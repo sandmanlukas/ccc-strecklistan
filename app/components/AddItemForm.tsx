@@ -54,15 +54,15 @@ export default function AddItemForm() {
                 <form onSubmit={handleSubmit}>
                     <label className='block'>
                         Name:
-                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} className='mt-1 block w-full' />
+                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} className='mt-1 block w-full rounded border border-black' />
                     </label>
                     <label className='block mt-4'>
                         Barcode:
-                        <input type="text" value={barcode} onChange={(e) => setBarcode(e.target.value)} className='mt-1 block w-full' />
+                        <input type="text" value={barcode} onChange={(e) => setBarcode(e.target.value)} className='mt-1 block w-full rounded border border-black' />
                     </label>
                     <label className='block mt-4'>
                         Price:
-                        <input type="number" value={price} onChange={(e) => setPrice(parseInt(e.target.value))} className='mt-1 block w-full' />
+                        <input type="number" value={price} onChange={(e) => setPrice(parseInt(e.target.value))} className='mt-1 block w-full rounded border border-black' />
                     </label>
                     <button type="submit" className='mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>Add Item</button>
                 </form>
