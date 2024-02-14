@@ -1,13 +1,13 @@
 // app/providers.tsx
-import { auth } from "@/auth";
+"use client";
 
-import SessionProvider from "@/app/components/SessionProvider"
+import { NextUIProvider } from "@nextui-org/react";
+
 export async function Providers({ children }: { children: React.ReactNode }) {
-    const session = await auth();
 
     return (
-        <SessionProvider session={session   }>
+        <NextUIProvider>
             {children}
-        </SessionProvider>
+        </NextUIProvider>
     )
 }

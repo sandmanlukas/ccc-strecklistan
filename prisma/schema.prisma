@@ -14,6 +14,9 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
+  firstName String
+  lastName  String
+  email     String   @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -31,6 +34,7 @@ model Item {
 }
 
 enum UserRole {
+  USER
   CCC
   ADMIN
 }
