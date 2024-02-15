@@ -3,7 +3,7 @@
 import { prisma } from '@/app/lib/db';
 
 async function addItem(barcode: string, name: string, price: number) {
-
+    
     try {
 
     const item = await prisma.item.create({
@@ -15,6 +15,7 @@ async function addItem(barcode: string, name: string, price: number) {
         });
         return item;
     } catch (error) {
+        console.log(error);
         return false;
     }
 

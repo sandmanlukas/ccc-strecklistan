@@ -36,14 +36,14 @@ function UserList() {
             : (
                 <div className='mx-auto p-3'>
                     {activeUsers && activeUsers.length > 0 &&
-                        <>
+                        <div className='mb-2'>
                             <h1 className="text-2xl font-bold mb-4">Sittande</h1>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {activeUsers.map(user => (
                                     <UserCard key={user.id} user={user} />
                                 ))}
                             </div>
-                        </>
+                        </div>
                     }
                     {nonActiveUsers && nonActiveUsers.length > 0 &&
                         <>  
