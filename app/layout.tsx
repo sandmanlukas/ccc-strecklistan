@@ -1,6 +1,9 @@
 import "./globals.css";
+import 'react-toastify/dist/ReactToastify.css';
+
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
+import { ToastContainer } from "react-toastify";
 
 import Navbar from "@/app/components/Navbar";
 import { auth } from "@/auth";
@@ -25,7 +28,19 @@ export default async function RootLayout({
         <Providers>
           <SessionProvider session={session}>
             <Navbar />
-            <main className="mx-auto max-w-5l text-2xl flex">
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
+            <main className="mx-auto max-w-5xl text-xl flex">
               {children}
             </main>
           </SessionProvider>

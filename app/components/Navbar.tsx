@@ -4,6 +4,9 @@ import React from "react";
 import verve from "@/fonts/verve";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { SlLogout, SlLogin } from "react-icons/sl";
+import { AiOutlineUserAdd } from "react-icons/ai";
+import { IoIosAddCircleOutline } from "react-icons/io";
 
 
 type Props = {};
@@ -14,16 +17,21 @@ function AuthButton() {
   if (session) {
     return (
       <>
-        {session.user?.username} <br />
-        <a href="/api/auth/signout">Logga ut</a>
+        <p className="text-xl mr-4">
+          {session.user?.username}
+        </p>
+        <a href="/api/auth/signout">
+          <SlLogout size={35} style={{ fontWeight: 'bold' }} />
+        </a>
       </>
     );
   }
 
   return (
     <>
-      Inte inloggad <br />
-      <a href="/api/auth/signin">Logga in</a>
+      <a href="/api/auth/signin">
+        <SlLogin size={35} style={{ fontWeight: 'bold' }} />
+      </a>
     </>
   );
 }
@@ -33,13 +41,21 @@ const Navbar = (props: Props) => {
     <nav
       className={
         verve.className +
-        " text-black p-4 pb-2 shadow-lg border-blue-700 bg-yellow-300 border-t-8 border-b-8 flex justify-between items-center sticky top-0 z-50"
+        " text-black shadow-lg p-4 border-blue-700 bg-yellow-300 border-t-8 border-b-8 flex items-end items-center sticky top-0 z-50 relative"
       }
     >
-      <Link className={"text-3xl"} href={"/"} as={"/"}>
+      <Link className={"text-3xl self-end flex-col"} href={"/"} as={"/"}>
         strecklistan
       </Link>
-      <AuthButton />
+      <Link href={"/user/new"} as={"/user/new"} className="mx-2">
+        <AiOutlineUserAdd size={35} style={{ fontWeight: 'bold' }} />
+      </Link>
+      <Link href={"/item/new"} as={"/item/new"} className="mx-2">
+        <IoIosAddCircleOutline size={35} style={{ fontWeight: 'bold' }} />
+      </Link>
+      <div className="flex justify-end items-center w-full">
+        <AuthButton />
+      </div>
     </nav>
   );
 };

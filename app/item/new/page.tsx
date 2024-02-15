@@ -2,7 +2,7 @@ import React from 'react';
 import {redirect} from 'next/navigation';
 
 import { auth } from '@/auth';
-import AddItemForm from '../components/AddItemForm';
+import AddItemForm from '../../components/AddItemForm';
 
 async function AddItemPage({children,}:{children: React.ReactNode}) {
 
