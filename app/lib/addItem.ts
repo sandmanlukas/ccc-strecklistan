@@ -1,19 +1,24 @@
 "use server";
 
 import { prisma } from '@/app/lib/db';
+import { ItemType } from '@prisma/client';
 
-async function addItem(barcode: string, name: string, price: number) {
+interface Item {
+    barcode: string;
+    name: string;
+    price: number;
+    type: ItemType;
+    volume?: number;
+}
+
+async function addItem(item: Item) {
     
     try {
 
-    const item = await prisma.item.create({
-            data: {
-                barcode: barcode,
-                name: name,
-                price: price,
-            },
+    const dbItem = await prisma.item.create({
+            data: item
         });
-        return item;
+        return dbItem;
     } catch (error) {
         console.log(error);
         return false;
