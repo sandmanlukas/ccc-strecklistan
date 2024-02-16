@@ -27,14 +27,13 @@ model User {
 }
 
 model Transaction {
-  id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id])
-  itemId     Int
-  item       Item     @relation(fields: [itemId], references: [id])
-  totalPrice Int
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  barcode   String
+  item      Item     @relation(fields: [barcode], references: [barcode])
 }
 
 model Item {

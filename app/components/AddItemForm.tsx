@@ -50,19 +50,14 @@ export default function AddItemForm() {
     }
 
     useEffect(() => {
-        let code = "";
-        let reading = false;
-
-        const handleScanEvent = handleScan(code, reading, setBarcode);
-
-
+        const handleScanEvent = handleScan(setBarcode);
         document.addEventListener('keydown', handleScanEvent);
 
         return () => {
             document.removeEventListener('keydown', handleScanEvent);
         }
 
-    }, [barcode]);
+    }, []);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();

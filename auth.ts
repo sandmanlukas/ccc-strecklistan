@@ -5,16 +5,9 @@ const bcrypt = require('bcryptjs');
 
 import CredentialsProvider from "next-auth/providers/credentials";
 
-// declare module "next-auth" {
-    interface CredentialsUser extends Omit<User, 'id' | 'password' | 'createdAt' | 'updatedAt' > {
-        id: string,
-    }
-
-//     interface Credentials {
-//         username: string,
-//         password: string,
-//     }
-// }
+interface CredentialsUser extends Omit<User, 'id' | 'password' | 'createdAt' | 'updatedAt'> {
+    id: string,
+}
 
 export const authOptions = {
     // adapter: PrismaAdapter(prisma),
@@ -66,7 +59,7 @@ export const authOptions = {
         }),
     ],
     callbacks: {
-        async jwt({ token, user }: { token: any, user: any }){
+        async jwt({ token, user }: { token: any, user: any }) {
             if (user) {
                 token.id = user.id;
                 token.username = user.username;
@@ -78,7 +71,7 @@ export const authOptions = {
             }
             return token;
         },
-        async session({ session, token }: { session: Session, token: any }){
+        async session({ session, token }: { session: Session, token: any }) {
             session.user = token;
             return session;
         },

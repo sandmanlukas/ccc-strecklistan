@@ -7,6 +7,17 @@ async function getUser(id: number) {
         where: {
             id: id,
         },
+        include: {
+            transactions: {
+                take: 10,
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                include: {
+                    item: true,
+                },
+            },
+        },
     });
     return users;
 }
