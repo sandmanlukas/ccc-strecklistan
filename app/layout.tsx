@@ -40,7 +40,7 @@ export default async function RootLayout({
               pauseOnHover
               theme="light"
             />
-            <main className="mx-auto max-w-5xl text-xl flex">
+            <main className="mx-auto max-w-10xl text-xl flex">
               {children}
             </main>
           </SessionProvider>

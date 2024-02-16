@@ -7,9 +7,10 @@ import { useEffect, useState } from "react"
 import { handleScan } from "@/app/lib/utils";
 import { createTransaction } from "@/app/lib/createTransaction";
 import { toast } from "react-toastify";
+import Transactions from "./Transactions";
 
 
-interface TransactionWithItem extends Transaction {
+export interface TransactionWithItem extends Transaction {
     item: Item;
 }
 
@@ -98,17 +99,7 @@ export default function UserPage({ id }: { id: number }) {
                                 <h2 className="text-1xl font-bold mb-1">Skuld</h2>
                                 <p>{debt} kr</p>
                             </div>
-                            <div>
-                                <h2 className="text-xl font-bold mt-3">Senaste transaktioner</h2>
-                                {transactions.length === 0 ? <p>Inga transaktioner!</p>
-                                    : (
-                                        <ul>
-                                            {transactions.map((transaction) => (
-                                                <li key={transaction.id}>{transaction.item.name} -  {transaction.item.price} kr</li>
-                                            ))}
-                                        </ul>
-                                    )}
-                            </div>
+                            <Transactions transactions={transactions} />
                         </>
                     }
 
