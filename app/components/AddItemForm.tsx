@@ -112,7 +112,7 @@ export default function AddItemForm() {
                         <select className="mt-1 block w-full rounded border border-black" value={type} onChange={(e) => setType(e.target.value)}>
                             {
                                 itemTypes.map((type) => (
-                                    <option value={type}>{type}</option>
+                                    <option key={type} value={type}>{type}</option>
                                 ))
                             }
                         </select>
