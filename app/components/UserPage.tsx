@@ -65,7 +65,7 @@ export default function UserPage({ id }: { id: number }) {
                         // Add the new transaction to the end of the array
                         const updatedTransactions = [transaction, ...currentTransactions];
                         // Slice the array to keep only the last 10 items
-                        return updatedTransactions.slice(0,10);
+                        return updatedTransactions.slice(0, 10);
                     });
                     setItem(item);
 
@@ -91,13 +91,14 @@ export default function UserPage({ id }: { id: number }) {
                     {user &&
                         <>
                             <div>
-                                <h1 className="text-2xl font-bold mb-1">{user.username}</h1>
+                                <div className="flex justify-between items-baseline">
+                                    <h1 className="text-2xl font-bold mb-1">{user.username}</h1>
+                                    <p className="font-bold">{debt} kr</p>
+                                </div>
                                 <p className="text-md">{user.firstName} {user.lastName}</p>
                             </div>
 
                             <div>
-                                <h2 className="text-1xl font-bold mb-1">Skuld</h2>
-                                <p>{debt} kr</p>
                             </div>
                             <Transactions transactions={transactions} />
                         </>
