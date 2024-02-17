@@ -11,6 +11,7 @@ datasource db {
 }
 
 //TODO: add email, real name and other fields
+
 model User {
   id           Int           @id @default(autoincrement())
   username     String        @unique
@@ -20,10 +21,18 @@ model User {
   password     String
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  role         UserRole      @default(CCC)
-  isKadaver    Boolean       @default(false)
+  role         UserRole      @default(ORDFORANDE)
   debt         Int           @default(0)
   transactions Transaction[]
+}
+
+model Account {
+  id        Int         @id @default(autoincrement())
+  username  String      @unique
+  password  String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  role      AccountRole @default(CCC)
 }
 
 model Transaction {
@@ -54,8 +63,23 @@ enum ItemType {
   ANNAT
 }
 
-enum UserRole {
-  USER
+enum AccountRole {
   CCC
   ADMIN
+}
+
+enum UserRole {
+  ORDFORANDE
+  KASSOR
+  BYGGCHEF
+  BILCHEF
+  GARDVAR
+  KLADCHEF
+  PROGRAMCHEF
+  ANNONSCHEF
+  MUSIKCHEF
+  OLCHEF
+  PRCHEF // Note: Hyphen is not allowed in enum values, so 'PR-chef' is changed to 'PRchef'
+  KADAVER
+  OTHER
 }

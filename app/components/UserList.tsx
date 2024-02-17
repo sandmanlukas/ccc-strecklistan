@@ -5,6 +5,7 @@ import { getAllUsers } from '@/app/lib/getAllUsers';
 import { User } from '@prisma/client';
 import {Spinner} from "@nextui-org/react";
 import UserCard from './UserCard';
+import { toast } from 'react-toastify';
 
 function UserList() {
     const [activeUsers, setActiveUsers] = useState<User[] | null>();
@@ -13,24 +14,28 @@ function UserList() {
 
     useEffect(() => {
         const fetchUsers = async () => {
-            setLoading(true);
-            const allUsers = await getAllUsers();
-            const activeUsers = allUsers.filter(user => !user.isKadaver);
-            const nonActiveUsers = allUsers.filter(user => user.isKadaver);
-            setActiveUsers(activeUsers);
-            setNonActiveUsers(nonActiveUsers);
-            setLoading(false);
+            try{
+                setLoading(true);
+                const allUsers = await getAllUsers();
+                const activeUsers = allUsers.filter(user => !user.role.includes('KADAVER'));
+                const nonActiveUsers = allUsers.filter(user => user.role.includes('KADAVER'));
+                setActiveUsers(activeUsers);
+                setNonActiveUsers(nonActiveUsers);
+            } catch (error) {
+                console.error(error);
+                toast.error('Något gick fel!')
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchUsers();
 
     }, []);
 
-
-
     return (
         loading ? 
-        <div className='mx-auto mt-2'>
+        <div className='mx-auto my-auto mt-2'>
             <Spinner />
         </div>
             : (

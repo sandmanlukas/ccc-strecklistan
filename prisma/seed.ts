@@ -1,4 +1,4 @@
-import { User, UserRole } from "@prisma/client";
+import { AccountRole, UserRole } from "@prisma/client";
 import { prisma } from "../app/lib/db";
 import { faker} from "@faker-js/faker";
 const bcrypt = require("bcryptjs");
@@ -7,8 +7,7 @@ const bcrypt = require("bcryptjs");
 interface FakeUser {
   username: string;
   password: string;
-  role: "USER" | "ADMIN" | "CCC";
-  isKadaver: boolean;
+  role: UserRole;
   email: string;
   firstName: string;
   lastName: string;
@@ -18,17 +17,18 @@ interface FakeUser {
 export function createRandomUser(role: UserRole): FakeUser {
   return {
     username: faker.internet.userName(),
-    password: faker.internet.password(),
-    role: role,
-    isKadaver: faker.datatype.boolean(),
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
+    password: faker.internet.password(),
+    role: role,
   };
 }
 
-async function createAndAddUsersToDatabase(role: UserRole) {
+async function createAndAddUsersToDatabase() {
+  const roles = Object.values(UserRole);
   for (let i = 0; i < 10; i++) {
+    const role = roles[Math.floor(Math.random() * roles.length)];
     const randomUser = createRandomUser(role); // You can specify the role here
     // Add the user to the database using your database logic
     // Example: await prisma.user.create({ data: randomUser });
@@ -42,7 +42,7 @@ async function main() {
     10
   );
 
-  const user = await prisma.user.upsert({
+  const user = await prisma.account.upsert({
     where: {
       username: "admin",
     },
@@ -52,16 +52,12 @@ async function main() {
     create: {
       username: "admin",
       password: hashedPassword,
-      email: "admin@cortegen.se",
-      firstName: "Admin",
-      lastName: "Adminsson",
-      role: "ADMIN",
-      isKadaver: false,
+      role: AccountRole.ADMIN,
     },
   });
 
   
-  await prisma.user.upsert({
+  await prisma.account.upsert({
     where: {
       username: "ccc",
     },
@@ -71,15 +67,11 @@ async function main() {
     create: {
       username: "ccc",
       password: hashedPassword,
-      email: "ccc@cortegen.se",
-      firstName: "CCC",
-      lastName: "CCCsson",
-      role: "CCC",
-      isKadaver: false,
+      role: AccountRole.CCC,
     },
   });
 
-  await createAndAddUsersToDatabase("USER");
+  await createAndAddUsersToDatabase();
 }
 
 main()

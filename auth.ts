@@ -1,12 +1,20 @@
 import { prisma } from "@/app/lib/db";
-import { User } from '@prisma/client';
-import NextAuth, { Session } from "next-auth";
+import { AccountRole } from '@prisma/client';
+import NextAuth, { NextAuthConfig, Session, User } from "next-auth";
 const bcrypt = require('bcryptjs');
 
 import CredentialsProvider from "next-auth/providers/credentials";
+import { NextRequest } from "next/server";
 
-interface CredentialsUser extends Omit<User, 'id' | 'password' | 'createdAt' | 'updatedAt'> {
-    id: string,
+
+declare module "next-auth" {
+    interface User {
+        username?: string;
+        firstName?: string;
+        lastName?: string;
+        role?: AccountRole;
+        error?: string;
+    }
 }
 
 export const authOptions = {
@@ -17,19 +25,19 @@ export const authOptions = {
         strategy: "jwt" as const,
     },
     secret: process.env.NEXT_AUTH_SECRET,
+    pages: {
+        signIn: '/auth/signin',
+        error: '/auth/signin',
+    },
     providers: [
         CredentialsProvider({
             name: "Credentials",
-            credentials: {
-                username: { label: "Användarnamn", type: "text" },
-                password: { label: "Lösenord", type: "password" },
-            },
-            async authorize(credentials, req) {
+            async authorize(credentials, req): Promise<User> {
                 if (!credentials?.username || !credentials?.password) {
-                    throw new Error('Du måste ange både användarnamn och lösenord');
+                    return { error: 'Användarnamn eller lösenord saknas!' }
                 }
 
-                const user = await prisma.user.findUnique({
+                const user = await prisma.account.findUnique({
                     where: {
                         username: credentials.username.toString(),
                     },
@@ -37,24 +45,18 @@ export const authOptions = {
 
 
                 if (!user) {
-                    throw new Error('Användarnamnet eller lösenordet var fel!');
-
+                    return { error: 'Användarnamnet eller lösenordet var fel!' };
                 }
 
                 if (!(await bcrypt.compare(credentials.password.toString(), user.password))) {
-                    throw new Error('Användarnamnet eller lösenordet var fel!');
-
+                    return { error: 'Användarnamnet eller lösenordet var fel!' };
                 }
 
                 return {
                     id: user.id.toString(),
                     username: user.username,
                     role: user.role,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    isKadaver: user.isKadaver,
-                    email: user.email,
-                } as CredentialsUser;
+                };
             },
         }),
     ],
@@ -64,10 +66,6 @@ export const authOptions = {
                 token.id = user.id;
                 token.username = user.username;
                 token.role = user.role;
-                token.firstName = user.firstName;
-                token.lastName = user.lastName;
-                token.isKadaver = user.isKadaver;
-                token.email = user.email;
             }
             return token;
         },
@@ -75,8 +73,17 @@ export const authOptions = {
             session.user = token;
             return session;
         },
+        authorized(params: { request: NextRequest, auth: Session | null }) {
+            return !!params.auth?.user;
+        },
+        signIn(params: { user: User }) {
+            if (params.user?.error) {
+                throw new Error(params.user.error);
+            }
+            return true;
+        }
     }
-};
+} satisfies NextAuthConfig;
 
 export const {
     handlers: { GET, POST },

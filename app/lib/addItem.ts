@@ -3,7 +3,7 @@
 import { prisma } from '@/app/lib/db';
 import { ItemType } from '@prisma/client';
 
-interface Item {
+export interface Item {
     barcode: string;
     name: string;
     price: number;

@@ -7,13 +7,12 @@ import { useSession } from "next-auth/react";
 import { SlLogout, SlLogin } from "react-icons/sl";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { IoIosAddCircleOutline } from "react-icons/io";
+import { Session } from "next-auth";
 
 
 type Props = {};
 
-function AuthButton() {
-  const { data: session } = useSession();
-
+function AuthButton({ session }: { session: Session | null }) {
   if (session) {
     return (
       <>
@@ -37,6 +36,7 @@ function AuthButton() {
 }
 
 const Navbar = (props: Props) => {
+  const { data: session } = useSession();
   return (
     <nav
       className={
@@ -47,14 +47,18 @@ const Navbar = (props: Props) => {
       <Link className={"text-3xl self-end flex-col"} href={"/"} as={"/"}>
         strecklistan
       </Link>
-      <Link href={"/user/new"} as={"/user/new"} className="mx-2">
-        <AiOutlineUserAdd size={35} style={{ fontWeight: 'bold' }} />
-      </Link>
-      <Link href={"/item/new"} as={"/item/new"} className="mx-2">
-        <IoIosAddCircleOutline size={35} style={{ fontWeight: 'bold' }} />
-      </Link>
+      {session && (
+        <>
+          <Link href={"/user/new"} as={"/user/new"} className="mx-2">
+            <AiOutlineUserAdd size={35} style={{ fontWeight: 'bold' }} />
+          </Link>
+          <Link href={"/item/new"} as={"/item/new"} className="mx-2">
+            <IoIosAddCircleOutline size={35} style={{ fontWeight: 'bold' }} />
+          </Link>
+        </>
+      )}
       <div className="flex justify-end items-center w-full">
-        <AuthButton />
+        <AuthButton session={session} />
       </div>
     </nav>
   );

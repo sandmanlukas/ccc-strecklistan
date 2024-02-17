@@ -1,8 +1,8 @@
-export default function Page({ params }: { params: { slug: string } }) {
+import AddUserForm from "@/app/components/AddUserForm";
+
+export default function NewUserPage() {
     return (
-        <div>
-            Add user here.
-        </div>
+        <AddUserForm />
     );
-  }
+}
 

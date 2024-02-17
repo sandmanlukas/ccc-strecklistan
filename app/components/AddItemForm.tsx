@@ -2,29 +2,51 @@
 
 import { useEffect, useState } from "react";
 import { handleScan, capitalizeFirstLetter } from "@/app/lib/utils";
-import { addItem } from "../lib/addItem";
-import { Item, ItemType } from "@prisma/client";
+import { addItem } from "@/app/lib/addItem";
+import { ItemType } from "@prisma/client";
+import { Item } from "@/app/lib/addItem";
 
 import { toast } from 'react-toastify';
+import { Input, SelectItem, Select } from "@nextui-org/react";
 
 export default function AddItemForm() {
-    const [barcode, setBarcode] = useState<string>('');
-    const [name, setName] = useState<string>('');
-    const [price, setPrice] = useState<number>(0);
-    const [volume, setVolume] = useState<number>(0);
-    const [type, setType] = useState<string>('Dryck');
+    const [formData, setFormData] = useState({
+        barcode: '',
+        name: '',
+        price: 0,
+        volume: 0,
+        type: 'Dryck',
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
+        let { name, value }: { name: string, value: string | number } = e.target;
+
+        if (name === 'price' || name === 'volume') {
+            value = parseInt(value);
+        }
+
+
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value,
+        }));
+    };
 
     const itemTypes = Object.values(ItemType).map((type) => capitalizeFirstLetter(type));
 
-    function clearStates() {
-        setName('');
-        setBarcode('');
-        setPrice(0);
-        setVolume(0);
-        setType('Dryck');
+    function clearFormState() {
+        setFormData({
+            barcode: '',
+            name: '',
+            price: 0,
+            volume: 0,
+            type: 'Dryck',
+        });
     }
 
     function validateForm() {
+        const { name, barcode, price, type, volume } = formData;
+
         // Basic validation to check if the fields are not empty
         if (!name.trim()) {
             toast.error('Namn får inte vara tomt');
@@ -50,7 +72,10 @@ export default function AddItemForm() {
     }
 
     useEffect(() => {
-        const handleScanEvent = handleScan(setBarcode);
+        const updateBarcodeInForm = (scannedCode: string) => {
+            setFormData(prev => ({ ...prev, barcode: scannedCode }));
+        };
+        const handleScanEvent = handleScan(updateBarcodeInForm);
         document.addEventListener('keydown', handleScanEvent);
 
         return () => {
@@ -64,63 +89,123 @@ export default function AddItemForm() {
 
         // Call the addItem function to store the item in the database
         if (!validateForm()) {
-            clearStates();
+            clearFormState();
             return;
         };
 
-        const item = { barcode, name, price, type: type.toUpperCase() as ItemType, volume }
+        const { barcode, name, price, type, volume } = formData;
+        const item: Item = {
+            barcode,
+            name,
+            price,
+            type: type.toUpperCase() as ItemType,
+            volume,
+        };
+        
         const dbItem = await addItem(item);
+        
         if (!dbItem) {
-            toast.error(`Det gick inte att lägga till ${name} i inventariet! Streckkoden finns antagligen redan.`, {
-                position: "top-center",
-            });
-            clearStates();
+            toast.error(`Det gick inte att lägga till ${item.name} i inventariet! Streckkoden finns antagligen redan.`);
+            clearFormState();
             return;
         }
-        toast.success(`${item.name} har lagts till i inventariet!`, {
-            position: "top-center",
-        });
+        toast.success(`${item.name} har lagts till i inventariet!`);
 
         // Clear the form fields after adding the item
-        clearStates();
+        clearFormState();
     };
 
     return (
-        <>
-            <div className="mx-auto mt-2">
-                <h1 className="font-bold mb-2">Lägg till inventarie</h1>
-                <form onSubmit={handleSubmit}>
-                    <label className='block'>
-                        Namn
-                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} className='mt-1 block w-full rounded border border-black' />
-                    </label>
-                    <label className='block mt-4'>
-                        Streckkod
-                        <input type="text" value={barcode} onChange={(e) => setBarcode(e.target.value)} className='mt-1 block w-full rounded border border-black' />
-                    </label>
-                    <label className='block mt-4'>
-                        Pris
-                        <input type="number" value={price} onChange={(e) => setPrice(parseInt(e.target.value))} className='mt-1 block w-full rounded border border-black' />
-                    </label>
-                    <label className="block mt-4">
-                        Typ
-                        <select className="mt-1 block w-full rounded border border-black" value={type} onChange={(e) => setType(e.target.value)}>
+
+        <div className="mx-auto my-20 bg-gray-100">
+            <div className="w-full max-w-md p-8 space-y-9 bg-white rounded-lg shadow-md">
+                <h2 className="text-center text-2xl font-bold text-gray-900'">Lägg till inventarie</h2>
+                <form onSubmit={handleSubmit} className="space-y-10">
+                    <div>
+                        <Input
+                            label="Namn"
+                            aria-label="Namn"
+                            labelPlacement="outside"
+                            placeholder="Namn på produkten"
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                            isRequired />
+                    </div>
+                    <div>
+                        <Input
+                            label="Streckkod"
+                            aria-label="Streckkod"
+                            labelPlacement="outside"
+                            placeholder="Strecka en burk eller något"
+                            type="text"
+                            id="barcode"
+                            name="barcode"
+                            value={formData.barcode}
+                            onChange={handleChange}
+                            required
+                            isRequired />
+                    </div>
+                    <div>
+                        <Input
+                            label="Pris"
+                            aria-label="Pris"
+                            labelPlacement="outside"
+                            type="number"
+                            id="price"
+                            name="price"
+                            value={formData.price.toString()}
+                            onChange={handleChange}
+                            endContent={<span className="text-sm text-gray-500">kr</span>}
+                            required
+                            isRequired
+                        />
+                    </div>
+                    <div>
+                        <Select
+                            label="Typ"
+                            aria-label="Typ"
+                            labelPlacement="outside"
+                            id="type"
+                            name="type"
+                            placeholder="Dryck"
+                            value={formData.type}
+                            onChange={handleChange}
+                        >
                             {
                                 itemTypes.map((type) => (
-                                    <option key={type} value={type}>{type}</option>
+                                    <SelectItem key={type} value={type}>{type}</SelectItem>
                                 ))
                             }
-                        </select>
-                    </label>
-                    {type === 'Dryck' &&
-                        <label className="block mt-4">
-                            Volym (cl)
-                            <input type="number" value={volume} onChange={(e) => setVolume(parseInt(e.target.value))} className='mt-1 block w-full rounded border border-black' />
-                        </label>
+                        </Select>
+                    </div>
+                    {formData.type === 'Dryck' &&
+                        <div>
+                            <Input
+                                aria-label="Volym"
+                                label="Volym"
+                                labelPlacement="outside"
+                                id="volume"
+                                name="volume"
+                                type="number"
+                                value={formData.volume.toString()}
+                                onChange={handleChange}
+                                endContent={<span className="text-sm text-gray-500">cl</span>}
+                            />
+                        </div>
                     }
-                    <button type="submit" className='mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>Lägg till</button>
+                    <button
+                        type="submit"
+                        className='w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
+                    >
+                        Lägg till
+                    </button>
                 </form>
             </div>
-        </>
+        </div >
+
     )
 }
