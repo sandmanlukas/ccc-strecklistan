@@ -35,15 +35,16 @@ export default function AddUserForm() {
 
     return (
         <div className='mx-auto my-20 bg-gray-100'>
-            <div className='w-full max-w-md p-8 space-y-4 bg-white rounded-lg shadow-md'>
+            <div className='w-full max-w-md p-8 space-y-9 bg-white rounded-lg shadow-md'>
                 <h2 className='text-center text-2xl font-bold text-gray-900'>Lägg till användare</h2>
-                <form onSubmit={handleSubmit} className='space-y-6'>
+                <form onSubmit={handleSubmit} className='space-y-9'>
                     <div>
                         <Input
                             type="text"
                             id="username"
                             name="username"
                             label="Användarnamn"
+                            labelPlacement='outside'
                             aria-label='Användarnamn'
                             value={formData.username}
                             onChange={handleChange}
@@ -57,6 +58,7 @@ export default function AddUserForm() {
                             id="email"
                             name="email"
                             label="E-mail"
+                            labelPlacement='outside'
                             aria-label='E-mail'
                             value={formData.email}
                             onChange={handleChange}
@@ -69,8 +71,9 @@ export default function AddUserForm() {
                             type="password"
                             id="password"
                             name="password"
-                            label="Lösenord"
                             aria-label='Lösenord'
+                            label="Lösenord"
+                            labelPlacement='outside'
                             value={formData.password}
                             onChange={handleChange}
                             isRequired
