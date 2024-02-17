@@ -48,3 +48,19 @@ export const positionLabels: { [key in UserRole]: string } = {
     KADAVER: "Kadaver", // Original representation
     OTHER: "Annat"
 };
+
+export const roleStringToUserRole: {[key: string]: UserRole} = {
+    "Ordförande": "ORDFORANDE" as UserRole,
+    "Kassör": "KASSOR" as UserRole,
+    "Byggchef": "BYGGCHEF" as UserRole,
+    "Bilchef": "BILCHEF" as UserRole,
+    "Gårdvar": "GARDVAR" as UserRole,
+    "Klädchef": "KLADCHEF" as UserRole,
+    "Programchef": "PROGRAMCHEF" as UserRole,
+    "Annonschef": "ANNONSCHEF" as UserRole,
+    "Musikchef": "MUSIKCHEF" as UserRole,
+    "Ölchef": "OLCHEF" as UserRole,
+    "PR-chef": "PRCHEF" as UserRole,
+    "Kadaver": "KADAVER" as UserRole,
+    "Annat": "OTHER" as UserRole
+}

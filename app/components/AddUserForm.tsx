@@ -3,19 +3,56 @@ import { Input, Select, SelectItem } from '@nextui-org/react';
 // components/AddUserForm.js
 import { useState } from 'react';
 import { UserRole } from '@prisma/client';
-import { positionLabels } from '@/app/lib/utils';
+import { positionLabels, roleStringToUserRole } from '@/app/lib/utils';
+import { toast } from 'react-toastify';
+import { clear } from 'console';
+import { addUser } from '../lib/addUser';
 
 export default function AddUserForm() {
     const [formData, setFormData] = useState({
         username: '',
+        firstName: '',
+        lastName: '',
         email: '',
-        password: '',
         role: 'Ordförande', // Default role
     });
 
     const userRoles = Object.values(UserRole).map((type) => {
         return positionLabels[type];
     });
+
+    function clearFormState() {
+        setFormData({
+            username: '',
+            firstName: '',
+            lastName: '',
+            email: '',
+            role: 'Ordförande', // Default role
+        });
+    }
+
+    function validateForm() {
+        const { username, firstName, lastName, email } = formData;
+
+        // Basic validation to check if the fields are not empty
+        if (!username.trim()) {
+            toast.error('Användarnamn får inte vara tomt');
+            return;
+        }
+        if (!firstName.trim()) {
+            toast.error('Förnamn får inte vara tomt');
+            return;
+        }
+        if (!lastName.trim()) {
+            toast.error('Efternamn får inte vara tomt');
+            return;
+        }
+        if (!email.trim()) {
+            toast.error('E-mail får inte vara tomt');
+            return;
+        }
+        return true;
+    }
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
@@ -26,11 +63,35 @@ export default function AddUserForm() {
         }));
     };
 
+
+
     const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Here you would usually send formData to your backend/API to add the new user
-        console.log(formData);
+
+        // Validate the form
+        if (!validateForm()) {
+            clearFormState();
+            return;
+        }
+
+        const { username, firstName, lastName, email, role } = formData;
+        const user = {
+            username,
+            firstName,
+            lastName,
+            email,
+            role: roleStringToUserRole[role],
+        }
+        const dbUser = await addUser(user);
+
+        if (!dbUser) {
+            toast.error('Något gick fel');
+            return;
+        }
+        toast.success(`${user.username} har lagts till!`);
+
         // Reset form or give feedback to the user
+        clearFormState();
     };
 
     return (
@@ -68,13 +129,27 @@ export default function AddUserForm() {
                     </div>
                     <div>
                         <Input
-                            type="password"
-                            id="password"
-                            name="password"
-                            aria-label='Lösenord'
-                            label="Lösenord"
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            aria-label='Förnamn'
+                            label="Förnamn"
                             labelPlacement='outside'
-                            value={formData.password}
+                            value={formData.firstName}
+                            onChange={handleChange}
+                            isRequired
+                            required
+                        />
+                    </div>
+                    <div>
+                        <Input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            aria-label='Efternamn'
+                            label="Efternamn"
+                            labelPlacement='outside'
+                            value={formData.lastName}
                             onChange={handleChange}
                             isRequired
                             required
@@ -82,8 +157,8 @@ export default function AddUserForm() {
                     </div>
                     <div>
                         <Select
-                            id="position"
-                            name="position"
+                            id="role"
+                            name="role"
                             value={formData.role}
                             placeholder='Ordförande'
                             label="Position"
