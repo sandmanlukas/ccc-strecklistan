@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { SlLogout, SlLogin } from "react-icons/sl";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { IoIosAddCircleOutline } from "react-icons/io";
+import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { Session } from "next-auth";
 
 
@@ -16,7 +17,7 @@ function AuthButton({ session }: { session: Session | null }) {
   if (session) {
     return (
       <>
-        <p className="text-xl mr-4">
+        <p className="text-xl mr-4 self-end">
           {session.user?.username}
         </p>
         <a href="/api/auth/signout">
@@ -37,6 +38,7 @@ function AuthButton({ session }: { session: Session | null }) {
 
 const Navbar = (props: Props) => {
   const { data: session } = useSession();
+
   return (
     <nav
       className={
@@ -44,21 +46,34 @@ const Navbar = (props: Props) => {
         " text-black shadow-lg p-4 border-blue-700 bg-yellow-300 border-t-8 border-b-8 flex items-end items-center sticky top-0 z-50 relative"
       }
     >
-      <Link className={"text-3xl self-end flex-col"} href={"/"} as={"/"}>
-        strecklistan
-      </Link>
-      {session && (
-        <>
-          <Link href={"/user/new"} as={"/user/new"} className="mx-2">
-            <AiOutlineUserAdd size={35} style={{ fontWeight: 'bold' }} />
-          </Link>
-          <Link href={"/item/new"} as={"/item/new"} className="mx-2">
-            <IoIosAddCircleOutline size={35} style={{ fontWeight: 'bold' }} />
-          </Link>
-        </>
-      )}
-      <div className="flex justify-end items-center w-full">
-        <AuthButton session={session} />
+      <div className="flex">
+        <Link className="text-3xl self-end" href={"/"} as={"/"}>
+          strecklistan
+        </Link>
+        {session && (
+          <>
+            {session.user.role === "ADMIN" && (
+              <Link href={"/user/new"} as={"/user/new"} className="mx-2">
+                <AiOutlineUserAdd size={35} style={{ fontWeight: 'bold' }} />
+              </Link>
+            )}
+            <Link href={"/item/new"} as={"/item/new"} className="mx-2">
+              <IoIosAddCircleOutline size={35} style={{ fontWeight: 'bold' }} />
+            </Link>
+          </>
+        )}
+      </div>
+      <div className="flex justify-end items-end w-full">
+        {session && (
+          <div className="flex">
+            {session.user.role === "ADMIN" && (
+              <Link href={"/admin"} as={"/admin"} className="mx-2">
+                <MdOutlineAdminPanelSettings size={35} style={{ fontWeight: 'bold' }} />
+              </Link>
+            )}
+            <AuthButton session={session} />
+          </div>
+        )}
       </div>
     </nav>
   );

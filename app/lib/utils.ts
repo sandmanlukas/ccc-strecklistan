@@ -44,9 +44,9 @@ export const positionLabels: { [key in UserRole]: string } = {
     ANNONSCHEF: "Annonschef",
     MUSIKCHEF: "Musikchef",
     OLCHEF: "Ölchef",
-    PRCHEF: "PR-chef", // Original representation
-    KADAVER: "Kadaver", // Original representation
-    OTHER: "Annat"
+    PRCHEF: "PR-chef", 
+    KADAVER: "Kadaver",
+    OTHER: "Annat",
 };
 
 export const roleStringToUserRole: {[key: string]: UserRole} = {

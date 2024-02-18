@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { TransactionWithItem } from '@/app/components/UserPage';
 

@@ -14,7 +14,7 @@
   "dependencies": {
     "@next-auth/prisma-adapter": "canary",
     "@nextui-org/react": "^2.2.9",
-    "@prisma/client": "5.9.1",
+    "@prisma/client": "^5.9.1",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.0",
