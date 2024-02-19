@@ -13,7 +13,7 @@ export default async function AdminPage() {
 
     return (
         <div>
-            <h1>Admin Page</h1>
+            <h1 className='text-2xl mb-2 pl-1'>Adminsaker</h1>
             <AdminUserList />
         </div>
     );
