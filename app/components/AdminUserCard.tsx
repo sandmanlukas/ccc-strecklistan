@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { User, UserRole } from '@prisma/client';
 import { positionLabels } from '@/app/lib/utils';
 import { MdOutlineEdit } from "react-icons/md";
@@ -69,7 +69,6 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
             toast.error('Kunde inte spara ändringar');
             return;
         }
-        // TODO: Save changes to the user in DB
         onCloseEditUserModal();
     }
 

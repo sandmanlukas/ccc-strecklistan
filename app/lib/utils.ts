@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client";
+import { ItemType, UserRole } from "@prisma/client";
 
 export function handleScan(setScannedData: Function, setScanCount: Function | null = null) {
     let code = "";
@@ -47,6 +47,12 @@ export const positionLabels: { [key in UserRole]: string } = {
     PRCHEF: "PR-chef", 
     KADAVER: "Kadaver",
     OTHER: "Annat",
+};
+
+export const itemTypes: { [key in ItemType]: string } = {
+    DRYCK: "Dryck",
+    MAT: "Mat",
+    ANNAT: "Annat",
 };
 
 export const roleStringToUserRole: {[key: string]: UserRole} = {
