@@ -3,12 +3,13 @@
 import React from "react";
 import { useEffect } from "react";
 import { Item, User } from "@prisma/client";
-import { Listbox, ListboxItem, Skeleton, Selection } from "@nextui-org/react";
-import { getAllUsers } from "@/app/lib/getAllUsers";
-import { ListboxWrapper } from "@/app/components/ListboxWrapper";
+import { Listbox, ListboxItem, Skeleton, Selection, Tabs, Tab } from "@nextui-org/react";
+
 import AdminUserCard from "@/app/components/AdminUserCard";
+import AdminItemCard from "@/app/components/AdminItemCard";
+import { ListboxWrapper } from "@/app/components/ListboxWrapper";
 import { getAllItems } from "@/app/lib/getAllItems";
-import AdminItemCard from "./AdminItemCard";
+import { getAllUsers } from "@/app/lib/getAllUsers";
 import { itemTypes } from "@/app/lib/utils";
 
 
@@ -91,74 +92,80 @@ export default function AdminUserList() {
 
     return (
 
-        <div className="space-y-4">
-            <Skeleton isLoaded={!loadingUsers} className="rounded-lg">
-                <div className="grid grid-cols-[1fr_2fr] gap-4">
-                    <div className="">
-                        <ListboxWrapper>
-                            <Listbox
-                                aria-label="Användare i systemet"
-                                variant="flat"
-                                disallowEmptySelection
-                                selectionMode="single"
-                                items={users}
-                                selectedKeys={selectedUserKey}
-                                onSelectionChange={setSelectedUserKey}
-                                classNames={{
-                                    base: "max-w-xs",
-                                    list: "max-h-[300px] overflow-scroll",
-                                }}
-                            >
-                                {(user) => (
-                                    <ListboxItem key={user.id} textValue={user.username} onClick={() => setSelectedUser(user)}>
-                                        <div className="flex gap-2 s-center">
-                                            <div className="flex flex-col">
-                                                <span className="text-small">{user.username}</span>
-                                                <span className="text-tiny text-default-400">{user.firstName} {user.lastName}</span>
-                                            </div>
-                                        </div>
-                                    </ListboxItem>
-                                )}
-                            </Listbox>
-                        </ListboxWrapper>
-                    </div>
-                    <AdminUserCard user={selectedUser} onUserUpdate={handleUserUpdate} onUserDeletion={handleUserDeletion} />
-                </div>
-            </Skeleton>
-            <Skeleton isLoaded={!loadingItems} className="rounded-lg">
-                <div className="grid grid-cols-[1fr_2fr] gap-4">
-                    <div className="">
-                        <ListboxWrapper>
-                            <Listbox
-                                aria-label="Inventarie i systemet"
-                                variant="flat"
-                                disallowEmptySelection
-                                selectionMode="single"
-                                items={items}
-                                selectedKeys={selectedItemKey}
-                                onSelectionChange={setSelectedItemKey}
-                                classNames={{
-                                    base: "max-w-xs",
-                                    list: "max-h-[300px] overflow-scroll",
-                                }}
-                            >
-                                {(item) => (
-                                    <ListboxItem key={item.id} textValue={item.name} onClick={() => setSelectedItem(item)}>
-                                        <div className="flex gap-2 s-center">
-                                            <div className="flex flex-col">
-                                                <span className="text-small">{item.name}</span>
-                                                <span className="text-tiny text-default-400">{item.price}kr - {itemTypes[item.type]}</span>
-                                            </div>
-                                        </div>
-                                    </ListboxItem>
-                                )}
-                            </Listbox>
-                        </ListboxWrapper>
-                    </div>
-                    <AdminItemCard item={selectedItem} onItemUpdate={handleItemUpdate} onItemDeletion={handleItemDeletion} />
+        <div>
+            <Tabs aria-label="Tabbar för användare eller inventarie">
+                <Tab key="users" title="Användare">
+                    <Skeleton isLoaded={!loadingUsers} className="rounded-lg">
+                        <div className="grid grid-cols-[1fr_2fr] gap-4">
+                            <div className="">
+                                <ListboxWrapper>
+                                    <Listbox
+                                        aria-label="Användare i systemet"
+                                        variant="flat"
+                                        disallowEmptySelection
+                                        selectionMode="single"
+                                        items={users}
+                                        selectedKeys={selectedUserKey}
+                                        onSelectionChange={setSelectedUserKey}
+                                        classNames={{
+                                            base: "max-w-xs",
+                                            list: "max-h-[300px] overflow-scroll",
+                                        }}
+                                    >
+                                        {(user) => (
+                                            <ListboxItem key={user.id} textValue={user.username} onClick={() => setSelectedUser(user)}>
+                                                <div className="flex gap-2 s-center">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-small">{user.username}</span>
+                                                        <span className="text-tiny text-default-400">{user.firstName} {user.lastName}</span>
+                                                    </div>
+                                                </div>
+                                            </ListboxItem>
+                                        )}
+                                    </Listbox>
+                                </ListboxWrapper>
+                            </div>
+                            <AdminUserCard user={selectedUser} onUserUpdate={handleUserUpdate} onUserDeletion={handleUserDeletion} />
+                        </div>
+                    </Skeleton>
+                </Tab>
+                <Tab key="items" title="Inventarie">
+                    <Skeleton isLoaded={!loadingItems} className="rounded-lg">
+                        <div className="grid grid-cols-[1fr_2fr] gap-4">
+                            <div className="">
+                                <ListboxWrapper>
+                                    <Listbox
+                                        aria-label="Inventarie i systemet"
+                                        variant="flat"
+                                        disallowEmptySelection
+                                        selectionMode="single"
+                                        items={items}
+                                        selectedKeys={selectedItemKey}
+                                        onSelectionChange={setSelectedItemKey}
+                                        classNames={{
+                                            base: "max-w-xs",
+                                            list: "max-h-[300px] overflow-scroll",
+                                        }}
+                                    >
+                                        {(item) => (
+                                            <ListboxItem key={item.id} textValue={item.name} onClick={() => setSelectedItem(item)}>
+                                                <div className="flex gap-2 s-center">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-small">{item.name}</span>
+                                                        <span className="text-tiny text-default-400">{item.price}kr - {itemTypes[item.type]}</span>
+                                                    </div>
+                                                </div>
+                                            </ListboxItem>
+                                        )}
+                                    </Listbox>
+                                </ListboxWrapper>
+                            </div>
+                            <AdminItemCard item={selectedItem} onItemUpdate={handleItemUpdate} onItemDeletion={handleItemDeletion} />
+                        </div>
+                    </Skeleton>
+                </Tab>
+            </Tabs>
 
-                </div>
-            </Skeleton>
         </div>
     );
 }
