@@ -6,10 +6,11 @@ import { positionLabels } from '@/app/lib/utils';
 import { MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, useDisclosure } from '@nextui-org/react';
-import { on } from 'events';
-import { log } from 'console';
+import { editUser } from '@/app/lib/editUser';
+import { deleteUser } from '@/app/lib/deleteUser';
+import { toast } from 'react-toastify';
 
-export default function AdminUserCard({ user }: { user: User | null }) {
+export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { user: User | null, onUserUpdate: (user: User) => void, onUserDeletion: (user: User) => void }) {
     const { isOpen: isEditUserModalOpen, onOpen: onOpenEditUserModal, onClose: onCloseEditUserModal, onOpenChange: onOpenChangeEditUserModal } = useDisclosure();
     const { isOpen: isDeleteUserModalOpen, onOpen: onOpenDeleteUserModal, onClose: onCloseDeleteUserModal } = useDisclosure();
     const [editedUser, setEditedUser] = React.useState<User | null>(user);
@@ -33,26 +34,41 @@ export default function AdminUserCard({ user }: { user: User | null }) {
         if (name === 'debt') {
             value = parseInt(value);
         }
+
         setEditedUser((prev) => {
             if (prev !== null) {
-                return {...prev, [name]: value};
+                return { ...prev, [name]: value };
             }
             return null;
         });
     }
 
-    const handleDeleteUser = () => {
+    const handleDeleteUser = async () => {
         if (!editedUser) return;
-        console.log('Deleting user');
-        console.log(editedUser);
+
+        const deleted = await deleteUser(editedUser.id);
+        if (deleted) {
+            onUserDeletion(deleted);
+            setEditedUser(null);
+            toast.success(`${deleted.username} borttagen`);
+        }
+
         onCloseDeleteUserModal();
-        
     }
 
-    const handleSaveChanges = () => {
+    const handleSaveChanges = async () => {
         if (!editedUser) return;
         console.log('Saving changes');
 
+        const user = await editUser(editedUser);
+        if (user) {
+            onUserUpdate(user);
+            setEditedUser(user);
+            toast.success('Ändringar sparade');
+        } else {
+            toast.error('Kunde inte spara ändringar');
+            return;
+        }
         // TODO: Save changes to the user in DB
         onCloseEditUserModal();
     }
@@ -103,13 +119,17 @@ export default function AdminUserCard({ user }: { user: User | null }) {
                                         <Input
                                             autoFocus
                                             label="Användarnamn"
-                                            value={editedUser?.username || ''} 
+                                            name='username'
+                                            id='username'
+                                            value={editedUser?.username || ''}
                                             onChange={handleInputChange}
                                             variant="bordered"
                                         />
                                         <Select
                                             label="Post"
-                                            value={editedUser?.role || ''} 
+                                            name='role'
+                                            id='role'
+                                            value={editedUser?.role || ''}
                                             onChange={handleInputChange}
                                             defaultSelectedKeys={[positionLabels[editedUser.role]]}
                                             variant="bordered">
@@ -121,25 +141,34 @@ export default function AdminUserCard({ user }: { user: User | null }) {
                                         </Select>
                                         <Input
                                             label="E-mail"
-                                            value={editedUser?.email || ''} 
+                                            name='email'
+                                            id='email'
+                                            value={editedUser?.email || ''}
                                             onChange={handleInputChange}
                                             variant="bordered"
                                         />
                                         <Input
                                             label="Förnamn"
-                                            value={editedUser?.firstName || ''} 
+                                            name='firstName'
+                                            id='firstName'
+                                            value={editedUser?.firstName || ''}
                                             onChange={handleInputChange}
                                             variant="bordered"
                                         />
                                         <Input
                                             label="Efternamn"
-                                            value={editedUser?.lastName || ''} 
+                                            name='lastName'
+                                            id='lastName'
+                                            value={editedUser?.lastName || ''}
                                             onChange={handleInputChange}
                                             variant="bordered"
                                         />
                                         <Input
                                             label="Skuld"
-                                            value={editedUser?.debt.toString() || ''} 
+                                            type='number'
+                                            name='debt'
+                                            id='debt'
+                                            value={editedUser?.debt.toString() || ''}
                                             onChange={handleInputChange}
                                             variant="bordered"
                                         />
@@ -167,7 +196,7 @@ export default function AdminUserCard({ user }: { user: User | null }) {
                                 <>
                                     <ModalHeader className="flex flex-col gap-1">Ta bort {editedUser.username}</ModalHeader>
                                     <ModalBody>
-                                       <p>Är du säker på att du vill ta bort {editedUser.username}? Detta går inte att ångra.</p>
+                                        <p>Är du säker på att du vill ta bort {editedUser.username}? Detta går inte att ångra.</p>
                                     </ModalBody>
                                     <ModalFooter>
                                         <Button color="primary" onPress={onCloseDeleteUserModal}>

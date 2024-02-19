@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from '@/app/lib/db';
-import { GiThrownSpear } from 'react-icons/gi';
 
 async function createTransaction(userId: number, barcode: string) {
     try {

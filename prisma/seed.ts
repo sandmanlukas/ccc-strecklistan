@@ -6,7 +6,6 @@ const bcrypt = require("bcryptjs");
 
 interface FakeUser {
   username: string;
-  password: string;
   role: UserRole;
   email: string;
   firstName: string;
@@ -20,7 +19,6 @@ export function createRandomUser(role: UserRole): FakeUser {
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
-    password: faker.internet.password(),
     role: role,
   };
 }

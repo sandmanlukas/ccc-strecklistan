@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from '@/app/lib/db';
-import { ItemType, UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 
 export interface UserAdd {
     username: string;
