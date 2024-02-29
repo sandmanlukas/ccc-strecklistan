@@ -42,6 +42,7 @@ model Transaction {
   user      User     @relation(fields: [userId], references: [id])
   barcode   String
   item      Item     @relation(fields: [barcode], references: [barcode])
+  beered    Boolean  @default(false)
 }
 
 model Item {

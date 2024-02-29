@@ -24,8 +24,6 @@ const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
         const transactionDate = new Date(date);
         transactionDate.setHours(0, 0, 0, 0);
 
-        console.log(transactionDate);
-        console.log(transactionDate.getTime(), today.getTime(), yesterday.getTime());
 
         if (transactionDate.getTime() === today.getTime()) {
             return `Idag kl ${formatTime(date)}`;
@@ -52,7 +50,13 @@ const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
                                 </div>
                                 <p className="text-sm text-gray-600">{formatDate(transaction.createdAt)}</p>
                             </div>
-                            <p className="text-base text-slate-600">{transaction.item.price} kr</p>
+                            {
+                                transaction.beered ? (
+                                    <p className="text-base text-slate-600">Bärsning</p>
+                                ) : (
+                                    <p className="text-base text-slate-600">{transaction.item.price} kr</p>
+                                )
+                            }
                         </div>
                     ))
                 ) : (

@@ -1,5 +1,7 @@
 import { ItemType, UserRole } from "@prisma/client";
 
+export const BEERED_BARCODE = "0000000000000";
+
 export function handleScan(setScannedData: Function, setScanCount: Function | null = null) {
     let code = "";
     let reading = false;
