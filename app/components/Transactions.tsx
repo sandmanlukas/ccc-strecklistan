@@ -60,7 +60,6 @@ const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
                                 <div className='flex items-baseline space-x-2'>
                                     <h3 className="text-lg font-medium">
                                         {transaction.item.name}
-                                        {/* {transaction.barcode === BEERED_BARCODE && <span className='text-xs text-gray-600 ml-2'>{transaction.beeredBy}</span>} */}
                                     </h3>
                                     {transaction.item.volume > 0 && <p className='text-sm text-gray-600 ml-2'>{transaction.item.volume} cl</p>}
                                 </div>
