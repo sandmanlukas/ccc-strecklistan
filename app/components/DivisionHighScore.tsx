@@ -1,0 +1,53 @@
+"use client";
+
+import React from 'react';
+import { TransactionWithItemAndUser } from './StatsPage';
+import { ItemType, Transaction } from '@prisma/client';
+import { BEERED_BARCODE, userRoleToDivision, personsPerDivision } from '../lib/utils';
+
+export default function DebtHighScore({ transactions }: { transactions: TransactionWithItemAndUser[] }) {
+
+    let divisionTransactions: { [key: string]: Transaction[] } = {};
+    const divisionTransactionCounts = [];
+    const drinkTransactions = transactions.filter(transaction => (transaction.item.type === 'DRYCK' as ItemType && transaction.item.barcode != BEERED_BARCODE));
+
+    drinkTransactions.forEach(transaction => {
+        const division = userRoleToDivision[transaction.user.role];
+
+        if (!division) {
+            return;
+        }
+
+        if (!divisionTransactions[division]) {
+            divisionTransactions[division] = [];
+        }
+
+        divisionTransactions[division].push(transaction);
+    });
+
+    for (const division in divisionTransactions) {
+        divisionTransactionCounts.push({
+            division,
+            count: divisionTransactions[division].length,
+            countPerPerson: divisionTransactions[division].length / personsPerDivision[division],
+        });
+    }
+
+    divisionTransactionCounts.sort((a, b) => b.countPerPerson - a.countPerPerson);
+    
+
+    return (
+        <div className='ml-4'>
+            <h3 className='text-2xl ml-2 mt-2'>Antal öl per styre</h3>
+            <div className='flex flex-col items-start mt-2'>
+                {divisionTransactionCounts.map((division, index) => (
+                    <div key={division.division} className='flex items-center justify-between w-96 bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
+                        <h3 className='text-lg font-medium'>{index + 1}. {division.division} </h3>
+                            <p className='text-base text-slate-600'>{division.countPerPerson} per/person ({division.count} totalt)</p>
+                    </div>
+                ))} 
+            </div>
+        </div>
+    );
+}
+

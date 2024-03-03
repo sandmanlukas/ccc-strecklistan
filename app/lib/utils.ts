@@ -62,6 +62,32 @@ export const itemTypes: { [key in ItemType]: string } = {
     ANNAT: "Annat",
 };
 
+export const divisions = ['AFA', 'BOB', 'PMS', 'FET'];
+
+export const personsPerDivision: { [key: string]: number } = {
+    AFA: 2,
+    BOB: 4,
+    PMS: 2,
+    FET: 3,
+};
+
+export const userRoleToDivision: {[key in UserRole]: string} = {
+    ORDFORANDE: 'AFA',
+    KASSOR: 'AFA',
+    BYGGCHEF: 'BOB',
+    BILCHEF: 'BOB',
+    GARDVAR: 'BOB',
+    KLADCHEF: 'BOB',
+    PROGRAMCHEF: 'PMS',
+    ANNONSCHEF: 'PMS',
+    MUSIKCHEF: 'FET',
+    OLCHEF: 'FET',
+    PRCHEF: 'FET',
+    KADAVER: "",
+    OTHER: ""
+}
+
+
 export const roleStringToUserRole: {[key: string]: UserRole} = {
     "Ordförande": "ORDFORANDE" as UserRole,
     "Kassör": "KASSOR" as UserRole,

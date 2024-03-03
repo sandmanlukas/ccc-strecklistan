@@ -6,7 +6,7 @@ import { Item, Transaction, User } from "@prisma/client"
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, DropdownSection, Spinner, Card, CardBody, dropdown, button } from "@nextui-org/react";
 import { IoClose } from "react-icons/io5";
 import { getUser } from "@/app/lib/getUser";
-import { handleScan } from "@/app/lib/utils";
+import { handleScan, positionLabels } from "@/app/lib/utils";
 import { getAllUsers } from "@/app/lib/getAllUsers";
 import { createTransaction } from "@/app/lib/createTransaction";
 import Transactions from "@/app/components/Transactions";
@@ -127,7 +127,7 @@ export default function UserPage({ id }: { id: number }) {
                                 <div className="flex justify-between items-baseline">
                                     <div>
                                         <h1 className="text-2xl font-bold mb-1">{user.username}</h1>
-                                        <p className="text-sm">{user.firstName} {user.lastName}</p>
+                                        <p className="text-sm">{user.firstName} {user.lastName} - {positionLabels[user.role]}</p>
                                     </div>
 
                                     {(currentUsers || oldUsers || otherUsers) && (

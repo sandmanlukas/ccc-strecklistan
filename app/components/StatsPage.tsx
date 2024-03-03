@@ -6,6 +6,7 @@ import { getAllTransactions } from '../lib/getAllTransactions';
 import { Spinner } from '@nextui-org/react';
 import { getAllUsers } from '../lib/getAllUsers';
 import DebtHighScore from './DebtHighScore';
+import DivisionHighScore from './DivisionHighScore';
 
 export interface TransactionWithItemAndUser extends Transaction {
     item: Item;
@@ -45,6 +46,7 @@ export default function StatsPage() {
                 <div>
                     <h2 className='text-3xl font-bold ml-2 mt-2'>Statistik</h2>
                     <DebtHighScore users={users} />
+                    <DivisionHighScore transactions={transactions} />
                 </div>
             )
     );
