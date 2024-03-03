@@ -38,13 +38,17 @@ const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
 
     const handleBeeredTransaction = (transaction: TransactionWithItem) => {
         if (transaction.beeredTransaction) {
-            if (transaction.beeredBy && transaction.beeredPrice) {
-                return <p className="text-base text-slate-600">Bärsad av {transaction.beeredBy} för {transaction.beeredPrice} kr</p>;
+            if (transaction.beeredBy) {
+                return <p className="text-base text-slate-600">Bärsad av {transaction.beeredBy} för {transaction.price} kr</p>;
             } else if (transaction.beeredUser) {
                 return <p className="text-base text-slate-600">Bärsade {transaction.beeredUser}</p>;
             }
         } else {
-            return <p className="text-base text-slate-600">{transaction.item.price} kr</p>;
+            if (transaction.price === 0) {
+                return <p className="text-base text-slate-600">Gratis</p>;
+            } else {
+                return <p className="text-base text-slate-600">{transaction.price} kr</p>;
+            }
         }
     }
 

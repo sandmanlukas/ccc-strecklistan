@@ -43,9 +43,9 @@ model Transaction {
   barcode           String
   item              Item     @relation(fields: [barcode], references: [barcode])
   beeredTransaction Boolean  @default(false)
-  beeredUser      String?
+  price             Int
+  beeredUser        String?
   beeredBy          String?
-  beeredPrice       Int?
 }
 
 model Item {

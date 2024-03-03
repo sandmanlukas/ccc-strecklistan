@@ -5,7 +5,20 @@ import { BEERED_BARCODE } from './utils';
 
 async function createTransaction(userId: number, beeredUserId: number | undefined, barcode: string) {
     try {
+        let freeBeer = false;
+
         const result = await prisma.$transaction(async (prisma) => {
+
+            const item = await prisma.item.findUnique({
+                where: {
+                    barcode: barcode,
+                },
+            });
+
+            if (!item) {
+                throw new Error("Kunde inte hitta produkten.");
+            }
+
             if (beeredUserId) {
 
                 // Get beering user
@@ -21,20 +34,25 @@ async function createTransaction(userId: number, beeredUserId: number | undefine
                         id: beeredUserId,
                     },
                 });
-                
+
+                if (!beeringUser || !beeredUser) {
+                    throw new Error("Kunde inte hitta användaren.");
+                }
+
                 // Create a transaction for the user who beered the other user
                 const transaction = await prisma.transaction.create({
                     data: {
                         userId: userId,
                         barcode: barcode,
                         beeredTransaction: true,
-                        beeredUser: beeredUser?.username, // Which user was beered
-                },
+                        beeredUser: beeredUser.username, // Which user was beered
+                        price: 0,
+                    },
                     include: {
                         item: true,
                     },
                 });
-                
+
                 // Update the beered user's debt
                 await prisma.user.update({
                     where: {
@@ -42,49 +60,55 @@ async function createTransaction(userId: number, beeredUserId: number | undefine
                     },
                     data: {
                         debt: {
-                            increment: transaction.item.price,
+                            increment: item.price,
                         }
                     },
                 });
-                
+
                 // Create a transaction for the beered user for statistics
                 await prisma.transaction.create({
                     data: {
                         userId: beeredUserId,
                         barcode: BEERED_BARCODE,
                         beeredTransaction: true,
-                        beeredBy: beeringUser?.username,
-                        beeredPrice: transaction.item.price,
+                        beeredBy: beeringUser.username,
+                        price: item.price,
                     },
                     include: {
                         item: true,
                     },
                 });
 
-                return transaction;
+                return { transaction, freeBeer };
             } else {
+
+                // Calculate if the user should get a free beer        
+                if (Math.random() <= (1 - Number(process.env.FREE_BEER_PROBABILITY))) {
+                    await prisma.user.update({
+                        where: {
+                            id: userId,
+                        },
+                        data: {
+                            debt: {
+                                increment: item.price,
+                            },
+                        },
+                    });
+                } else {
+                    freeBeer = true;
+                }
+
                 const transaction = await prisma.transaction.create({
                     data: {
                         userId: userId,
                         barcode: barcode,
+                        price: freeBeer ? 0 : item.price,
                     },
                     include: {
                         item: true,
                     },
                 });
-
-                await prisma.user.update({
-                    where: {
-                        id: userId,
-                    },
-                    data: {
-                        debt: {
-                            increment: transaction.item.price,
-                        }
-                    },
-                });
-
-                return transaction;
+                return { transaction, freeBeer };
             }
         });
         console.log("Transaction created with item details, and user's debt updated");

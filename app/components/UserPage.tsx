@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState} from "react"
+import { useEffect, useState } from "react"
 import { toast } from "react-toastify";
 import { Item, Transaction, User } from "@prisma/client"
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, DropdownSection, Spinner, Card, CardBody, dropdown, button } from "@nextui-org/react";
@@ -65,10 +65,10 @@ export default function UserPage({ id }: { id: number }) {
     }, []);
 
     useEffect(() => {
-        const performTransaction = async () => {            
+        const performTransaction = async () => {
             if (barcode && user) {
                 try {
-                    const transaction = await createTransaction(user.id, beeredUser?.id, barcode);
+                    const { transaction, freeBeer } = await createTransaction(user.id, beeredUser?.id, barcode);
                     if (!transaction) {
                         return;
                     }
@@ -82,7 +82,12 @@ export default function UserPage({ id }: { id: number }) {
                         toast.success(`1 ${item.name} tillagd!`);
                     }
 
-                    const newDebt = debt + price;
+                    if (!freeBeer) {
+                        const newDebt = debt + price;
+                        setDebt(newDebt);
+                    } else {
+                        toast('Du vann en gratis öl (chansen var 0.5%)! 🍻');
+                    }
                     setTransactions(currentTransactions => {
                         // Add the new transaction to the end of the array
                         const updatedTransactions = [transaction, ...currentTransactions];
@@ -90,7 +95,6 @@ export default function UserPage({ id }: { id: number }) {
                         return updatedTransactions.slice(0, 10);
                     });
                     setItem(item);
-                    setDebt(newDebt);
                     setBeeredUser(null);
                 } catch (error) {
                     toast.error('Något gick fel! Är du säker på att den här varan finns?');
