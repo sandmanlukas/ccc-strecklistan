@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { TransactionWithItem } from '@/app/components/UserPage';
-import { BEERED_BARCODE } from '../lib/utils';
 
 interface TransactionProps {
     transactions: TransactionWithItem[];

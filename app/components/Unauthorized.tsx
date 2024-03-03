@@ -1,16 +1,9 @@
 "use client";
 
 import React from 'react';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
 function Unauthorized() {
-    const redirectToHome = () => {
-        console.log('redirecting');
-        
-        redirect('/');
-    }
-
     return (
         <div className="container mx-auto text-center p-10">
         <h1 className="text-2xl font-bold mb-4">Obehörig åtkomst</h1>

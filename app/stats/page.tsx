@@ -1,11 +1,11 @@
 import React from 'react';
+import StatsPage from '@/app/components/StatsPage';
 
-const StatsPage = () => {
+
+const Page = () => {
   return (
-    <div>
-        <h1>Stats</h1>
-    </div>
+    <StatsPage/>
   );
 };
 
-export default StatsPage;
+export default Page;
