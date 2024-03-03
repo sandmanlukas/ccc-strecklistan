@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { SlLogout, SlLogin } from "react-icons/sl";
 import { AiOutlineUserAdd } from "react-icons/ai";
-import { IoIosAddCircleOutline } from "react-icons/io";
+import { IoIosAddCircleOutline, IoIosStats } from "react-icons/io";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { Session } from "next-auth";
 
@@ -60,6 +60,9 @@ const Navbar = (props: Props) => {
             <Link href={"/item/new"} as={"/item/new"} className="mx-2">
               <IoIosAddCircleOutline size={35} style={{ fontWeight: 'bold' }} />
             </Link>
+            <Link href={"/stats"} as={"/stats"} className="mx-2">
+              <IoIosStats size={35} style={{ fontWeight: 'bold' }} />
+          </Link>
           </>
         )}
       </div>

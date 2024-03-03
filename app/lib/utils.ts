@@ -7,6 +7,11 @@ export function handleScan(setScannedData: Function, setScanCount: Function | nu
     let reading = false;
 
     return (event: KeyboardEvent) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
         if (!reading) {
             reading = true;
             setTimeout(() => {

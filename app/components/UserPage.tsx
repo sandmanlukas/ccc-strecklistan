@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState} from "react"
 import { toast } from "react-toastify";
 import { Item, Transaction, User } from "@prisma/client"
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, DropdownSection, Spinner, Card, CardBody } from "@nextui-org/react";
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, DropdownSection, Spinner, Card, CardBody, dropdown, button } from "@nextui-org/react";
 import { IoClose } from "react-icons/io5";
 import { getUser } from "@/app/lib/getUser";
 import { handleScan } from "@/app/lib/utils";
@@ -28,8 +28,6 @@ export default function UserPage({ id }: { id: number }) {
     const [scanCount, setScanCount] = useState<number>(0);
     const [item, setItem] = useState<Item | null>(null);
     const [debt, setDebt] = useState<number>(0);
-
-
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -57,6 +55,7 @@ export default function UserPage({ id }: { id: number }) {
 
     useEffect(() => {
         const handleScanEvent = handleScan(setBarcode, setScanCount);
+
         document.addEventListener('keydown', handleScanEvent);
 
         return () => {
@@ -66,7 +65,7 @@ export default function UserPage({ id }: { id: number }) {
     }, []);
 
     useEffect(() => {
-        const performTransaction = async () => {
+        const performTransaction = async () => {            
             if (barcode && user) {
                 try {
                     const transaction = await createTransaction(user.id, beeredUser?.id, barcode);
@@ -101,6 +100,10 @@ export default function UserPage({ id }: { id: number }) {
         performTransaction();
     }, [scanCount, user])
 
+    const handleDropdownClick = (user: User) => {
+        setBeeredUser(user);
+    }
+
     return (
         loading ?
             <div className='mx-auto mt-2'>
@@ -111,7 +114,7 @@ export default function UserPage({ id }: { id: number }) {
                     {user &&
                         <>
                             {beeredUser && (
-                                <div className="mb-2">
+                                <div className="mb-2" >
                                     <Card>
                                         <CardBody className="relative">
                                             <IoClose className="absolute top-2 right-2 cursor-pointer " onClick={() => setBeeredUser(null)} />
@@ -128,7 +131,6 @@ export default function UserPage({ id }: { id: number }) {
                                     </div>
 
                                     {(currentUsers || oldUsers || otherUsers) && (
-
                                         <Dropdown>
                                             <DropdownTrigger>
                                                 <Button
@@ -144,21 +146,21 @@ export default function UserPage({ id }: { id: number }) {
                                             <DropdownMenu variant="faded" aria-label="Bärsa!">
                                                 <DropdownSection title="Sittande" showDivider>
                                                     {currentUsers.map((filteredUser) => (
-                                                        <DropdownItem key={filteredUser.id} onClick={() => setBeeredUser(filteredUser)}>
+                                                        <DropdownItem key={filteredUser.id} onClick={() => handleDropdownClick(filteredUser)}>
                                                             {filteredUser.username}
                                                         </DropdownItem>
                                                     ))}
                                                 </DropdownSection>
                                                 <DropdownSection title="Kadaver" showDivider>
                                                     {oldUsers.map((filteredUser) => (
-                                                        <DropdownItem key={filteredUser.id} onClick={() => setBeeredUser(filteredUser)}>
+                                                        <DropdownItem key={filteredUser.id} onClick={() => handleDropdownClick(filteredUser)}>
                                                             {filteredUser.username}
                                                         </DropdownItem>
                                                     ))}
                                                 </DropdownSection>
                                                 <DropdownSection title="Andra" >
                                                     {otherUsers.map((filteredUser) => (
-                                                        <DropdownItem key={filteredUser.id} onClick={() => setBeeredUser(filteredUser)}>
+                                                        <DropdownItem key={filteredUser.id} onClick={() => handleDropdownClick(filteredUser)}>
                                                             {filteredUser.username}
                                                         </DropdownItem>
                                                     ))}

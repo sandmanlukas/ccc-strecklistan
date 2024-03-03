@@ -7,29 +7,35 @@ async function createTransaction(userId: number, beeredUserId: number | undefine
     try {
         const result = await prisma.$transaction(async (prisma) => {
             if (beeredUserId) {
-                // Create a transaction for the beered user for statistics
-                await prisma.transaction.create({
-                    data: {
-                        userId: beeredUserId,
-                        barcode: BEERED_BARCODE,
-                    },
-                    include: {
-                        item: true,
+
+                // Get beering user
+                const beeringUser = await prisma.user.findUnique({
+                    where: {
+                        id: userId,
                     },
                 });
 
+                // Get beered user
+                const beeredUser = await prisma.user.findUnique({
+                    where: {
+                        id: beeredUserId,
+                    },
+                });
+                
                 // Create a transaction for the user who beered the other user
                 const transaction = await prisma.transaction.create({
                     data: {
                         userId: userId,
                         barcode: barcode,
-                        beered: true,
-                    },
+                        beeredTransaction: true,
+                        beeredUser: beeredUser?.username, // Which user was beered
+                },
                     include: {
                         item: true,
                     },
                 });
-
+                
+                // Update the beered user's debt
                 await prisma.user.update({
                     where: {
                         id: beeredUserId,
@@ -38,6 +44,20 @@ async function createTransaction(userId: number, beeredUserId: number | undefine
                         debt: {
                             increment: transaction.item.price,
                         }
+                    },
+                });
+                
+                // Create a transaction for the beered user for statistics
+                await prisma.transaction.create({
+                    data: {
+                        userId: beeredUserId,
+                        barcode: BEERED_BARCODE,
+                        beeredTransaction: true,
+                        beeredBy: beeringUser?.username,
+                        beeredPrice: transaction.item.price,
+                    },
+                    include: {
+                        item: true,
                     },
                 });
 

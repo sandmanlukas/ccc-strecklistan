@@ -35,14 +35,17 @@ model Account {
 }
 
 model Transaction {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  barcode   String
-  item      Item     @relation(fields: [barcode], references: [barcode])
-  beered    Boolean  @default(false)
+  id                Int      @id @default(autoincrement())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  userId            Int
+  user              User     @relation(fields: [userId], references: [id])
+  barcode           String
+  item              Item     @relation(fields: [barcode], references: [barcode])
+  beeredTransaction Boolean  @default(false)
+  beeredUser      String?
+  beeredBy          String?
+  beeredPrice       Int?
 }
 
 model Item {
