@@ -38,7 +38,7 @@ export default function DebtHighScore({ transactions }: { transactions: Transact
 
     return (
         <div className='ml-4'>
-            <h3 className='text-2xl ml-2 mt-2'>Antal öl per styre</h3>
+            <h3 className='text-2xl ml-2 mt-2 font-bold'>Antal öl per styre</h3>
             <div className='flex flex-col items-start mt-2'>
                 {divisionTransactionCounts.map((division, index) => (
                     <div key={division.division} className='flex items-center justify-between w-96 bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>

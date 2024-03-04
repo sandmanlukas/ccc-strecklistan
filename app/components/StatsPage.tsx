@@ -7,6 +7,7 @@ import { Spinner } from '@nextui-org/react';
 import { getAllUsers } from '../lib/getAllUsers';
 import DebtHighScore from './DebtHighScore';
 import DivisionHighScore from './DivisionHighScore';
+import DrinksByDay from './DrinksByDay';
 
 export interface TransactionWithItemAndUser extends Transaction {
     item: Item;
@@ -23,7 +24,7 @@ export default function StatsPage() {
             setLoading(true);
             const transactions = await getAllTransactions();
             const users = await getAllUsers();
-            
+
             if (!transactions || !users) {
                 setLoading(false);
                 return;
@@ -36,18 +37,29 @@ export default function StatsPage() {
 
     }, []);
 
-    
+
     return (
         loading ?
             <div className='mx-auto mt-2'>
                 <Spinner />
             </div>
             : (
-                <div>
-                    <h2 className='text-3xl font-bold ml-2 mt-2'>Statistik</h2>
-                    <DebtHighScore users={users} />
-                    <DivisionHighScore transactions={transactions} />
-                </div>
+                <>
+                    <div className='mx-auto'>
+                        <h2 className='text-3xl font-bold mt-4'>Statistik</h2>
+                        <div className='grid grid-rows-2 gap-4 mx-auto'>
+                            <div>
+                                <DrinksByDay transactions={transactions} />
+                            </div>
+                            <div className='grid grid-cols-2 gap-4'>
+                                <div>
+                                    <DebtHighScore users={users} />
+                                </div>
+                                <DivisionHighScore transactions={transactions} />
+                            </div>
+                        </div>
+                    </div>
+                </>
             )
     );
 }
