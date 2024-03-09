@@ -1,6 +1,7 @@
 import React from "react";
 import { Bar, BarChart, CartesianGrid, Legend, Line, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { TransactionWithItem } from "./UserPage";
+import { Card } from "@nextui-org/react";
 
 
 export default function TotalDrinksByDay({ transactions }: { transactions: TransactionWithItem[]; }) {
@@ -37,7 +38,7 @@ export default function TotalDrinksByDay({ transactions }: { transactions: Trans
     }, [transactionsByDay]);
 
     return (
-        <div className="p-4">
+        <Card className="p-4">
             <BarChart
                 width={700}
                 height={300}
@@ -56,6 +57,6 @@ export default function TotalDrinksByDay({ transactions }: { transactions: Trans
                 <Legend />
                 <Bar dataKey="drinks" name="Streckade drycker" type="monotone" fill="#43AA8B" activeBar={<Rectangle fill="#EF3054" stroke="#000" />} />
             </BarChart>
-        </div>
+        </Card>
     );
 }

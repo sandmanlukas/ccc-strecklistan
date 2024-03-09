@@ -53,14 +53,10 @@ export default function StatsPage() {
                             <div>
                                 <Tabs aria-label="Different graphs">
                                     <Tab key="totalDrinksByDay" title="Streck per dag (totalt)">
-                                        <Card>
-                                            <TotalDrinksByDay transactions={transactions} />
-                                        </Card>
+                                        <TotalDrinksByDay transactions={transactions} />
                                     </Tab>
                                     <Tab key="totalDrinksByCount" title="Streck per dryck (totalt)">
-                                        <Card>
-                                            <TotalDrinksByCount transactions={transactions} />
-                                        </Card>
+                                        <TotalDrinksByCount transactions={transactions} />
                                     </Tab>
                                     <Tab key="drinksByDay" title="Streck per dag">
                                         <DrinksByDay transactions={transactions} />
