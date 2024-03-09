@@ -14,22 +14,23 @@ interface Data {
 }
 
 export default function DrinksByDay({ transactions }: { transactions: TransactionWithItem[]; }) {
-    const [selectedDrink, setSelectedDrink] = React.useState<string>("");
+    const [selectedDrink, setSelectedDrink] = React.useState<string>("Totalt");
 
-    useEffect(() => {
-        const drinkCounts: { [key: string]: number } = {};
-        transactions.forEach(transaction => {
-            const drink = transaction.item.name;
-            if (!drinkCounts[drink]) {
-                drinkCounts[drink] = 0;
-            }
-            drinkCounts[drink]++;
-        });
+    // useEffect(() => {
+    //     const drinkCounts: { [key: string]: number } = {};
+    //     transactions.forEach(transaction => {
+    //         const drink = transaction.item.name;
+    //         if (!drinkCounts[drink]) {
+    //             drinkCounts[drink] = 0;
+    //         }
 
-        const mostPopularDrink = Object.entries(drinkCounts).sort((a, b) => b[1] - a[1])[0][0];
+    //         drinkCounts[drink]++;
+    //     });
 
-        setSelectedDrink(mostPopularDrink);
-    }, [transactions])
+    //     const mostPopularDrink = Object.entries(drinkCounts).sort((a, b) => b[1] - a[1])[0][0];
+
+    //     setSelectedDrink(mostPopularDrink);
+    // }, [transactions])
 
 
     // Process the transactions data
@@ -40,7 +41,12 @@ export default function DrinksByDay({ transactions }: { transactions: Transactio
         if (!acc[drink]) {
             acc[drink] = [];
         }
+
+        if (!acc['Totalt']) {
+            acc['Totalt'] = [];
+        }
         const existingDateIndex = acc[drink].findIndex(item => item.date === date);
+        const existingTotalDateIndex = acc['Totalt'].findIndex(item => item.date === date);
 
         if (existingDateIndex === -1) {
             acc[drink].push({
@@ -50,6 +56,15 @@ export default function DrinksByDay({ transactions }: { transactions: Transactio
         } else {
             acc[drink][existingDateIndex].count++;
         }
+
+        if (existingTotalDateIndex === -1) {
+            acc['Totalt'].push({
+                date,
+                count: 1,
+            });
+        } else {
+            acc['Totalt'][existingTotalDateIndex].count++;
+        }
         return acc;
     }, {});
 
@@ -57,7 +72,7 @@ export default function DrinksByDay({ transactions }: { transactions: Transactio
         setSelectedDrink(e.target.value);
     };
 
-    const drinks = Object.keys(dateToDrinkByDate);
+    const drinks = Object.keys(dateToDrinkByDate).sort();
 
     if (drinks.length === 0) {
         return <Card className="p-4">Inga drycker hittades</Card>;
@@ -75,9 +90,9 @@ export default function DrinksByDay({ transactions }: { transactions: Transactio
                     <SelectItem key={drink} value={drink}>{drink}</SelectItem>
                 ))}
             </Select>
-            <p>
+            <h3 className="ml-2">
                 {selectedDrink}
-            </p>
+            </h3>
             <LineChart
                 width={700}
                 height={300}
