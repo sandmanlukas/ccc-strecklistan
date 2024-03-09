@@ -2,14 +2,16 @@
 
 import { Item, Transaction, User } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
-import { getAllTransactions } from '../lib/getAllTransactions';
-import { Card, Spinner, Tab, Tabs } from '@nextui-org/react';
-import { getAllUsers } from '../lib/getAllUsers';
-import DebtHighScore from './DebtHighScore';
-import DivisionHighScore from './DivisionHighScore';
-import TotalDrinksByDay from './TotalDrinksByDay';
-import TotalDrinksByCount from './TotalDrinksByCount';
-import DrinksByDay from './DrinksByDay';
+import { getAllTransactions } from '@/app/lib/getAllTransactions';
+import { Spinner, Tab, Tabs } from '@nextui-org/react';
+import { getAllUsers } from '@/app/lib/getAllUsers';
+import DebtHighScore from '@/app/components/DebtHighScore';
+import DivisionHighScore from '@/app/components/DivisionHighScore';
+import TotalDrinksByDay from '@/app/components/TotalDrinksByDay';
+import TotalDrinksByCount from '@/app/components/TotalDrinksByCount';
+import DrinksByDay from '@/app/components/DrinksByDay';
+import BeeredHighScore from '@/app/components/BeeredHighScore';
+import BeeredByHighScore from '@/app/components/BeeredByHighScore';
 
 export interface TransactionWithItemAndUser extends Transaction {
     item: Item;
@@ -68,6 +70,8 @@ export default function StatsPage() {
                                     <DebtHighScore users={users} />
                                 </div>
                                 <DivisionHighScore transactions={transactions} />
+                                <BeeredHighScore transactions={transactions} />
+                                <BeeredByHighScore transactions={transactions} />
                             </div>
                         </div>
                     </div>

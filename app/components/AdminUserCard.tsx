@@ -60,7 +60,6 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
 
     const handleSaveChanges = async () => {
         if (!editedUser) return;
-        console.log('Saving changes');
 
         const user = await editUser(editedUser);
         if (user) {

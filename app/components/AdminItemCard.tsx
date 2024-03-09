@@ -78,7 +78,6 @@ export default function AdminItemCard({ item, onItemUpdate, onItemDeletion }: { 
 
     const handleSaveChanges = async () => {
         if (!editedItem) return;
-        console.log('Saving changes');
 
         const item = await editItem(editedItem);
         if (item) {

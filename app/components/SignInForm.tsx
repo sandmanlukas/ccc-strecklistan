@@ -15,17 +15,13 @@ export default function SignIn() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Attempt to sign in'
 
         const response = await signIn('credentials', {
             redirect: false, // Prevents redirecting to avoid losing state in this demo
             username,
             password,
-            // callbackUrl: '/', // Ensure the callback URL is always the user page
         });
         if (response && response.error) {
-            console.log(response);
-
             toast.error(response.error);
             return;
         } else {
