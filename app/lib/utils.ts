@@ -15,7 +15,7 @@ export function handleScan(setScannedData: Function, setScanCount: Function | nu
         if (!reading) {
             reading = true;
             setTimeout(() => {
-                if (code.length > 10) {
+                if (code.length >= 7) {
                     setScannedData(code);
                     if (setScanCount) {
                         setScanCount((count: number) => count + 1);
