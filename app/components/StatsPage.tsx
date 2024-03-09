@@ -3,10 +3,12 @@
 import { Item, Transaction, User } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
 import { getAllTransactions } from '../lib/getAllTransactions';
-import { Spinner } from '@nextui-org/react';
+import { Card, Spinner, Tab, Tabs } from '@nextui-org/react';
 import { getAllUsers } from '../lib/getAllUsers';
 import DebtHighScore from './DebtHighScore';
 import DivisionHighScore from './DivisionHighScore';
+import TotalDrinksByDay from './TotalDrinksByDay';
+import TotalDrinksByCount from './TotalDrinksByCount';
 import DrinksByDay from './DrinksByDay';
 
 export interface TransactionWithItemAndUser extends Transaction {
@@ -49,7 +51,21 @@ export default function StatsPage() {
                         <h2 className='text-3xl font-bold mt-4'>Statistik</h2>
                         <div className='grid grid-rows-2 gap-4 mx-auto'>
                             <div>
-                                <DrinksByDay transactions={transactions} />
+                                <Tabs aria-label="Different graphs">
+                                    <Tab key="totalDrinksByDay" title="Streck per dag (totalt)">
+                                        <Card>
+                                            <TotalDrinksByDay transactions={transactions} />
+                                        </Card>
+                                    </Tab>
+                                    <Tab key="totalDrinksByCount" title="Streck per dryck (totalt)">
+                                        <Card>
+                                            <TotalDrinksByCount transactions={transactions} />
+                                        </Card>
+                                    </Tab>
+                                    <Tab key="drinksByDay" title="Streck per dag">
+                                        <DrinksByDay transactions={transactions} />
+                                    </Tab>
+                                </Tabs>
                             </div>
                             <div className='grid grid-cols-2 gap-4'>
                                 <div>
@@ -63,4 +79,3 @@ export default function StatsPage() {
             )
     );
 }
-

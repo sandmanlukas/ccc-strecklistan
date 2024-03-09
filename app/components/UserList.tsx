@@ -35,7 +35,7 @@ function UserList() {
 
     return (
         loading ? 
-        <div className='mx-auto my-auto mt-2'>
+        <div className='mx-auto my-auto mt-20'>
             <Spinner />
         </div>
             : (

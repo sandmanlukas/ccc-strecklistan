@@ -1,98 +1,109 @@
-import React from "react";
-import { Bar, BarChart, CartesianGrid, Legend, Line, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import React, { useEffect } from "react";
+import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 import { TransactionWithItem } from "./UserPage";
+import { Card, Select, SelectItem } from "@nextui-org/react";
+import { ItemType } from "@prisma/client";
 
+
+interface DataPoint {
+    date: string;
+    count: number;
+}
+interface Data {
+    [drink: string]: DataPoint[];
+}
 
 export default function DrinksByDay({ transactions }: { transactions: TransactionWithItem[]; }) {
-    // function getRandomInt(min: number, max: number) {
-    //     min = Math.ceil(min);
-    //     max = Math.floor(max);
-    //     return Math.floor(Math.random() * (max - min + 1)) + min;
-    // }
+    const [selectedDrink, setSelectedDrink] = React.useState<string>("");
 
-    // transactions = [];
+    useEffect(() => {
+        const drinkCounts: { [key: string]: number } = {};
+        transactions.forEach(transaction => {
+            const drink = transaction.item.name;
+            if (!drinkCounts[drink]) {
+                drinkCounts[drink] = 0;
+            }
+            drinkCounts[drink]++;
+        });
 
-    // for (let i = 0; i < 100; i++) {
-    //     let date = new Date();
-    //     date.setDate(date.getDate() - i); // subtract i days from the current date
+        const mostPopularDrink = Object.entries(drinkCounts).sort((a, b) => b[1] - a[1])[0][0];
 
-    //     transactions.push({
-    //         id: i,
-    //         createdAt: date, // format the date as 'yyyy-mm-dd'
-    //         updatedAt: date,
-    //         userId: getRandomInt(1, 10),
-    //         barcode: '1234567890123',
-    //         price: 10,
-    //         beeredTransaction: false,
-    //         beeredBy: null,
-    //         beeredUser: null,
-    //         item: {
-    //             id: 1,
-    //             name: 'Coca Cola',
-    //             type: 'DRYCK',
-    //             price: 10,
-    //             barcode: '1234567890123',
-    //             createdAt: date,
-    //             updatedAt: date,
-    //             volume: 33,
-    //         }
-    //     });
-    // }
+        setSelectedDrink(mostPopularDrink);
+    }, [transactions])
 
-    let transactionsByDay: { [key: string]: number; } = {
-        'Måndag': 0,
-        'Tisdag': 0,
-        'Onsdag': 0,
-        'Torsdag': 0,
-        'Fredag': 0,
-        'Lördag': 0,
-        'Söndag': 0,
+
+    // Process the transactions data
+    const dateToDrinkByDate: Data = transactions.reduce((acc: Data, transaction: TransactionWithItem) => {
+        const date = new Date(transaction.createdAt).toLocaleDateString('sv-SE')
+        const drink = transaction.item.name;
+
+        if (!acc[drink]) {
+            acc[drink] = [];
+        }
+        const existingDateIndex = acc[drink].findIndex(item => item.date === date);
+
+        if (existingDateIndex === -1) {
+            acc[drink].push({
+                date,
+                count: 1,
+            });
+        } else {
+            acc[drink][existingDateIndex].count++;
+        }
+        return acc;
+    }, {});
+
+    const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedDrink(e.target.value);
     };
 
-    transactions.forEach(transaction => {
-        const date = new Date(transaction.createdAt);
-        let day = date.toLocaleString('sv-SE', { weekday: 'long' });
-        day = day.charAt(0).toUpperCase() + day.slice(1).toLowerCase();
+    const drinks = Object.keys(dateToDrinkByDate);
 
-        if (!transactionsByDay[day]) {
-            transactionsByDay[day] = 0;
-        }
-
-        transactionsByDay[day]++;
-    });
-
-    const data = React.useMemo(() => {
-        return Object.keys(transactionsByDay).map(day => {
-            return {
-                weekday: day,
-                drinks: transactionsByDay[day],
-            };
-        });
-    }, [transactionsByDay]);
-
+    if (drinks.length === 0) {
+        return <Card className="p-4">Inga drycker hittades</Card>;
+    }
     return (
-        <>
-            <h2>Dryck per dag</h2>
-            <ResponsiveContainer width={700} height={500}>
-                <BarChart
-                    width={700}
-                    height={300}
-                    data={data}
-                    margin={{
-                        top: 5,
-                        right: 30,
-                        left: 20,
-                        bottom: 5,
-                    }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="weekday" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend  />
-                    <Bar dataKey="drinks" name="Streckade drycker" type="monotone" fill="#43AA8B" activeBar={<Rectangle fill="#EF3054" stroke="#000" />} />
-                </BarChart>
-            </ResponsiveContainer>
-        </>
+
+        <Card className="p-4">
+            <Select
+                aria-label="Choose drink to display in graph"
+                className="my-2"
+                selectedKeys={[selectedDrink]}
+                onChange={handleSelectionChange}
+            >
+                {drinks.map(drink => (
+                    <SelectItem key={drink} value={drink}>{drink}</SelectItem>
+                ))}
+            </Select>
+            <p>
+                {selectedDrink}
+            </p>
+            <LineChart
+                width={700}
+                height={300}
+                data={dateToDrinkByDate[selectedDrink]}
+                margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                }}
+            >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" tick={{ fontSize: 15 }} />
+                <YAxis
+                    tickFormatter={(value) => Math.floor(value).toString()}
+                    ticks={
+                        dateToDrinkByDate[selectedDrink] ?
+                            Array.from(new Set(dateToDrinkByDate[selectedDrink].map(item => Math.floor(item.count))))
+                            : []
+                    }
+                    domain={[0, 'dataMax + 0.5']}
+                />
+                <Tooltip />
+                <Legend />
+                <Line key="melleruds" type="monotone" name="Antal streck" dataKey="count" stroke="#8884d8" activeDot={{ r: 6 }} />
+            </LineChart>
+        </Card>
     );
 }
