@@ -38,8 +38,8 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
                     </tr>
                 </thead>
                 <tbody>
-                    {transactions.map((transaction, index) => (
-                        <tr key={index}>
+                    {transactions.map((transaction) => (
+                        <tr key={transaction.id}>
                             <td className='pr-2'>{transaction.item.name}</td>
                             <td className='pr-2'>{transaction.price} kr</td>
                             <td className='pr-2'>{formatDateAndTime(transaction.createdAt)}</td>
