@@ -1,19 +1,14 @@
 import * as React from 'react';
 import { Container, Head, Heading, Tailwind, Text } from "@react-email/components";
-import { TransactionWithItem } from './UserPage';
-import { formatDateAndTime } from '../lib/utils';
+import { formatDate, formatDateAndTime } from '../lib/utils';
+import { EmailTemplateProps } from './Email';
 
-
-interface EmailTemplateProps {
-    body: string;
-    debt: number;
-    transactions: TransactionWithItem[];
-}
 
 export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
     body,
     debt,
     transactions,
+    lastEmailSent
 }) => (
 
     <Tailwind>
@@ -26,27 +21,32 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
             <Text style={text}>
                 Din nuvarande skuld ligger på: <span className='font-bold'>{debt} kr.</span>
             </Text>
-            <Text style={text}>
-                Dina transaktioner (sedan senaste skuldutskicket):
-            </Text>
-            <table className='table-auto'>
-                <thead>
-                    <tr>
-                        <th className='text-left pr-2'>Vad?</th>
-                        <th className='text-left pr-2'>Hur mycket?</th>
-                        <th className='text-left pr-2'>När?</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {transactions.map((transaction) => (
-                        <tr key={transaction.id}>
-                            <td className='pr-2'>{transaction.item.name}</td>
-                            <td className='pr-2'>{transaction.price} kr</td>
-                            <td className='pr-2'>{formatDateAndTime(transaction.createdAt)}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            {transactions.length > 0 && (
+                <div>
+
+                    <Text style={text}>
+                        Dina transaktioner (sedan senaste skuldutskicket {lastEmailSent && formatDate(lastEmailSent)}):
+                    </Text>
+                    <table className='table-auto'>
+                        <thead>
+                            <tr>
+                                <th className='text-left pr-2'>Vad?</th>
+                                <th className='text-left pr-2'>Hur mycket?</th>
+                                <th className='text-left pr-2'>När?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {transactions.map((transaction) => (
+                                <tr key={transaction.id}>
+                                    <td className='pr-2'>{transaction.item.name}</td>
+                                    <td className='pr-2'>{transaction.price} kr</td>
+                                    <td className='pr-2'>{formatDateAndTime(transaction.createdAt)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
             <Text style={{
                 ...footer,
                 marginBottom: "0",

@@ -1,4 +1,5 @@
 import { ItemType, UserRole } from "@prisma/client";
+import { date } from "zod";
 
 export const BEERED_BARCODE = "0000000000000";
 
@@ -117,3 +118,10 @@ export const formatDateAndTime = (date: Date): string => {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return date.toLocaleDateString('sv-SE', options);
 };
+
+export const formatDate = (date: Date): string => {
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+    return date.toLocaleDateString('sv-SE');
+}

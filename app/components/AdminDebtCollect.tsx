@@ -8,7 +8,7 @@ import { addOrUpdateText } from '@/app/lib/addOrUpdateText';
 import { toast } from 'react-toastify';
 import { EmailTemplate } from '@/app/components/EmailTemplate';
 import { TransactionWithItem } from '@/app/components/UserPage';
-import { getNonCCCUsersWithItemsAndTransactions } from '@/app/lib/getNonCCCUsersWithItemsAndTransactions';
+import { getDataForDebtCollection, updateLastEmailSent } from '@/app/lib/getDataForDebtCollection';
 import { User } from '@prisma/client';
 
 
@@ -63,7 +63,7 @@ const fakeTransactions: TransactionWithItem[] =
     ]
 
 
-const sendEmails = async (users: UserWithItemsAndTransactions[], title: string, body: string) => {
+const sendEmails = async (users: UserWithItemsAndTransactions[], title: string, body: string, lastEmailSentAt: Date | null) => {
     const response = await fetch('/api/send', {
         method: 'POST',
         headers: {
@@ -73,6 +73,7 @@ const sendEmails = async (users: UserWithItemsAndTransactions[], title: string, 
             subject: title,
             body,
             users: users,
+            lastEmailSentAt
         })
     });
 
@@ -118,13 +119,15 @@ export default function AdminDebtCollect() {
     }
 
     const handleSendMail = async () => {
+
+        //TODO: Add date of last collection in db to be able to filter out transactions after that date
         // Send mail
         setLoading(true);
         setShowConfirmationModal(false);
 
-        const users = await getNonCCCUsersWithItemsAndTransactions();
+        const { users, lastEmailSent} = await getDataForDebtCollection();
 
-        console.log(users);
+        console.log('users', users);
 
         if (!users) {
             toast.error('Något gick fel vid hämtning av användare!');
@@ -132,9 +135,17 @@ export default function AdminDebtCollect() {
             return;
         }
 
-        const response = await sendEmails(users, title, body);
+        const response = await sendEmails(users, title, body, lastEmailSent || null);
 
         if (!response) return;
+
+        const updatedLastEmailSent = await updateLastEmailSent();
+
+        if (!updateLastEmailSent) {
+            toast.error('Något gick fel vid uppdatering av senaste mailutskick!');
+            setLoading(false);
+            return;
+        }
 
 
         toast.success('Mail skickat!');
@@ -209,7 +220,7 @@ export default function AdminDebtCollect() {
                         Mailexempel
                     </ModalHeader>
                     <ModalBody>
-                        <EmailTemplate body={body} debt={1337} transactions={fakeTransactions} />
+                        <EmailTemplate body={body} debt={1337} transactions={fakeTransactions} lastEmailSent={new Date()} />
                     </ModalBody>
                 </ModalContent>
             </Modal>

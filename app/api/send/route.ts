@@ -2,14 +2,13 @@
 
 import { Email } from "@/app/components/Email";
 import { Resend } from 'resend';
-import { TransactionWithItem } from "@/app/components/UserPage";
-import { User } from "@prisma/client";
 import { UserWithItemsAndTransactions } from "@/app/components/AdminDebtCollect";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface RequestData {
     users: UserWithItemsAndTransactions[];
+    lastEmailSent: Date | null;
     subject: string;
     body: string;
 }
@@ -19,14 +18,15 @@ export async function POST(req: Request) {
         const requestData: RequestData = await req.json();
         const body = requestData.body;
         const subject = requestData.subject;
-        const from = process.env.EMAIL_FROM as string;
+        const lastEmailSent = requestData.lastEmailSent;
+        const from = process.env.EMAIL_ADDRESS as string;
 
         const emails = requestData.users.map((user: UserWithItemsAndTransactions) => {
             return {
                 from: from,
                 to: [user.email],
                 subject: subject,
-                react: Email({ body: body, debt: user.debt, transactions: user.transactions }) as React.ReactElement,
+                react: Email({ body: body, debt: user.debt, transactions: user.transactions, lastEmailSent  }) as React.ReactElement,
             }
         });
 
@@ -34,6 +34,7 @@ export async function POST(req: Request) {
 
         return Response.json(data);
     } catch (error) {
+        console.log('error', error);
         return Response.json({ error });
     }
 }

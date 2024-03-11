@@ -67,6 +67,13 @@ model Text {
   body      String
 }
 
+model DebtCollect {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  emailSentAt DateTime?
+}
+
 enum ItemType {
   DRYCK
   MAT
