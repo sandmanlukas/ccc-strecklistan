@@ -109,7 +109,11 @@ export const formatTime = (date: Date): string => {
     return date.toLocaleTimeString('sv-SE', options);
 };
 
-export const formatDateAndTime = (date: Date): string => {
+export const formatDateAndTime = (date: Date): string => {    
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return date.toLocaleDateString('sv-SE', options);
 };

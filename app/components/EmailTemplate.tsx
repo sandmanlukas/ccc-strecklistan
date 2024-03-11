@@ -28,25 +28,25 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
             </Text>
             <Text style={text}>
                 Dina transaktioner (sedan senaste skuldutskicket):
-                <table className='table-auto'>
-                    <thead>
-                        <tr>
-                            <th className='text-left pr-2'>Vad?</th>
-                            <th className='text-left pr-2'>Hur mycket?</th>
-                            <th className='text-left pr-2'>När?</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {transactions.map((transaction, index) => (
-                            <tr key={index}>
-                                <td className='pr-2'>{transaction.item.name}</td>
-                                <td className='pr-2'>{transaction.price} kr</td>
-                                <td className='pr-2'>{formatDateAndTime(transaction.createdAt)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
             </Text>
+            <table className='table-auto'>
+                <thead>
+                    <tr>
+                        <th className='text-left pr-2'>Vad?</th>
+                        <th className='text-left pr-2'>Hur mycket?</th>
+                        <th className='text-left pr-2'>När?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {transactions.map((transaction, index) => (
+                        <tr key={index}>
+                            <td className='pr-2'>{transaction.item.name}</td>
+                            <td className='pr-2'>{transaction.price} kr</td>
+                            <td className='pr-2'>{formatDateAndTime(transaction.createdAt)}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
             <Text style={{
                 ...footer,
                 marginBottom: "0",
