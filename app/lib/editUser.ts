@@ -5,8 +5,6 @@ import { User } from '@prisma/client';
 
 async function editUser(user: User) {
     try {
-        console.log('user', user);
-        
         const dbUser = await prisma.user.update({
             where: {
                 id: user.id
@@ -23,10 +21,9 @@ async function editUser(user: User) {
         return dbUser;
     } catch (error) {
         console.log('error', error);
-        
+
         return null;
     }
-
 }
 
 export { editUser };
