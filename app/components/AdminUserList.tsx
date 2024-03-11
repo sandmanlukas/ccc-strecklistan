@@ -11,6 +11,7 @@ import { ListboxWrapper } from "@/app/components/ListboxWrapper";
 import { getAllItems } from "@/app/lib/getAllItems";
 import { getAllUsers } from "@/app/lib/getAllUsers";
 import { itemTypes } from "@/app/lib/utils";
+import AdminDebtCollect from "./AdminDebtCollect";
 
 
 export default function AdminUserList() {
@@ -163,6 +164,9 @@ export default function AdminUserList() {
                             <AdminItemCard item={selectedItem} onItemUpdate={handleItemUpdate} onItemDeletion={handleItemDeletion} />
                         </div>
                     </Skeleton>
+                </Tab>
+                <Tab key="debts" title="Samla in skulder">
+                   <AdminDebtCollect />
                 </Tab>
             </Tabs>
 

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { TransactionWithItem } from '@/app/components/UserPage';
+import { formatTime } from '../lib/utils';
 
 interface TransactionProps {
     transactions: TransactionWithItem[];
@@ -13,11 +14,6 @@ const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
         const today = new Date();
         const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
-
-        const formatTime = (date: Date): string => {
-            const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
-            return date.toLocaleTimeString('sv-SE', options);
-        };
 
         today.setHours(0, 0, 0, 0);
         yesterday.setHours(0, 0, 0, 0);

@@ -10,8 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//TODO: add email, real name and other fields
-
 model User {
   id           Int           @id @default(autoincrement())
   username     String        @unique
@@ -58,6 +56,15 @@ model Item {
   volume       Int           @default(0)
   type         ItemType      @default(DRYCK)
   transactions Transaction[]
+}
+
+model Text {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  body      String
 }
 
 enum ItemType {

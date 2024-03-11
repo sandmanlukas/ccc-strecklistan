@@ -51,7 +51,7 @@ export const positionLabels: { [key in UserRole]: string } = {
     ANNONSCHEF: "Annonschef",
     MUSIKCHEF: "Musikchef",
     OLCHEF: "Ölchef",
-    PRCHEF: "PR-chef", 
+    PRCHEF: "PR-chef",
     KADAVER: "Kadaver",
     OTHER: "Annat",
 };
@@ -71,7 +71,7 @@ export const personsPerDivision: { [key: string]: number } = {
     FET: 3,
 };
 
-export const userRoleToDivision: {[key in UserRole]: string} = {
+export const userRoleToDivision: { [key in UserRole]: string } = {
     ORDFORANDE: 'AFA',
     KASSOR: 'AFA',
     BYGGCHEF: 'BOB',
@@ -88,7 +88,7 @@ export const userRoleToDivision: {[key in UserRole]: string} = {
 }
 
 
-export const roleStringToUserRole: {[key: string]: UserRole} = {
+export const roleStringToUserRole: { [key: string]: UserRole } = {
     "Ordförande": "ORDFORANDE" as UserRole,
     "Kassör": "KASSOR" as UserRole,
     "Byggchef": "BYGGCHEF" as UserRole,
@@ -103,3 +103,13 @@ export const roleStringToUserRole: {[key: string]: UserRole} = {
     "Kadaver": "KADAVER" as UserRole,
     "Annat": "OTHER" as UserRole
 }
+
+export const formatTime = (date: Date): string => {
+    const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
+    return date.toLocaleTimeString('sv-SE', options);
+};
+
+export const formatDateAndTime = (date: Date): string => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return date.toLocaleDateString('sv-SE', options);
+};
