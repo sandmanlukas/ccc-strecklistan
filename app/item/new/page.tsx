@@ -1,8 +1,7 @@
 import React from 'react';
 import AddItemForm from '../../components/AddItemForm';
 
-async function AddItemPage({ children, }: { children: React.ReactNode }) {
-
+async function AddItemPage() {
     return (
         <AddItemForm />
     );
