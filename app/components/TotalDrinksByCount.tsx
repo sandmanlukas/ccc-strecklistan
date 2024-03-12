@@ -6,19 +6,19 @@ import { Card } from "@nextui-org/react";
 
 export default function TotalDrinksByCount({ transactions }: { transactions: TransactionWithItem[]; }) {
 
-    let transactionsByCount: { [key: string]: number; } = {};
+    const transactionsByCount = React.useMemo(() => {
+        const counts: { [key: string]: number; } = {};
 
-    transactions.forEach(transaction => {
-        if (!(transaction.item.type === 'DRYCK')) return;
+        transactions.forEach(({ item: { name } }) => {
+            if (!counts[name]) {
+                counts[name] = 0;
+            }
 
-        const name = transaction.item.name;
+            counts[name]++;
+        });
 
-        if (!transactionsByCount[name]) {
-            transactionsByCount[name] = 0;
-        }
-
-        transactionsByCount[name]++;
-    });
+        return counts;
+    }, [transactions]);
 
     const data = React.useMemo(() => {
         return Object.keys(transactionsByCount).map(name => {
@@ -30,26 +30,34 @@ export default function TotalDrinksByCount({ transactions }: { transactions: Tra
     }, [transactionsByCount]);
 
     return (
-        <Card className="p-4">
-
-            <BarChart
-                width={700}
-                height={300}
-                data={data}
-                margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                }}
-            >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="drink" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="count" name="Streck per dryck" type="monotone" fill="#43AA8B" activeBar={<Rectangle fill="#EF3054" stroke="#000" />} />
-            </BarChart>
-        </Card>
+        <>
+            {
+                data.length > 0 ? (
+                    <Card className="p-4">
+                        <BarChart
+                            width={700}
+                            height={300}
+                            data={data}
+                            margin={{
+                                top: 5,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="drink" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="count" name="Streck per dryck" type="monotone" fill="#43AA8B" activeBar={<Rectangle fill="#EF3054" stroke="#000" />} />
+                        </BarChart>
+                    </Card>
+                ) : (
+                    <Card className="p-4">
+                        <h3 className="text-xl">Ingen data än. Strecka något.</h3>
+                    </Card>
+                )}
+        </>
     );
 }

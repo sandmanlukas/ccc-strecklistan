@@ -16,23 +16,6 @@ interface Data {
 export default function DrinksByDay({ transactions }: { transactions: TransactionWithItem[]; }) {
     const [selectedDrink, setSelectedDrink] = React.useState<string>("Totalt");
 
-    // useEffect(() => {
-    //     const drinkCounts: { [key: string]: number } = {};
-    //     transactions.forEach(transaction => {
-    //         const drink = transaction.item.name;
-    //         if (!drinkCounts[drink]) {
-    //             drinkCounts[drink] = 0;
-    //         }
-
-    //         drinkCounts[drink]++;
-    //     });
-
-    //     const mostPopularDrink = Object.entries(drinkCounts).sort((a, b) => b[1] - a[1])[0][0];
-
-    //     setSelectedDrink(mostPopularDrink);
-    // }, [transactions])
-
-
     // Process the transactions data
     const dateToDrinkByDate: Data = transactions.reduce((acc: Data, transaction: TransactionWithItem) => {
         const date = new Date(transaction.createdAt).toLocaleDateString('sv-SE')
@@ -77,6 +60,7 @@ export default function DrinksByDay({ transactions }: { transactions: Transactio
     if (drinks.length === 0) {
         return <Card className="p-4">Inga drycker hittades</Card>;
     }
+    
     return (
 
         <Card className="p-4">
