@@ -12,17 +12,26 @@ function UserList() {
     const [activeUsers, setActiveUsers] = useState<User[] | null>();
     const [oldUsers, setOldUsers] = useState<User[] | null>();
     const [otherUsers, setOtherUsers] = useState<User[] | null>();
-
     const [loading, setLoading] = useState(true);
+
+    
+    const rolesOrder = ['ORDFORANDE', 'KASSOR', 'BYGGCHEF', 'BILCHEF', 'GARDVAR', 'KLADCHEF', 'PROGRAMCHEF', 'ANNONSCHEF', 'MUSIKCHEF', 'OLCHEF', 'PRCHEF'];
+
 
     useEffect(() => {
         const fetchUsers = async () => {
             try{
                 setLoading(true);
+
                 const allUsers = await getAllUsers();
+
                 const activeUsers = allUsers.filter(user => !user.role.includes('KADAVER') && !user.role.includes('OTHER'));
+                activeUsers.sort((a, b) => {
+                    return rolesOrder.indexOf(a.role) - rolesOrder.indexOf(b.role);
+                });
                 const oldUsers = allUsers.filter(user => user.role.includes('KADAVER'));
                 const otherUsers = allUsers.filter(user => user.role.includes('OTHER'));
+
                 setActiveUsers(activeUsers);
                 setOldUsers(oldUsers);
                 setOtherUsers(otherUsers);
