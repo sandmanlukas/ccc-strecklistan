@@ -20,7 +20,7 @@ function UserList() {
             try{
                 setLoading(true);
                 const allUsers = await getAllUsers();
-                const activeUsers = allUsers.filter(user => !user.role.includes('KADAVER') || !user.role.includes('OTHER'));
+                const activeUsers = allUsers.filter(user => !user.role.includes('KADAVER') && !user.role.includes('OTHER'));
                 const oldUsers = allUsers.filter(user => user.role.includes('KADAVER'));
                 const otherUsers = allUsers.filter(user => user.role.includes('OTHER'));
                 setActiveUsers(activeUsers);
