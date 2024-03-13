@@ -41,7 +41,7 @@ export default function UserPage({ id }: { id: number }) {
             setUser(user);
             const currentUsers = users.filter(filterUser => filterUser.role !== 'KADAVER' && filterUser.role !== 'OTHER' && filterUser.username !== user.username);
             const oldUsers = users.filter(filterUser => filterUser.role === 'KADAVER' && filterUser.username !== user.username);
-            const otherUsers = users.filter(filterUser => filterUser.role !== 'OTHER' && filterUser.username !== user.username);
+            const otherUsers = users.filter(filterUser => filterUser.role === 'OTHER' && filterUser.username !== user.username);
             setCurrentUsers(currentUsers);
             setOldUsers(oldUsers);
             setOtherUsers(otherUsers);
