@@ -21,14 +21,13 @@ export default function SignIn() {
             username,
             password,
         });
+        
         if (response && response.error) {
             toast.error(response.error);
             return;
         } else {
             router.push('/');
         }
-
-
     };
 
     return (
