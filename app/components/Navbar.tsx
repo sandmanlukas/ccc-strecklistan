@@ -9,6 +9,8 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import { IoIosAddCircleOutline, IoIosStats } from "react-icons/io";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { Session } from "next-auth";
+import { usePathname } from "next/navigation";
+import path from "path";
 
 
 type Props = {};
@@ -42,6 +44,15 @@ function AuthButton({ session }: { session: Session | null }) {
 
 const Navbar = (props: Props) => {
   const { data: session } = useSession();
+  const pathname = usePathname();
+
+  const activeTab = (route: string) => {
+
+    if (pathname === route) {
+      return "border-b-2 border-black";
+    }
+    return "";
+  }
 
   return (
     <nav
@@ -57,15 +68,15 @@ const Navbar = (props: Props) => {
         {session && (
           <>
             {session.user.role === "ADMIN" && (
-              <Link href={"/user/new"} as={"/user/new"} className="mx-2">
-                <AiOutlineUserAdd size={35} style={{ fontWeight: 'bold' }} />
+              <Link href={"/user/new"} as={"/user/new"} className={`mx-2 ${activeTab("/user/new")}`}>
+                <AiOutlineUserAdd size={35} className="font-bold" />
               </Link>
             )}
-            <Link href={"/item/new"} as={"/item/new"} className="mx-2">
-              <IoIosAddCircleOutline size={35} style={{ fontWeight: 'bold' }} />
+            <Link href={"/item/new"} as={"/item/new"} className={`mx-2 ${activeTab("/item/new")}`}>
+              <IoIosAddCircleOutline size={35} className="font-bold" />
             </Link>
-            <Link href={"/stats"} as={"/stats"} className="mx-2">
-              <IoIosStats size={35} style={{ fontWeight: 'bold' }} />
+            <Link href={"/stats"} as={"/stats"} className={`mx-2 ${activeTab("/stats")}`}>
+              <IoIosStats size={35} className="font-bold" />
           </Link>
           </>
         )}
@@ -74,8 +85,8 @@ const Navbar = (props: Props) => {
         {session && (
           <div className="flex">
             {session.user.role === "ADMIN" && (
-              <Link href={"/admin"} as={"/admin"} className="mx-2">
-                <MdOutlineAdminPanelSettings size={35} style={{ fontWeight: 'bold' }} />
+              <Link href={"/admin"} as={"/admin"} className={`mx-2 ${activeTab("/admin")}`}>
+                <MdOutlineAdminPanelSettings size={35} className="font-bold"/>
               </Link>
             )}
             <AuthButton session={session} />
