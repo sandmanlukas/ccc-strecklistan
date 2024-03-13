@@ -61,26 +61,26 @@ function UserList() {
                                 </div>
                                 </div>
                             }
-                    {oldUsers && oldUsers.length > 0 &&
-                        <>  
-                        <h1 className="text-2xl font-bold mb-4">Kadaver</h1>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {oldUsers.map(user => (
-                            <UserCard key={user.id} user={user} />
-                            ))}
-                            </div>
-                            </>
-                        }
-                    {otherUsers && otherUsers.length > 0 &&
-                        <>  
-                        <h1 className="text-2xl font-bold mb-4">Kadaver</h1>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {otherUsers.map(user => (
-                            <UserCard key={user.id} user={user} />
-                            ))}
-                            </div>
-                            </>
-                        }
+                        {oldUsers && oldUsers.length > 0 &&
+                            <div className='mb-2'>  
+                            <h1 className="text-2xl font-bold mb-4">Kadaver</h1>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {oldUsers.map(user => (
+                                <UserCard key={user.id} user={user} />
+                                ))}
+                                </div>
+                                </div>
+                            }
+                        {otherUsers && otherUsers.length > 0 &&
+                            <>  
+                            <h1 className="text-2xl font-bold mb-4">Kadaver</h1>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {otherUsers.map(user => (
+                                <UserCard key={user.id} user={user} />
+                                ))}
+                                </div>
+                                </>
+                            }
                         </>
                     )}
                 </div>
