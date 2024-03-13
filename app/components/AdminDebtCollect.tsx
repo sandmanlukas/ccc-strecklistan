@@ -109,6 +109,9 @@ export default function AdminDebtCollect() {
 
     const handleSaveText = async () => {
         setEdit(!edit);
+
+        if (!title && !body) return;
+
         const response = await addOrUpdateText({ name: 'mail', title, body });
         if (!response) {
             toast.error('Något gick fel!');
@@ -119,7 +122,6 @@ export default function AdminDebtCollect() {
     }
 
     const handleSendMail = async () => {
-
         //TODO: Add date of last collection in db to be able to filter out transactions after that date
         // Send mail
         setLoading(true);
@@ -141,7 +143,7 @@ export default function AdminDebtCollect() {
 
         const updatedLastEmailSent = await updateLastEmailSent();
 
-        if (!updateLastEmailSent) {
+        if (!updatedLastEmailSent) {
             toast.error('Något gick fel vid uppdatering av senaste mailutskick!');
             setLoading(false);
             return;
@@ -160,7 +162,10 @@ export default function AdminDebtCollect() {
                 Se till att eventuella swishnummer stämmer etc.
             </p>
             <p className='text-sm flex items-end'>
-                Du kan trycka på <PiFileMagnifyingGlass className='mx-1'></PiFileMagnifyingGlass> för att se en förhandsgranskning på hur mailet kommer se ut.
+                Du kan trycka på <PiFileMagnifyingGlass className='mx-1' size={20}/> för att se en förhandsgranskning på hur mailet kommer se ut. 
+            </p>
+            <p className='text-sm flex items-end'>
+                Genom att trycka på <CiEdit className='mx-1' size={20}/> så kan du börja redigera mailet. Tryck sedan på <FaRegSave className='mx-1' size={20}/> för att spara ändringarna.
             </p>
             <div className='flex items-end '>
                 <h3>Mailmall</h3>
@@ -177,14 +182,14 @@ export default function AdminDebtCollect() {
                 label="Titel på mailet"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                disabled={!edit}
+                isDisabled={!edit}
             />
             <Textarea
                 label="Innehåll på mailet"
                 placeholder="Ändra mallens innehåll här..."
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
-                disabled={!edit}
+                isDisabled={!edit}
             />
             <Button isLoading={loading} onClick={() => setShowConfirmationModal(true)}>
                 Skicka mail
