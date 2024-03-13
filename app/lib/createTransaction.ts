@@ -66,7 +66,7 @@ async function createTransaction(userId: number, beeredUserId: number | undefine
                 });
 
                 // Create a transaction for the beered user for statistics
-                await prisma.transaction.create({
+                const beeredUserTransaction = await prisma.transaction.create({
                     data: {
                         userId: beeredUserId,
                         barcode: BEERED_BARCODE,

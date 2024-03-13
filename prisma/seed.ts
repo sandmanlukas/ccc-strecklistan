@@ -1,6 +1,7 @@
 import { AccountRole, UserRole } from "@prisma/client";
 import { prisma } from "../app/lib/db";
 import { faker} from "@faker-js/faker";
+import { BEERED_BARCODE } from "../app/lib/utils";
 const bcrypt = require("bcryptjs");
 
 
@@ -54,7 +55,7 @@ async function main() {
     },
   });
 
-  
+
   await prisma.account.upsert({
     where: {
       username: "ccc",
@@ -66,6 +67,15 @@ async function main() {
       username: "ccc",
       password: hashedPassword,
       role: AccountRole.CCC,
+    },
+  });
+
+  await prisma.item.create({
+    data: {
+      name: "Bärsning",
+      price: 0,
+      volume: 0,
+      barcode: BEERED_BARCODE,
     },
   });
 
