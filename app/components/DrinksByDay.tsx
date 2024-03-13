@@ -62,7 +62,6 @@ export default function DrinksByDay({ transactions }: { transactions: Transactio
     }
     
     return (
-
         <Card className="p-4">
             <Select
                 aria-label="Choose drink to display in graph"
@@ -74,35 +73,36 @@ export default function DrinksByDay({ transactions }: { transactions: Transactio
                     <SelectItem key={drink} value={drink}>{drink}</SelectItem>
                 ))}
             </Select>
-            <h3 className="ml-2">
-                {selectedDrink}
-            </h3>
-            <LineChart
-                width={700}
-                height={300}
-                data={dateToDrinkByDate[selectedDrink]}
-                margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                }}
-            >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" tick={{ fontSize: 15 }} />
-                <YAxis
-                    tickFormatter={(value) => Math.floor(value).toString()}
-                    ticks={
-                        dateToDrinkByDate[selectedDrink] ?
-                            Array.from(new Set(dateToDrinkByDate[selectedDrink].map(item => Math.floor(item.count))))
-                            : []
-                    }
-                    domain={[0, 'dataMax + 0.5']}
-                />
-                <Tooltip />
-                <Legend />
-                <Line key="melleruds" type="monotone" name="Antal streck" dataKey="count" stroke="#8884d8" activeDot={{ r: 6 }} />
-            </LineChart>
+
+            { selectedDrink ? (
+                <div>
+                    <h3 className="ml-2">
+                        {selectedDrink}
+                    </h3>
+                    <LineChart
+                    width={700}
+                    height={300}
+                    data={dateToDrinkByDate[selectedDrink]}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5,}}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" tick={{ fontSize: 15 }} />
+                        <YAxis
+                            tickFormatter={(value) => Math.floor(value).toString()}
+                            ticks={
+                                dateToDrinkByDate[selectedDrink] ?
+                                Array.from(new Set(dateToDrinkByDate[selectedDrink].map(item => Math.floor(item.count))))
+                                : []
+                            }
+                            domain={[0, 'dataMax + 0.5']}
+                            />
+                        <Tooltip />
+                        <Legend />
+                        <Line key="melleruds" type="monotone" name="Antal streck" dataKey="count" stroke="#8884d8" activeDot={{ r: 6 }} />
+                    </LineChart>
+                </div>
+                    ) : (
+                        <h3 className="text-xl">Du måste välja en dryck.</h3>
+                    )}
         </Card>
     );
 }
