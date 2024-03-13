@@ -1,6 +1,6 @@
 import { prisma } from "@/app/lib/db";
 import { AccountRole } from '@prisma/client';
-import NextAuth, { NextAuthConfig, Session, User } from "next-auth";
+import NextAuth, { Session, User } from "next-auth";
 const bcrypt = require('bcryptjs');
 
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -18,9 +18,6 @@ declare module "next-auth" {
 }
 
 export const authOptions = {
-    // adapter: PrismaAdapter(prisma),
-
-    // cookies: cookies,
     session: {
         strategy: "jwt" as const,
     },
@@ -32,9 +29,13 @@ export const authOptions = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
-            async authorize(credentials, req): Promise<User> {
+            credentials: {
+                username: { label: "Username", type: "text", placeholder: "username" },
+                password: { label: "Password", type: "password" },
+              },
+            async authorize(credentials): Promise<User> {
                 if (!credentials?.username || !credentials?.password) {
-                    return { error: 'Användarnamn eller lösenord saknas!' }
+                    return { id: 'ERROR', error: 'Användarnamn eller lösenord saknas!' };
                 }
 
                 const user = await prisma.account.findUnique({
@@ -45,11 +46,11 @@ export const authOptions = {
 
 
                 if (!user) {
-                    return { error: 'Användarnamnet eller lösenordet var fel!' };
+                    return {id: 'ERROR', error: 'Användarnamnet eller lösenordet var fel!' };
                 }
 
                 if (!(await bcrypt.compare(credentials.password.toString(), user.password))) {
-                    return { error: 'Användarnamnet eller lösenordet var fel!' };
+                    return {id: 'ERROR', error: 'Användarnamnet eller lösenordet var fel!' };
                 }
 
                 return {
@@ -83,7 +84,7 @@ export const authOptions = {
             return true;
         }
     }
-} satisfies NextAuthConfig;
+};
 
 export const {
     handlers: { GET, POST },
