@@ -3,7 +3,7 @@
 import React from "react";
 import verve from "@/fonts/verve";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { SlLogout, SlLogin } from "react-icons/sl";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { IoIosAddCircleOutline, IoIosStats } from "react-icons/io";
@@ -20,9 +20,13 @@ function AuthButton({ session }: { session: Session | null }) {
         <p className="text-xl mr-4 self-end">
           {session.user?.username}
         </p>
-        <a href="/api/auth/signout">
-          <SlLogout size={35} style={{ fontWeight: 'bold' }} />
-        </a>
+          <SlLogout  
+          onClick={() => {
+              signOut({
+                callbackUrl: "/signin",
+              });
+            }}
+          size={35} style={{ fontWeight: 'bold' }} />
       </>
     );
   }
