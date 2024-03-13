@@ -12,8 +12,8 @@ export default async function AdminPage() {
     }
 
     return (
-        <div>
-            <h1 className='text-2xl mb-2 pl-1'>Adminsaker</h1>
+        <div className='m-auto'>
+            <h1 className='text-2xl my-2 pl-1'>Adminsaker</h1>
             <AdminUserList />
         </div>
     );
