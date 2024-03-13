@@ -82,7 +82,7 @@ function UserList() {
                             }
                         {otherUsers && otherUsers.length > 0 &&
                             <>  
-                            <h1 className="text-2xl font-bold mb-4">Kadaver</h1>
+                            <h1 className="text-2xl font-bold mb-4">Andra</h1>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {otherUsers.map(user => (
                                 <UserCard key={user.id} user={user} />
