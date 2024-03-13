@@ -12,6 +12,7 @@ import TotalDrinksByCount from '@/app/components/TotalDrinksByCount';
 import DrinksByDay from '@/app/components/DrinksByDay';
 import BeeredHighScore from '@/app/components/BeeredHighScore';
 import BeeredByHighScore from '@/app/components/BeeredByHighScore';
+import TotalDebt from './TotalStats';
 
 export interface TransactionWithItemAndUser extends Transaction {
     item: Item;
@@ -65,7 +66,11 @@ export default function StatsPage() {
                                     </Tab>
                                 </Tabs>
                             </div>
+
                             <div className='grid grid-cols-2 gap-4'>
+                            <div className='col-span-2'>
+                            <TotalDebt users={users} transactions={transactions} />
+                            </div>
                                 <div>
                                     <DebtHighScore users={users} />
                                 </div>
