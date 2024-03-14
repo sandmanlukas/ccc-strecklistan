@@ -6,9 +6,11 @@ import { positionLabels } from '@/app/lib/utils';
 import { MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, useDisclosure } from '@nextui-org/react';
+import Image from "next/image";
 import { editUser } from '@/app/lib/editUser';
 import { deleteUser } from '@/app/lib/deleteUser';
 import { toast } from 'react-toastify';
+import { DEFAULT_AVATAR_URL } from '@/app/constants';
 
 export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { user: User | null, onUserUpdate: (user: User) => void, onUserDeletion: (user: User) => void }) {
     const { isOpen: isEditUserModalOpen, onOpen: onOpenEditUserModal, onClose: onCloseEditUserModal, onOpenChange: onOpenChangeEditUserModal } = useDisclosure();
@@ -48,7 +50,21 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
     const handleDeleteUser = async () => {
         if (!editedUser) return;
 
+        if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL) {
+            console.log('deleting avatar');
+            
+            const response = await fetch(`/api/avatar/delete?url=${editedUser.avatar}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                toast.error('Kunde inte ta bort användarens avatar');
+                return;
+            }
+        }
+        
         const deleted = await deleteUser(editedUser.id);
+        
         if (deleted) {
             onUserDeletion(deleted);
             setEditedUser(null);
@@ -86,31 +102,35 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
             {originalUser && (
                 <>
                     <div className='border p-4 rounded-lg shadow-md space-y-2'>
-                        <div className='flex justify-between items-center'>
+                        <div className='flex justify-between'>
                             <h2 className='text-xl font-bold'>{originalUser.username}</h2>
                             <div className='flex'>
-                                <MdOutlineEdit onClick={onOpenEditUserModal} className='mr-3 text-2xl cursor-pointer' />
+                                <MdOutlineEdit onClick={onOpenEditUserModal} className='mx-3 text-2xl cursor-pointer' />
                                 <RiDeleteBinLine onClick={onOpenDeleteUserModal} className='texEt-2xl text-red-600 cursor-pointer' />
                             </div>
                         </div>
-                        <div>
-                            <p className='text-gray-600 text-sm'>Post</p>
-                            <p>{role}</p>
-                        </div>
 
-                        <div>
-                            <p className='text-gray-600 text-sm'>Namn</p>
-                            <p>{originalUser.firstName} {originalUser.lastName}</p>
-                        </div>
+                        <div className='flex'>
+                            <Image
+                                alt="Användarens avatar"
+                                src={originalUser.avatar ? originalUser.avatar : DEFAULT_AVATAR_URL}
+                                width={200}
+                                height={200}
+                                className='rounded mr-4' />
+                            <div>
+                                <p className='text-gray-600 text-sm'>Post</p>
+                                <p>{role}</p>
 
-                        <div>
-                            <p className='text-gray-600 text-sm'>E-mail</p>
-                            <p>{originalUser.email}</p>
-                        </div>
+                                <p className='text-gray-600 text-sm'>Namn</p>
+                                <p>{originalUser.firstName} {originalUser.lastName}</p>
 
-                        <div>
-                            <p className='text-gray-600 text-sm'>Skuld</p>
-                            <p>{originalUser.debt} kr</p>
+                                <p className='text-gray-600 text-sm'>E-mail</p>
+                                <p>{originalUser.email}</p>
+
+                                <p className='text-gray-600 text-sm'>Skuld</p>
+                                <p>{originalUser.debt} kr</p>
+
+                            </div>
                         </div>
                     </div>
                     {editedUser && (

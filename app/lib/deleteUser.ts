@@ -9,6 +9,7 @@ async function deleteUser(id: number) {
                 id: id
             }
         });
+
         return dbUser;
     } catch (error) {
         console.log('error', error);
