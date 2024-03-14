@@ -1,8 +1,8 @@
 import { AccountRole, UserRole } from "@prisma/client";
 import { prisma } from "../app/lib/db";
 import { faker} from "@faker-js/faker";
-import { BEERED_BARCODE } from "../app/lib/utils";
 const bcrypt = require("bcryptjs");
+import { DEFAULT_AVATAR_URL, BEERED_BARCODE } from "@/app/constants";
 
 
 interface FakeUser {
@@ -11,6 +11,7 @@ interface FakeUser {
   email: string;
   firstName: string;
   lastName: string;
+  avatar: string;
 }
 
 
@@ -21,6 +22,7 @@ export function createRandomUser(role: UserRole): FakeUser {
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
     role: role,
+    avatar: DEFAULT_AVATAR_URL,
   };
 }
 

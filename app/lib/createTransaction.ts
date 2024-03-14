@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from '@/app/lib/db';
-import { BEERED_BARCODE } from './utils';
+import { BEERED_BARCODE } from '@/app/constants';
 
 async function createTransaction(userId: number, beeredUserId: number | undefined, barcode: string) {
     try {

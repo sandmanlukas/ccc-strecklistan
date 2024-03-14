@@ -21,6 +21,7 @@ model User {
   updatedAt    DateTime      @updatedAt
   role         UserRole      @default(ORDFORANDE)
   debt         Int           @default(0)
+  avatar       String?
   transactions Transaction[]
 }
 

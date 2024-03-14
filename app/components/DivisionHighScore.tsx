@@ -3,7 +3,8 @@
 import React from 'react';
 import { TransactionWithItemAndUser } from './StatsPage';
 import { ItemType, Transaction } from '@prisma/client';
-import { BEERED_BARCODE, userRoleToDivision, personsPerDivision } from '../lib/utils';
+import { userRoleToDivision, personsPerDivision } from '../lib/utils';
+import { BEERED_BARCODE } from '@/app/constants';
 
 interface DivisionTransactionCounts {
     division: string;

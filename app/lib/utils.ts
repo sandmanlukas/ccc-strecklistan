@@ -1,7 +1,4 @@
 import { ItemType, UserRole } from "@prisma/client";
-import { date } from "zod";
-
-export const BEERED_BARCODE = "0000000000000";
 
 export function handleScan(setScannedData: Function, setScanCount: Function | null = null) {
     let code = "";
@@ -124,4 +121,17 @@ export const formatDate = (date: Date): string => {
         date = new Date(date);
     }
     return date.toLocaleDateString('sv-SE');
+}
+
+export function base64toFile(base64: string, filename: string): File {
+    const arr = base64.split(',');
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    const mime = mimeMatch ? mimeMatch[1] : '';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
 }

@@ -1,12 +1,16 @@
 "use client";
-import { Input, Select, SelectItem } from '@nextui-org/react';
-// components/AddUserForm.js
-import { useState } from 'react';
+
+import React, { useState } from 'react';
+import { Avatar, Button, Input, Select, SelectItem } from '@nextui-org/react';
+import Webcam from 'react-webcam';
 import { UserRole } from '@prisma/client';
-import { positionLabels, roleStringToUserRole } from '@/app/lib/utils';
+import { base64toFile, positionLabels, roleStringToUserRole } from '@/app/lib/utils';
 import { toast } from 'react-toastify';
-import { clear } from 'console';
-import { addUser } from '../lib/addUser';
+import { addUser } from '@/app/lib/addUser';
+import type { PutBlobResult } from '@vercel/blob';
+import { DEFAULT_AVATAR_URL } from '@/app/constants';
+import { set } from 'zod';
+
 
 export default function AddUserForm() {
     const [formData, setFormData] = useState({
@@ -16,6 +20,10 @@ export default function AddUserForm() {
         email: '',
         role: 'Ordförande', // Default role
     });
+    const [showWebcam, setShowWebcam] = useState(false);
+    const [avatar, setAvatar] = useState(DEFAULT_AVATAR_URL);
+    const webcamRef = React.useRef<Webcam>(null);
+    const [creatingUser, setCreatingUser] = useState(false);
 
     const userRoles = Object.values(UserRole).map((type) => {
         return positionLabels[type];
@@ -29,6 +37,8 @@ export default function AddUserForm() {
             email: '',
             role: 'Ordförande', // Default role
         });
+        setAvatar(DEFAULT_AVATAR_URL);
+        setCreatingUser(false);
     }
 
     function validateForm() {
@@ -67,6 +77,7 @@ export default function AddUserForm() {
 
     const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setCreatingUser(true);
 
         // Validate the form
         if (!validateForm()) {
@@ -75,17 +86,36 @@ export default function AddUserForm() {
         }
 
         const { username, firstName, lastName, email, role } = formData;
+
+        let newBlob = null;
+        if (avatar && avatar !== DEFAULT_AVATAR_URL) {
+            const response = await fetch(`/api/avatar/upload?filename=${username}_avatar`, {
+                method: 'POST',
+                body: base64toFile(avatar, `${username}_avatar.jpg`),
+            });
+
+            if (!response.ok) {
+                toast.error('Något gick fel vid uppladdning av din avatar. Försök igen.');
+                return;
+            }
+
+            newBlob = (await response.json()) as PutBlobResult;            
+        }
+
         const user = {
             username,
             firstName,
             lastName,
             email,
             role: roleStringToUserRole[role],
+            avatar: newBlob?.url || null,
         }
+
         const dbUser = await addUser(user);
 
         if (!dbUser) {
             toast.error('Något gick fel');
+            clearFormState();
             return;
         }
         toast.success(`${user.username} har lagts till!`);
@@ -94,12 +124,44 @@ export default function AddUserForm() {
         clearFormState();
     };
 
+    const captureImage = React.useCallback(
+        () => {
+            setShowWebcam(true)
+            const imageSrc = webcamRef.current?.getScreenshot();
+            if (imageSrc) {
+                setAvatar(imageSrc);
+            }
+            setShowWebcam(false);
+        },
+        [webcamRef]
+      );
+
+
     return (
         <div className='mx-auto my-20 bg-gray-100'>
             <div className='w-full max-w-md p-8 space-y-9 bg-white rounded-lg shadow-md'>
                 <h2 className='text-center text-2xl font-bold text-gray-900'>Lägg till användare</h2>
                 <form onSubmit={handleSubmit} className='space-y-9'>
                     <div>
+                        {showWebcam ? (
+                            <div>
+                                <Webcam 
+                                className='mb-2 rounded-lg'
+                                screenshotFormat='image/jpeg'
+                                ref={webcamRef}/>
+                                <Button onClick={captureImage}>Ta bild</Button>
+                            </div>
+                                ) : 
+                                (
+                                <div>        
+                                <Avatar 
+                                radius="sm" 
+                                src={avatar}
+                                className='w-36 h-36 mx-auto mb-2 rounded-lg'
+                                />
+                                <Button onClick={() => setShowWebcam(true)}>Ta bild</Button>
+                                </div>
+                                )}
                         <Input
                             type="text"
                             id="username"
@@ -174,12 +236,13 @@ export default function AddUserForm() {
                             }
                         </Select>
                     </div>
-                    <button
-                        type="submit"
-                        className='w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
+                    <Button 
+                    type='submit'
+                    className='w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
+                    isLoading={creatingUser}
                     >
                         Lägg till
-                    </button>
+                    </Button>
                 </form>
             </div>
         </div>
