@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { User, UserRole } from '@prisma/client';
-import { positionLabels } from '@/app/lib/utils';
+import { base64toFile, positionLabels } from '@/app/lib/utils';
 import { MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, useDisclosure } from '@nextui-org/react';
@@ -11,12 +11,17 @@ import { editUser } from '@/app/lib/editUser';
 import { deleteUser } from '@/app/lib/deleteUser';
 import { toast } from 'react-toastify';
 import { DEFAULT_AVATAR_URL } from '@/app/constants';
+import Webcam from 'react-webcam';
+import { PutBlobResult } from '@vercel/blob';
 
 export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { user: User | null, onUserUpdate: (user: User) => void, onUserDeletion: (user: User) => void }) {
     const { isOpen: isEditUserModalOpen, onOpen: onOpenEditUserModal, onClose: onCloseEditUserModal, onOpenChange: onOpenChangeEditUserModal } = useDisclosure();
     const { isOpen: isDeleteUserModalOpen, onOpen: onOpenDeleteUserModal, onClose: onCloseDeleteUserModal } = useDisclosure();
     const [editedUser, setEditedUser] = React.useState<User | null>(user);
     const [originalUser, setOriginalUser] = React.useState<User | null>(user);
+    const [showWebcam, setShowWebcam] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const webcamRef = React.useRef<Webcam>(null);
 
     const role = user ? positionLabels[user.role] : ''; // Adjust according to how `positionLabels` is implemented
 
@@ -52,7 +57,7 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
 
         if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL) {
             console.log('deleting avatar');
-            
+
             const response = await fetch(`/api/avatar/delete?url=${editedUser.avatar}`, {
                 method: 'DELETE',
             });
@@ -62,9 +67,9 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
                 return;
             }
         }
-        
+
         const deleted = await deleteUser(editedUser.id);
-        
+
         if (deleted) {
             onUserDeletion(deleted);
             setEditedUser(null);
@@ -76,8 +81,29 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
 
     const handleSaveChanges = async () => {
         if (!editedUser) return;
+        setIsEditing(true);
 
-        const user = await editUser(editedUser);
+        let newBlob = null;
+        if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL) {
+            const response = await fetch(`/api/avatar/upload?filename=${editedUser.username}_avatar`, {
+                method: 'POST',
+                body: base64toFile(editedUser.avatar, `${editedUser}_avatar.jpg`),
+            });
+
+            if (!response.ok) {
+                toast.error('Något gick fel vid uppladdning av din avatar. Försök igen.');
+                return;
+            }
+
+            newBlob = (await response.json()) as PutBlobResult;            
+        }
+
+        const editedUserWithNewAvatar = {
+            ...editedUser,
+            avatar: newBlob?.url || null,
+        }
+
+        const user = await editUser(editedUserWithNewAvatar);
         if (user) {
             onUserUpdate(user);
             setEditedUser(user);
@@ -87,15 +113,35 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
             toast.error('Kunde inte spara ändringar');
             return;
         }
+
+        setIsEditing(false);
         onCloseEditUserModal();
     };
 
     const onCloseEditUserModalAndReset = () => {
         // Reset the editedItem to the originalItem if changes were not saved
         setEditedUser(originalUser);
+        setIsEditing(false);
         onCloseEditUserModal(); // Close the modal
     };
 
+    const captureImage = React.useCallback(
+        () => {
+            setShowWebcam(true)
+            const imageSrc = webcamRef.current?.getScreenshot();
+            if (imageSrc) {
+                setEditedUser((prev) => {
+                    if (prev !== null) {
+                        return { ...prev, avatar: imageSrc };
+                    }
+                    return null;
+                });
+
+            }
+            setShowWebcam(false);
+        },
+        [webcamRef]
+    );
 
     return (
         <div>
@@ -146,6 +192,33 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
                                         <>
                                             <ModalHeader className="flex flex-col gap-1">Ändra info för {originalUser.username}</ModalHeader>
                                             <ModalBody>
+                                                {
+                                                    showWebcam ? (
+                                                        <div>
+                                                            <Webcam
+                                                                className='mb-2 rounded-lg'
+                                                                screenshotFormat='image/jpeg'
+                                                                ref={webcamRef} />
+                                                            <Button onClick={captureImage}>Ta profilbild</Button>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <Image
+                                                                alt="Användarens avatar"
+                                                                src={editedUser.avatar ? editedUser.avatar : DEFAULT_AVATAR_URL}
+                                                                width={200}
+                                                                height={100}
+                                                                className='rounded mt-0 pt-0 w-auto'
+                                                            />
+                                                            <Button
+                                                                color='primary'
+                                                                onClick={() => setShowWebcam(true)}
+                                                            >
+                                                                Ändra avatar
+                                                            </Button>
+                                                        </>
+                                                    )
+                                                }
                                                 <Input
                                                     autoFocus
                                                     label="Användarnamn"
@@ -207,7 +280,10 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
                                                 <Button color="danger" variant="flat" onPress={onCloseEditUserModalAndReset}>
                                                     Stäng
                                                 </Button>
-                                                <Button color="primary" onPress={handleSaveChanges}>
+                                                <Button 
+                                                color="primary" 
+                                                onPress={handleSaveChanges}
+                                                isLoading={isEditing}>
                                                     Spara ändringar
                                                 </Button>
                                             </ModalFooter>

@@ -15,7 +15,8 @@ async function editUser(user: User) {
                 lastName: user.lastName,
                 email: user.email,
                 role: user.role,
-                debt: user.debt
+                debt: user.debt,
+                avatar: user.avatar
             }
         });
         return dbUser;

@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 import { addUser } from '@/app/lib/addUser';
 import type { PutBlobResult } from '@vercel/blob';
 import { DEFAULT_AVATAR_URL } from '@/app/constants';
-import { set } from 'zod';
 
 
 export default function AddUserForm() {
@@ -22,8 +21,8 @@ export default function AddUserForm() {
     });
     const [showWebcam, setShowWebcam] = useState(false);
     const [avatar, setAvatar] = useState(DEFAULT_AVATAR_URL);
-    const webcamRef = React.useRef<Webcam>(null);
     const [creatingUser, setCreatingUser] = useState(false);
+    const webcamRef = React.useRef<Webcam>(null);
 
     const userRoles = Object.values(UserRole).map((type) => {
         return positionLabels[type];
@@ -149,7 +148,7 @@ export default function AddUserForm() {
                                 className='mb-2 rounded-lg'
                                 screenshotFormat='image/jpeg'
                                 ref={webcamRef}/>
-                                <Button onClick={captureImage}>Ta bild</Button>
+                                <Button onClick={captureImage}>Ta profilbild</Button>
                             </div>
                                 ) : 
                                 (
@@ -159,7 +158,7 @@ export default function AddUserForm() {
                                 src={avatar}
                                 className='w-36 h-36 mx-auto mb-2 rounded-lg'
                                 />
-                                <Button onClick={() => setShowWebcam(true)}>Ta bild</Button>
+                                <Button onClick={() => setShowWebcam(true)}>Ta profilbild</Button>
                                 </div>
                                 )}
                         <Input
