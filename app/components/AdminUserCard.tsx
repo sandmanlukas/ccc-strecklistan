@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { DEFAULT_AVATAR_URL } from '@/app/constants';
 import Webcam from 'react-webcam';
 import { PutBlobResult } from '@vercel/blob';
+import { set } from 'zod';
 
 export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { user: User | null, onUserUpdate: (user: User) => void, onUserDeletion: (user: User) => void }) {
     const { isOpen: isEditUserModalOpen, onOpen: onOpenEditUserModal, onClose: onCloseEditUserModal, onOpenChange: onOpenChangeEditUserModal } = useDisclosure();
@@ -21,6 +22,7 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
     const [originalUser, setOriginalUser] = React.useState<User | null>(user);
     const [showWebcam, setShowWebcam] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const webcamRef = React.useRef<Webcam>(null);
 
     const role = user ? positionLabels[user.role] : ''; // Adjust according to how `positionLabels` is implemented
@@ -54,10 +56,9 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
 
     const handleDeleteUser = async () => {
         if (!editedUser) return;
+        setIsDeleting(true);
 
         if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL) {
-            console.log('deleting avatar');
-
             const response = await fetch(`/api/avatar/delete?url=${editedUser.avatar}`, {
                 method: 'DELETE',
             });
@@ -76,6 +77,7 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
             toast.success(`${deleted.username} borttagen`);
         }
 
+        setIsDeleting(false);
         onCloseDeleteUserModal();
     }
 
@@ -95,7 +97,7 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
                 return;
             }
 
-            newBlob = (await response.json()) as PutBlobResult;            
+            newBlob = (await response.json()) as PutBlobResult;
         }
 
         const editedUserWithNewAvatar = {
@@ -280,10 +282,10 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
                                                 <Button color="danger" variant="flat" onPress={onCloseEditUserModalAndReset}>
                                                     Stäng
                                                 </Button>
-                                                <Button 
-                                                color="primary" 
-                                                onPress={handleSaveChanges}
-                                                isLoading={isEditing}>
+                                                <Button
+                                                    color="primary"
+                                                    onPress={handleSaveChanges}
+                                                    isLoading={isEditing}>
                                                     Spara ändringar
                                                 </Button>
                                             </ModalFooter>
@@ -308,7 +310,12 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
                                                 <Button color="primary" onPress={onCloseDeleteUserModal}>
                                                     Avbryt
                                                 </Button>
-                                                <Button color="danger" variant="flat" onPress={handleDeleteUser}>
+                                                <Button
+                                                    color="danger"
+                                                    variant="flat"
+                                                    onPress={handleDeleteUser}
+                                                    isLoading={isDeleting}
+                                                >
                                                     Ta bort
                                                 </Button>
                                             </ModalFooter>
