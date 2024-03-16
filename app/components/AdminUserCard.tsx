@@ -87,6 +87,19 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
 
         let newBlob = null;
         if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL) {
+
+            // Delete old file from storage if it exists first
+            if (originalUser?.avatar) {
+                const response = await fetch(`/api/avatar/delete?url=${originalUser.avatar}`, {
+                    method: 'DELETE',
+                });
+
+                if (!response.ok) {
+                    toast.error('Kunde inte ta bort användarens avatar');
+                    return;
+                }
+            };
+
             const response = await fetch(`/api/avatar/upload?filename=${editedUser.username}_avatar`, {
                 method: 'POST',
                 body: base64toFile(editedUser.avatar, `${editedUser}_avatar.jpg`),
