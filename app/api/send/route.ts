@@ -3,6 +3,7 @@
 import { Email } from "@/app/components/Email";
 import { Resend } from 'resend';
 import { UserWithItemsAndTransactions } from "@/app/components/AdminDebtCollect";
+import { Swish } from "@prisma/client";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -11,6 +12,7 @@ interface RequestData {
     lastEmailSent: Date | null;
     subject: string;
     body: string;
+    swish: Swish;
 }
 
 export async function POST(req: Request) {
@@ -19,6 +21,7 @@ export async function POST(req: Request) {
         const body = requestData.body;
         const subject = requestData.subject;
         const lastEmailSent = requestData.lastEmailSent;
+        const swish = requestData.swish;
         const from = process.env.EMAIL_ADDRESS as string;
 
         const emails = requestData.users.map((user: UserWithItemsAndTransactions) => {
@@ -26,7 +29,7 @@ export async function POST(req: Request) {
                 from: from,
                 to: [user.email],
                 subject: subject,
-                react: Email({ body: body, debt: user.debt, transactions: user.transactions, lastEmailSent  }) as React.ReactElement,
+                react: Email({ body: body, debt: user.debt, transactions: user.transactions, lastEmailSent, swish}) as React.ReactElement,
             }
         });
 

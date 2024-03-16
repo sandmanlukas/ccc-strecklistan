@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import { EmailTemplate } from '@/app/components/EmailTemplate';
 import { TransactionWithItem } from '@/app/components/UserPage';
 import { getDataForDebtCollection, updateLastEmailSent } from '@/app/lib/getDataForDebtCollection';
-import { User } from '@prisma/client';
+import { Swish, User } from '@prisma/client';
 
 
 export interface UserWithItemsAndTransactions extends User {
@@ -63,7 +63,11 @@ const fakeTransactions: TransactionWithItem[] =
     ]
 
 
-const sendEmails = async (users: UserWithItemsAndTransactions[], title: string, body: string, lastEmailSentAt: Date | null) => {
+const sendEmails = async (users: UserWithItemsAndTransactions[], title: string, body: string, lastEmailSentAt: Date | null, swish: Swish | null) => {
+    if (!swish) {
+        toast.error('Ingen Swish-info hittad!');
+        return;
+    }
     const response = await fetch('/api/send', {
         method: 'POST',
         headers: {
@@ -73,7 +77,8 @@ const sendEmails = async (users: UserWithItemsAndTransactions[], title: string, 
             subject: title,
             body,
             users: users,
-            lastEmailSentAt
+            lastEmailSentAt,
+            swish,
         })
     });
 
@@ -85,26 +90,46 @@ const sendEmails = async (users: UserWithItemsAndTransactions[], title: string, 
     return response;
 }
 
-export default function AdminDebtCollect() {
+export default function AdminDebtCollect({ swish }: { swish: Swish | null }) {
     const [edit, setEdit] = useState(false);
     const [showEmailTemplate, setShowEmailTemplate] = useState(false);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
+    const [debtedUsers, setDebtedUsers] = useState<UserWithItemsAndTransactions[]>([]);
+    const [lastEmailSent, setLastEmailSent] = useState<Date | null>(null);
 
     useEffect(() => {
+        setLoading(true);
         const fetchText = async () => {
             const response = await getText('mail');
 
             if (!response) {
+                toast.error('Något gick fel vid hämtning av text!');
+                setLoading(false);
                 return;
             }
             setTitle(response.title);
             setBody(response.body);
-
         }
+
+        const fetchDebtedUsers = async () => {
+            const { users, lastEmailSent } = await getDataForDebtCollection();
+
+            if (!users || !lastEmailSent) {
+                toast.error('Något gick fel vid hämtning av användare!');
+                setLoading(false);
+                return;
+            }
+
+            setDebtedUsers(users);
+            setLastEmailSent(lastEmailSent);
+        }
+
+        fetchDebtedUsers();
         fetchText();
+        setLoading(false);
     }, []);
 
     const handleSaveText = async () => {
@@ -127,17 +152,13 @@ export default function AdminDebtCollect() {
         setLoading(true);
         setShowConfirmationModal(false);
 
-        const { users, lastEmailSent} = await getDataForDebtCollection();
-
-        console.log('users', users);
-
-        if (!users) {
+        if (!debtedUsers) {
             toast.error('Något gick fel vid hämtning av användare!');
             setLoading(false);
             return;
         }
 
-        const response = await sendEmails(users, title, body, lastEmailSent || null);
+        const response = await sendEmails(debtedUsers, title, body, lastEmailSent || null, swish);
 
         if (!response) return;
 
@@ -149,7 +170,6 @@ export default function AdminDebtCollect() {
             return;
         }
 
-
         toast.success('Mail skickat!');
         setLoading(false);
     }
@@ -159,13 +179,13 @@ export default function AdminDebtCollect() {
             <p className="text-sm">
                 Här kan du skicka ut mail till alla (icke-sittande) om att det är dags att betala sin skuld.
                 Nedanför så finns en mailmall som går att redigera, det är detta mail som kommer skickas ut till folk.
-                Se till att eventuella swishnummer stämmer etc.
+                Swishinformation behöver inte skrivas med i mailet, utan det kommer från admininställningarna, så se till att de stämmer där.
             </p>
             <p className='text-sm flex items-end'>
-                Du kan trycka på <PiFileMagnifyingGlass className='mx-1' size={20}/> för att se en förhandsgranskning på hur mailet kommer se ut. 
+                Du kan trycka på <PiFileMagnifyingGlass className='mx-1' size={20} /> för att se en förhandsgranskning på hur mailet kommer se ut.
             </p>
             <p className='text-sm flex items-end'>
-                Genom att trycka på <CiEdit className='mx-1' size={20}/> så kan du börja redigera mailet. Tryck sedan på <FaRegSave className='mx-1' size={20}/> för att spara ändringarna.
+                Genom att trycka på <CiEdit className='mx-1' size={20} /> så kan du börja redigera mailet. Tryck sedan på <FaRegSave className='mx-1' size={20} /> för att spara ändringarna.
             </p>
             <div className='flex items-end '>
                 <h3>Mailmall</h3>
@@ -202,10 +222,34 @@ export default function AdminDebtCollect() {
                 <ModalContent>
                     <ModalHeader>Skicka mail</ModalHeader>
                     <ModalBody>
-                        Är du säker på att du vill skicka ut mail om skulder?
+                        {
+                            !swish && (
+                                <p className='text-lg text-red-500'>Ingen Swish-info hittad! Se till att ställa in detta i inställningarna!</p>
+                            )
+                        }
+                        <p>
+                            Är du säker på att du vill skicka ut mail om skulder?
+                        </p>
+                        {debtedUsers.length > 0 ? (
+                            <>
+                                <p>
+                                    Dessa kommer få mailet:
+                                </p>
+                                <ul>
+                                    {debtedUsers.map((user) => (
+                                        <li key={user.id}><span className='font-bold'>Namn</span>: {user.username} - <span className='font-bold'>Skuld</span>: {user.debt} kr</li>
+                                    ))}
+                                </ul>
+                            </>
+                        ) : (
+                            <p>
+                                Det verkar som om ingen har streckat något sen senaste mailutskicket.
+                            </p>
+                        )}
+
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="success" onClick={handleSendMail}>
+                        <Button color="success" onClick={handleSendMail} isDisabled={!swish}>
                             Skicka
                         </Button>
                         <Button color="danger" onClick={() => setShowConfirmationModal(false)}>
@@ -225,7 +269,12 @@ export default function AdminDebtCollect() {
                         Mailexempel
                     </ModalHeader>
                     <ModalBody>
-                        <EmailTemplate body={body} debt={1337} transactions={fakeTransactions} lastEmailSent={new Date()} />
+                        {
+                            !swish && (
+                                <p className='text-lg text-red-500'>Ingen Swish-info hittad!</p>
+                            )
+                        }
+                        <EmailTemplate body={body} debt={1337} transactions={fakeTransactions} lastEmailSent={new Date()} swish={swish} />
                     </ModalBody>
                 </ModalContent>
             </Modal>

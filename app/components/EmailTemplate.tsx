@@ -8,7 +8,8 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
     body,
     debt,
     transactions,
-    lastEmailSent
+    lastEmailSent,
+    swish
 }) => (
 
     <Tailwind>
@@ -19,7 +20,7 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
                 {body}
             </Text>
             <Text style={text}>
-                Din nuvarande skuld ligger på: <span className='font-bold'>{debt} kr.</span>
+                Din nuvarande skuld ligger på: <span className='font-bold'>{debt} kr.</span> Swisha till <span className='font-bold'>{swish?.number} ({swish?.name})</span> för att betala av din skuld.
             </Text>
             {transactions.length > 0 && (
                 <div>

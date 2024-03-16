@@ -191,7 +191,7 @@ export default function AdminPage() {
                     </Skeleton>
                 </Tab>
                 <Tab key="debts" title="Samla in skulder">
-                   <AdminDebtCollect />
+                   <AdminDebtCollect swish={swish}/>
                 </Tab>
                 <Tab key="swish" title="Swishinfo">
                     <AdminSwishInfo swish={swish}/>
