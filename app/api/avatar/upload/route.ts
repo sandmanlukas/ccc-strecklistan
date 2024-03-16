@@ -8,7 +8,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     if (!filename || !request.body) {
         throw new Error('Filename or body missing in request.');
     }
-
+    
     const blob = await put(filename, request.body, {
         access: 'public',
     });

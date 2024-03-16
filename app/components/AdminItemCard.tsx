@@ -113,22 +113,16 @@ export default function AdminItemCard({ item, onItemUpdate, onItemDeletion }: { 
                         <div>
                             <p className='text-gray-600 text-sm'>Pris</p>
                             <p>{originalItem.price} kr</p>
-                        </div>
 
-                        <div>
                             <p className='text-gray-600 text-sm'>Typ</p>
                             <p>{type}</p>
-                        </div>
 
-
-                        {originalItem.type === ItemType.DRYCK && (
-                            <div>
-                                <p className='text-gray-600 text-sm'>Volym</p>
-                                <p>{originalItem.volume} cl</p>
-                            </div>
-                        )}
-
-                        <div>
+                            {originalItem.type === ItemType.DRYCK && (
+                                <div>
+                                    <p className='text-gray-600 text-sm'>Volym</p>
+                                    <p>{originalItem.volume} cl</p>
+                                </div>
+                            )}
                             <p className='text-gray-600 text-sm'>Streckkod</p>
                             <p>{originalItem.barcode}</p>
                         </div>
