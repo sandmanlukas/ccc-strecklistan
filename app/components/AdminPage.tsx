@@ -2,21 +2,25 @@
 
 import React from "react";
 import { useEffect } from "react";
-import { Item, User } from "@prisma/client";
+import { Item, Swish, User } from "@prisma/client";
 import { Listbox, ListboxItem, Skeleton, Selection, Tabs, Tab } from "@nextui-org/react";
 
 import AdminUserCard from "@/app/components/AdminUserCard";
 import AdminItemCard from "@/app/components/AdminItemCard";
+import AdminDebtCollect from "@/app/components/AdminDebtCollect";
+import AdminSwishInfo from "@/app/components/AdminSwishInfo";
 import { ListboxWrapper } from "@/app/components/ListboxWrapper";
 import { getAllItems } from "@/app/lib/getAllItems";
 import { getAllUsers } from "@/app/lib/getAllUsers";
+import { getSwishInfo } from "@/app/lib/getSwishInfo";
 import { itemTypes } from "@/app/lib/utils";
-import AdminDebtCollect from "./AdminDebtCollect";
+import { toast } from "react-toastify";
 
 
-export default function AdminUserList() {
+export default function AdminPage() {
     const [users, setUsers] = React.useState<User[]>([]);
     const [items, setItems] = React.useState<Item[]>([]);
+    const [swish, setSwish] = React.useState<Swish | null>(null);
     const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
     const [selectedItem, setSelectedItem] = React.useState<Item | null>(null);
     const [selectedUserKey, setSelectedUserKey] = React.useState<Selection>(new Set([users[0]?.id.toString()]));
@@ -24,6 +28,7 @@ export default function AdminUserList() {
 
     const [loadingUsers, setLoadingUsers] = React.useState(true);
     const [loadingItems, setLoadingItems] = React.useState(true);
+    const [loadingSwish, setLoadingSwish] = React.useState(true);
 
     const handleUserUpdate = (updatedUser: User) => {
         setUsers(currentUsers => {
@@ -72,6 +77,10 @@ export default function AdminUserList() {
         const fetchUsers = async () => {
             setLoadingUsers(true);
             const users = await getAllUsers();
+            if (!users) {
+                toast.error("Kunde inte hämta användare");
+                return;
+            }
             setUsers(users);
             setSelectedUser(users[0]);
             setSelectedUserKey(new Set([users[0].id.toString()]));
@@ -81,14 +90,30 @@ export default function AdminUserList() {
         const fetchItems = async () => {
             setLoadingItems(true);
             const items = await getAllItems();
+            if (!items) {
+                toast.error("Kunde inte hämta inventarie");
+                return;
+            }
             setItems(items);
             setSelectedItem(items[0]);
             setSelectedItemKey(new Set([items[0].id.toString()]));
             setLoadingItems(false);
         }
 
+        const fetchSwishInfo = async () => {
+            setLoadingSwish(true);
+            const swish = await getSwishInfo();
+            if (!swish) {
+                toast.error("Kunde inte hämta Swish info");
+                return;
+            }
+            setSwish(swish);
+            setLoadingSwish(false);
+        }
+
         fetchUsers();
         fetchItems();
+        fetchSwishInfo();
     }, []);
 
     return (
@@ -167,6 +192,9 @@ export default function AdminUserList() {
                 </Tab>
                 <Tab key="debts" title="Samla in skulder">
                    <AdminDebtCollect />
+                </Tab>
+                <Tab key="swish" title="Swishinfo">
+                    <AdminSwishInfo swish={swish}/>
                 </Tab>
             </Tabs>
 
