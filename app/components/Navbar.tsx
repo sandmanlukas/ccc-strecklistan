@@ -10,7 +10,7 @@ import { IoIosAddCircleOutline, IoIosStats } from "react-icons/io";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
-import path from "path";
+import Image from "next/image";
 
 
 type Props = {};
@@ -22,12 +22,12 @@ function AuthButton({ session }: { session: Session | null }) {
         <p className="text-xl mr-4 self-end">
           {session.user?.username}
         </p>
-          <SlLogout  
+        <SlLogout
           onClick={() => {
-              signOut({
-                callbackUrl: "/signin",
-              });
-            }}
+            signOut({
+              callbackUrl: "/signin",
+            });
+          }}
           size={35} style={{ fontWeight: 'bold' }} />
       </>
     );
@@ -47,7 +47,6 @@ const Navbar = (props: Props) => {
   const pathname = usePathname();
 
   const activeTab = (route: string) => {
-
     if (pathname === route) {
       return "border-b-2 border-black";
     }
@@ -77,7 +76,11 @@ const Navbar = (props: Props) => {
             </Link>
             <Link href={"/stats"} as={"/stats"} className={`mx-2 ${activeTab("/stats")}`}>
               <IoIosStats size={35} className="font-bold" />
-          </Link>
+            </Link>
+            <Link href={"/swish"} as={"/swish"} className={`mx-2 p-0 ${activeTab("/swish")}`}>
+              <Image src="/swish.png" alt="Swishloggan" width={300} height={300} className="p-0"/>
+            </Link>
+
           </>
         )}
       </div>
@@ -86,7 +89,7 @@ const Navbar = (props: Props) => {
           <div className="flex">
             {session.user.role === "ADMIN" && (
               <Link href={"/admin"} as={"/admin"} className={`mx-2 ${activeTab("/admin")}`}>
-                <MdOutlineAdminPanelSettings size={35} className="font-bold"/>
+                <MdOutlineAdminPanelSettings size={35} className="font-bold" />
               </Link>
             )}
             <AuthButton session={session} />

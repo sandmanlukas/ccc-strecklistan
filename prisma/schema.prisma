@@ -76,6 +76,15 @@ model DebtCollect {
   emailSentAt DateTime?
 }
 
+model Swish {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @unique
+  number    String
+  imageUrl  String?
+}
+
 enum ItemType {
   DRYCK
   MAT

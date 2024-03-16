@@ -1,8 +1,8 @@
 import { AccountRole, UserRole } from "@prisma/client";
 import { prisma } from "../app/lib/db";
-import { faker} from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 const bcrypt = require("bcryptjs");
-import { DEFAULT_AVATAR_URL, BEERED_BARCODE } from "@/app/constants";
+import { DEFAULT_AVATAR_URL, BEERED_BARCODE } from "../app/constants";
 
 
 interface FakeUser {
@@ -72,12 +72,34 @@ async function main() {
     },
   });
 
-  await prisma.item.create({
-    data: {
+  await prisma.item.upsert({
+    where: {
+      barcode: BEERED_BARCODE,
+    },
+    update: {
+      name: "Bärsning",
+      price: 0,
+      volume: 0,
+    },
+    create: {
       name: "Bärsning",
       price: 0,
       volume: 0,
       barcode: BEERED_BARCODE,
+    },
+  });
+
+  await prisma.swish.upsert({
+    where: {
+      id: 1,
+    },
+    update: {
+      name: "Test Testsson",
+      number: "1234567890",
+    },
+    create: {
+      name: "Test Testsson",
+      number: "1234567890",
     },
   });
 
