@@ -3,10 +3,10 @@
 import { prisma } from '@/app/lib/db';
 import { Item } from '@prisma/client';
 
+
+
 async function editItem(item: Item) {
     try {
-        console.log('user', item);
-        
         const dbItem = await prisma.item.update({
             where: {
                 id: item.id

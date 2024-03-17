@@ -28,7 +28,7 @@ function AuthButton({ session }: { session: Session | null }) {
               callbackUrl: "/signin",
             });
           }}
-          size={35} style={{ fontWeight: 'bold' }} />
+          size={35} className="font-bold cursor-pointer" />
       </>
     );
   }
@@ -36,7 +36,7 @@ function AuthButton({ session }: { session: Session | null }) {
   return (
     <>
       <a href="/api/auth/signin">
-        <SlLogin size={35} style={{ fontWeight: 'bold' }} />
+        <SlLogin size={35} className="font-bold cursor-pointer" />
       </a>
     </>
   );
