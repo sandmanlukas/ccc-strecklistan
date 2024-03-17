@@ -13,7 +13,6 @@ import { toast } from 'react-toastify';
 import { DEFAULT_AVATAR_URL } from '@/app/constants';
 import Webcam from 'react-webcam';
 import { PutBlobResult } from '@vercel/blob';
-import { set } from 'zod';
 
 export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { user: User | null, onUserUpdate: (user: User) => void, onUserDeletion: (user: User) => void }) {
     const { isOpen: isEditUserModalOpen, onOpen: onOpenEditUserModal, onClose: onCloseEditUserModal, onOpenChange: onOpenChangeEditUserModal } = useDisclosure();
