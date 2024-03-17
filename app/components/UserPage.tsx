@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify";
 import { Item, Transaction, User } from "@prisma/client"
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, DropdownSection, Spinner, Card, CardBody, dropdown, button } from "@nextui-org/react";
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, DropdownSection, Spinner, Card, CardBody, dropdown, button, Avatar } from "@nextui-org/react";
 import { IoClose } from "react-icons/io5";
 import { getUser } from "@/app/lib/getUser";
 import { handleScan, positionLabels } from "@/app/lib/utils";
 import { getAllUsers } from "@/app/lib/getAllUsers";
 import { createTransaction } from "@/app/lib/createTransaction";
 import Transactions from "@/app/components/Transactions";
+import { DEFAULT_AVATAR_URL } from "../constants";
 
 
 export interface TransactionWithItem extends Transaction {
@@ -128,10 +129,13 @@ export default function UserPage({ id }: { id: number }) {
                                 </div>
                             )}
                             <div>
-                                <div className="flex justify-between items-baseline">
-                                    <div>
-                                        <h1 className="text-2xl font-bold mb-1">{user.username}</h1>
-                                        <p className="text-sm">{user.firstName} {user.lastName} - {positionLabels[user.role]}</p>
+                                <div className="flex justify-between">
+                                    <div className="flex justify-between">
+                                        <Avatar src={user.avatar ? user.avatar : DEFAULT_AVATAR_URL} className="mr-2 w-20 h-20" />
+                                        <div>
+                                            <h1 className="text-2xl font-bold mb-1">{user.username}</h1>
+                                            <p className="text-sm">{user.firstName} {user.lastName} - {positionLabels[user.role]}</p>
+                                        </div>
                                     </div>
 
                                     {(currentUsers || oldUsers || otherUsers) && (
