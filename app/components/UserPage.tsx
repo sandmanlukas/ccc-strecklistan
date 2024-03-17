@@ -54,7 +54,7 @@ export default function UserPage({ id }: { id: number }) {
         }
         fetchUser();
 
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         const handleScanEvent = handleScan(setBarcode, setScanCount);
@@ -86,8 +86,7 @@ export default function UserPage({ id }: { id: number }) {
                     }
 
                     if (!freeBeer) {
-                        const newDebt = debt + price;
-                        setDebt(newDebt);
+                        setDebt(prevDebt => prevDebt + price);
                     } else {
                         toast('Du vann en gratis öl (chansen var 0.5%)! 🍻');
                     }
@@ -105,7 +104,7 @@ export default function UserPage({ id }: { id: number }) {
             }
         }
         performTransaction();
-    }, [scanCount, user])
+    }, [scanCount, user, barcode])
 
     const handleDropdownClick = (user: User) => {
         setTimeout(() => {

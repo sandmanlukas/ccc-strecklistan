@@ -15,10 +15,10 @@ function UserList() {
     const [loading, setLoading] = useState(true);
 
     
-    const rolesOrder = ['ORDFORANDE', 'KASSOR', 'BYGGCHEF', 'BILCHEF', 'GARDVAR', 'KLADCHEF', 'PROGRAMCHEF', 'ANNONSCHEF', 'MUSIKCHEF', 'OLCHEF', 'PRCHEF'];
-
-
+    
+    
     useEffect(() => {
+        const rolesOrder = ['ORDFORANDE', 'KASSOR', 'BYGGCHEF', 'BILCHEF', 'GARDVAR', 'KLADCHEF', 'PROGRAMCHEF', 'ANNONSCHEF', 'MUSIKCHEF', 'OLCHEF', 'PRCHEF'];
         const fetchUsers = async () => {
             try{
                 setLoading(true);
