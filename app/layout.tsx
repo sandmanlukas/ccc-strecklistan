@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import { ToastContainer } from "react-toastify";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import Navbar from "@/app/components/Navbar";
 import { auth } from "@/auth";
@@ -43,6 +44,7 @@ export default async function RootLayout({
             <main className="mx-auto max-w-5xl text-xl flex">
               {children}
             </main>
+            <SpeedInsights />
           </SessionProvider>
         </Providers>
       </body>
