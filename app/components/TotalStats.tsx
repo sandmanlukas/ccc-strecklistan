@@ -3,6 +3,7 @@
 import { User } from '@prisma/client';
 import React from 'react';
 import { TransactionWithItemAndUser } from './StatsPage';
+import { formatCentilitres } from '../lib/utils';
 
 export default function TotalStats({ users, transactions }: { users: User[], transactions: TransactionWithItemAndUser[] }) {
     const totalDebt = users.reduce((acc, user) => acc + user.debt, 0);
@@ -30,7 +31,7 @@ export default function TotalStats({ users, transactions }: { users: User[], tra
                         )}
                         {totalVolume > 0 && (
                             <div className='w-96 bg-white shadow-md rounded-lg p-2 border border-grey'>
-                                <p className='text-lg font-medium'>Volym: {totalVolume} cl</p>
+                                <p className='text-lg font-medium'>Volym: {formatCentilitres(totalVolume)}</p>
                             </div>
                         )}
                         {numberOfDrinks > 0 && (

@@ -144,3 +144,12 @@ export function formatPhoneNumber(phoneNumber: string) {
     }
     return '';
 } 
+
+export function formatCentilitres(cl: number) {
+    const litres = cl / 100;
+    if (litres >= 1) {
+        return `${litres} liter`;
+    } else {
+        return `${cl} cl`;
+    }
+}
