@@ -79,6 +79,7 @@ export default function AdminPage() {
     }
 
     useEffect(() => {
+        const rolesOrder = ['ORDFORANDE', 'KASSOR', 'BYGGCHEF', 'BILCHEF', 'GARDVAR', 'KLADCHEF', 'PROGRAMCHEF', 'ANNONSCHEF', 'MUSIKCHEF', 'OLCHEF', 'PRCHEF', 'KADAVER', 'OTHER'];
         const fetchUsers = async () => {
             setLoadingUsers(true);
             const users = await getAllUsers();
@@ -86,6 +87,9 @@ export default function AdminPage() {
                 toast.error("Kunde inte hämta användare");
                 return;
             }
+            users.sort((a, b) => {
+                return rolesOrder.indexOf(a.role) - rolesOrder.indexOf(b.role);
+            });
             setUsers(users);
             setSelectedUser(users[0]);
             setSelectedUserKey(new Set([users[0].id.toString()]));
