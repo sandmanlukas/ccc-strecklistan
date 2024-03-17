@@ -21,8 +21,6 @@ export default function UserPage({ id }: { id: number }) {
     const [user, setUser] = useState<User | null>(null);
     const [beeredUser, setBeeredUser] = useState<User | null>(null);
     const [currentUsers, setCurrentUsers] = useState<User[]>([]);
-    const [oldUsers, setOldUsers] = useState<User[]>([]);
-    const [otherUsers, setOtherUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [transactions, setTransactions] = useState<TransactionWithItem[]>([]);
     const [barcode, setBarcode] = useState<string | null>(null);
@@ -33,6 +31,7 @@ export default function UserPage({ id }: { id: number }) {
     const divRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        const rolesOrder = ['ORDFORANDE', 'KASSOR', 'BYGGCHEF', 'BILCHEF', 'GARDVAR', 'KLADCHEF', 'PROGRAMCHEF', 'ANNONSCHEF', 'MUSIKCHEF', 'OLCHEF', 'PRCHEF', 'KADAVER', 'OTHER'];
         const fetchUser = async () => {
             setLoading(true);
             const user = await getUser(id);
@@ -41,13 +40,12 @@ export default function UserPage({ id }: { id: number }) {
                 setLoading(false);
                 return;
             }
+            users.sort((a, b) => {
+                return rolesOrder.indexOf(a.role) - rolesOrder.indexOf(b.role);
+            });
             setUser(user);
             const currentUsers = users.filter(filterUser => filterUser.role !== 'KADAVER' && filterUser.role !== 'OTHER' && filterUser.username !== user.username);
-            const oldUsers = users.filter(filterUser => filterUser.role === 'KADAVER' && filterUser.username !== user.username);
-            const otherUsers = users.filter(filterUser => filterUser.role === 'OTHER' && filterUser.username !== user.username);
             setCurrentUsers(currentUsers);
-            setOldUsers(oldUsers);
-            setOtherUsers(otherUsers);
             setTransactions(user.transactions);
             setDebt(user.debt);
             setLoading(false);
@@ -145,7 +143,7 @@ export default function UserPage({ id }: { id: number }) {
                                         </div>
                                     </div>
 
-                                    {(currentUsers || oldUsers || otherUsers) && (
+                                    {currentUsers && (user.role !== 'OTHER' && user.role !== 'KADAVER') && (
                                         <Dropdown shouldBlockScroll={false}>
                                             <DropdownTrigger>
                                                 <Button
@@ -158,22 +156,8 @@ export default function UserPage({ id }: { id: number }) {
                                                 </Button>
                                             </DropdownTrigger>
                                             <DropdownMenu variant="faded" aria-label="Bärsa!">
-                                                <DropdownSection title="Sittande" showDivider>
+                                                <DropdownSection title="Sittande">
                                                     {currentUsers.map((filteredUser) => (
-                                                        <DropdownItem key={filteredUser.id} onClick={() => handleDropdownClick(filteredUser)}>
-                                                            {filteredUser.username}
-                                                        </DropdownItem>
-                                                    ))}
-                                                </DropdownSection>
-                                                <DropdownSection title="Kadaver" showDivider>
-                                                    {oldUsers.map((filteredUser) => (
-                                                        <DropdownItem key={filteredUser.id} onClick={() => handleDropdownClick(filteredUser)}>
-                                                            {filteredUser.username}
-                                                        </DropdownItem>
-                                                    ))}
-                                                </DropdownSection>
-                                                <DropdownSection title="Andra" >
-                                                    {otherUsers.map((filteredUser) => (
                                                         <DropdownItem key={filteredUser.id} onClick={() => handleDropdownClick(filteredUser)}>
                                                             {filteredUser.username}
                                                         </DropdownItem>
@@ -181,7 +165,6 @@ export default function UserPage({ id }: { id: number }) {
                                                 </DropdownSection>
                                             </DropdownMenu>
                                         </Dropdown>
-
                                     )}
                                 </div>
                             </div>
