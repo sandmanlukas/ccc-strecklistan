@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { toast } from "react-toastify";
 import { Item, Transaction, User } from "@prisma/client"
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, DropdownSection, Spinner, Card, CardBody, dropdown, button, Avatar } from "@nextui-org/react";
@@ -29,6 +29,8 @@ export default function UserPage({ id }: { id: number }) {
     const [scanCount, setScanCount] = useState<number>(0);
     const [item, setItem] = useState<Item | null>(null);
     const [debt, setDebt] = useState<number>(0);
+
+    const divRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -106,6 +108,12 @@ export default function UserPage({ id }: { id: number }) {
     }, [scanCount, user])
 
     const handleDropdownClick = (user: User) => {
+        setTimeout(() => {
+            if (divRef.current) {
+                divRef.current.focus();
+            }
+        }, 200);
+
         setBeeredUser(user);
     }
 
@@ -129,7 +137,7 @@ export default function UserPage({ id }: { id: number }) {
                                 </div>
                             )}
                             <div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between focus:outline-none" ref={divRef} tabIndex={-1}>
                                     <div className="flex justify-between">
                                         <Avatar src={user.avatar ? user.avatar : DEFAULT_AVATAR_URL} className="mr-2 w-20 h-20" />
                                         <div>
@@ -139,13 +147,12 @@ export default function UserPage({ id }: { id: number }) {
                                     </div>
 
                                     {(currentUsers || oldUsers || otherUsers) && (
-                                        <Dropdown>
+                                        <Dropdown shouldBlockScroll={false}>
                                             <DropdownTrigger>
                                                 <Button
                                                     size="lg"
                                                     variant="bordered"
-                                                    className="ml-4"
-                                                >
+                                                    className="ml-4">
                                                     <span>
                                                         Bärsa!
                                                     </span>
