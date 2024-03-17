@@ -117,14 +117,17 @@ export default function AdminDebtCollect({ swish }: { swish: Swish | null }) {
         const fetchDebtedUsers = async () => {
             const { users, lastEmailSent } = await getDataForDebtCollection();
 
-            if (!users || !lastEmailSent) {
+            if (!users) {
                 toast.error('Något gick fel vid hämtning av användare!');
                 setLoading(false);
                 return;
             }
 
             setDebtedUsers(users);
-            setLastEmailSent(lastEmailSent);
+
+            if (lastEmailSent || lastEmailSent === null) {
+                setLastEmailSent(lastEmailSent);
+            }
         }
 
         fetchDebtedUsers();
