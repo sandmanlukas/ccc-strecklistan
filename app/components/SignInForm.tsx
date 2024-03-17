@@ -5,7 +5,8 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { Button, Input } from "@nextui-org/react";
+import { Input } from "@nextui-org/react";
+import { Session } from 'next-auth';
 
 export default function SignIn() {
     const [username, setUsername] = useState('');
@@ -21,12 +22,13 @@ export default function SignIn() {
             username,
             password,
         });
-        
+
         if (response && response.error) {
             toast.error(response.error);
             return;
         } else {
-            router.push('/');
+            // router.push('/');
+            window.location.href = '/';
         }
     };
 

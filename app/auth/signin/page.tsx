@@ -11,7 +11,7 @@ async function SignInPage() {
 
     return (
         <div className='mx-auto grid place-items-center'>
-            <SignInForm />
+            <SignInForm/>
         </div>
     );
 
