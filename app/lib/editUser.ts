@@ -2,6 +2,7 @@
 
 import { prisma } from '@/app/lib/db';
 import { User } from '@prisma/client';
+import { roleStringToUserRole } from './utils';
 
 async function editUser(user: User) {
     try {
@@ -14,7 +15,7 @@ async function editUser(user: User) {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
-                role: user.role,
+                role: roleStringToUserRole[user.role],
                 debt: user.debt,
                 avatar: user.avatar
             }
