@@ -123,7 +123,7 @@ export default function UserPage({ id }: { id: number }) {
                                     <Card>
                                         <CardBody className="relative">
                                             <IoClose className="absolute top-2 right-2 cursor-pointer " onClick={() => setBeeredUser(null)} />
-                                            <p className="pt-3">Du kommer bärsa: <span className="font-bold">${beeredUser.username}</span></p>
+                                            <p className="pt-3">Du kommer bärsa: <span className="font-bold">{beeredUser.username}</span></p>
                                         </CardBody>
                                     </Card>
                                 </div>
