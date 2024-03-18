@@ -50,9 +50,9 @@ export default function StatsPage() {
             </div>
             : (
                 <>
-                    <div className='mx-auto'>
+                    <div className='mx-auto space-y-4'>
                         <h2 className='text-3xl font-bold mt-4'>Statistik</h2>
-                        <div className='grid grid-rows-2 gap-4 mx-auto'>
+                        <div className='grid'>
                             <div>
                                 <Tabs aria-label="Different graphs">
                                     <Tab key="totalDrinksByDay" title="Streck per dag (totalt)">
@@ -68,9 +68,9 @@ export default function StatsPage() {
                             </div>
 
                             <div className='grid grid-cols-2 gap-4'>
-                            <div className='col-span-2'>
-                            <TotalDebt users={users} transactions={transactions} />
-                            </div>
+                                <div className='col-span-2'>
+                                    <TotalDebt users={users} transactions={transactions} />
+                                </div>
                                 <div>
                                     <DebtHighScore users={users} />
                                 </div>
