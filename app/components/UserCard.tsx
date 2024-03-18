@@ -15,7 +15,7 @@ function UserCard({ user }: { user: User }) {
         <Link href={`/user/${user.id}`} as={`/user/${user.id}`}>
             <div className="shadow border rounded  bg-white min-h-[100px] flex flex-col justify-between p-4 overflow-clip cursor-pointer transition-all ease-in hover:shadow w-[250px] h-[300px] ">
                 {
-                    <Image alt="Användarens avatar" src={user.avatar ? user.avatar : DEFAULT_AVATAR_URL} width={250} height={250} className='rounded' />
+                    <Image alt="Användarens avatar" src={user.avatar ? user.avatar : DEFAULT_AVATAR_URL} width={250} height={0} className='rounded h-[200px]' />
                 }
                 <div>
                     <p className='text-xl font-bold mb-2'>{user.username}</p>
