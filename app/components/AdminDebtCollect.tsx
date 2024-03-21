@@ -246,7 +246,7 @@ export default function AdminDebtCollect({ swish }: { swish: Swish | null }) {
                             </>
                         ) : (
                             <p>
-                                Det verkar som om ingen har streckat något sen senaste mailutskicket.
+                                Det verkar som om ingen har streckat något sen senaste mailutskicket eller att ingen har en skuld.
                             </p>
                         )}
 

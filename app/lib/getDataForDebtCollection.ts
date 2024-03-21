@@ -33,6 +33,19 @@ async function getDataForDebtCollection() {
                             gt: 0,
                         }
                     },
+                    {
+                        transactions: {
+                            some: {
+                                createdAt: {
+                                    gte: startDate,
+                                    lte: endDate,
+                                },
+                                price: {
+                                    gt: 0,
+                                }
+                            }
+                        }
+                    }
                 ]
             },
             // Don't include beered
