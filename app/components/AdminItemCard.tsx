@@ -66,7 +66,7 @@ export default function AdminItemCard({ item, onItemUpdate, onItemDeletion }: { 
     const handleDeleteItem = async () => {
         if (!editedItem) return;
 
-        const deleted = await deleteItem(editedItem.id);
+        const deleted = await deleteItem(editedItem.id, editedItem.barcode);
         if (deleted) {
             onItemDeletion(deleted);
             setEditedItem(null);
