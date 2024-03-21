@@ -12,7 +12,8 @@ import TotalDrinksByCount from '@/app/components/TotalDrinksByCount';
 import DrinksByDay from '@/app/components/DrinksByDay';
 import BeeredHighScore from '@/app/components/BeeredHighScore';
 import BeeredByHighScore from '@/app/components/BeeredByHighScore';
-import TotalDebt from './TotalStats';
+import TotalDebt from '@/app/components/TotalStats';
+import TotalDrinksByVolume from '@/app/components/TotalDrinksByVolume';
 
 export interface TransactionWithItemAndUser extends Transaction {
     item: Item;
@@ -60,6 +61,9 @@ export default function StatsPage() {
                                     </Tab>
                                     <Tab key="totalDrinksByCount" title="Streck per dryck (totalt)">
                                         <TotalDrinksByCount transactions={transactions} />
+                                    </Tab>
+                                    <Tab key="drinksByVolume" title="Volym per dryck (totalt)">
+                                        <TotalDrinksByVolume transactions={transactions} />
                                     </Tab>
                                     <Tab key="drinksByDay" title="Streck per dag">
                                         <DrinksByDay transactions={transactions} />
