@@ -3,7 +3,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { Account, Item, Swish, User } from "@prisma/client";
-import { Listbox, ListboxItem, Skeleton, Selection, Tabs, Tab } from "@nextui-org/react";
+import { Listbox, ListboxItem, Skeleton, Selection, Tabs, Tab, Link } from "@nextui-org/react";
 
 import AdminUserCard from "@/app/components/AdminUserCard";
 import AdminItemCard from "@/app/components/AdminItemCard";
@@ -105,7 +105,7 @@ export default function AdminPage() {
             }
             setItems(items);
             setSelectedItem(items[0]);
-            setSelectedItemKey(new Set([items[0].id.toString()]));
+            setSelectedItemKey(new Set([items[0]?.id.toString()]));
             setLoadingItems(false);
         }
 
@@ -142,6 +142,8 @@ export default function AdminPage() {
         <div>
             <Tabs aria-label="Tabbar för användare eller inventarie">
                 <Tab key="users" title="Användare">
+
+                    {users.length > 0 ? (
                     <Skeleton isLoaded={!loadingUsers} className="rounded-lg">
                         <div className="grid grid-cols-[1fr_2fr] gap-4">
                             <div className="">
@@ -175,9 +177,20 @@ export default function AdminPage() {
                             <AdminUserCard user={selectedUser} onUserUpdate={handleUserUpdate} onUserDeletion={handleUserDeletion} />
                         </div>
                     </Skeleton>
+                    ) : (
+                        <div className="p-4 bg-white rounded-lg">
+                            <p className="text-xl ">Inga användare hittades. Testa lägga till några användare
+                                <Link className="ml-2 text-xl" href={"/user/new"}>här</Link>
+                            </p>
+                        </div>
+                    )}
                 </Tab>
                 <Tab key="items" title="Inventarie">
-                    <Skeleton isLoaded={!loadingItems} className="rounded-lg">
+                    {
+                        items.length > 0 ?
+                    (
+
+                        <Skeleton isLoaded={!loadingItems} className="rounded-lg">
                         <div className="grid grid-cols-[1fr_2fr] gap-4">
                             <div className="">
                                 <ListboxWrapper>
@@ -193,7 +206,7 @@ export default function AdminPage() {
                                             base: "max-w-xs",
                                             list: "max-h-[300px] overflow-scroll",
                                         }}
-                                    >
+                                        >
                                         {(item) => (
                                             <ListboxItem key={item.id} textValue={item.name} onClick={() => setSelectedItem(item)}>
                                                 <div className="flex gap-2 s-center">
@@ -210,6 +223,14 @@ export default function AdminPage() {
                             <AdminItemCard item={selectedItem} onItemUpdate={handleItemUpdate} onItemDeletion={handleItemDeletion} />
                         </div>
                     </Skeleton>
+                        ) : (
+                            <div className="p-4 bg-white rounded-lg">
+                                <p className="text-xl ">Ingen inventarie hittades. Testa lägga till några grejer
+                                    <Link className="ml-2 text-xl" href={"/item/new"}>här</Link>
+                                </p>
+                            </div>
+                        
+                        )}
                 </Tab>
                 <Tab key="debts" title="Samla in skulder">
                     <Skeleton isLoaded={!loadingAccounts} className="rounded-lg">
