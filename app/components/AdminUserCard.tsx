@@ -57,7 +57,7 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
         if (!editedUser) return;
         setIsDeleting(true);
 
-        if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL) {
+        if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL) {            
             const response = await fetch(`/api/avatar/delete?url=${editedUser.avatar}`, {
                 method: 'DELETE',
             });
@@ -84,21 +84,23 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
         if (!editedUser) return;
         setIsEditing(true);
 
-        let newBlob = null;
-        if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL) {
-
+        let newAvatarUrl = originalUser?.avatar ? { url: originalUser.avatar } : null;
+        // Delete old avatar if a new one is uploaded, if the new one is different from old one
+        if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL && editedUser.avatar !== originalUser?.avatar) {
+            
             // Delete old file from storage if it exists first
-            if (originalUser?.avatar) {
+            if (originalUser?.avatar && originalUser.avatar !== editedUser.avatar) {
+                
                 const response = await fetch(`/api/avatar/delete?url=${originalUser.avatar}`, {
                     method: 'DELETE',
                 });
-
+                
                 if (!response.ok) {
                     toast.error('Kunde inte ta bort användarens avatar');
                     return;
                 }
             };
-
+            
             const response = await fetch(`/api/avatar/upload?filename=${editedUser.username}_avatar`, {
                 method: 'POST',
                 body: base64toFile(editedUser.avatar, `${editedUser}_avatar.jpg`),
@@ -109,12 +111,13 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
                 return;
             }
 
-            newBlob = (await response.json()) as PutBlobResult;
+            const newBlob = (await response.json()) as PutBlobResult;
+            newAvatarUrl = { url: newBlob.url };
         }
 
         const editedUserWithNewAvatar = {
             ...editedUser,
-            avatar: newBlob?.url || null,
+            avatar: newAvatarUrl?.url || null,
         }
 
         const user = await editUser(editedUserWithNewAvatar);
