@@ -45,8 +45,6 @@ export default function SwishPage() {
     useEffect(() => {
         const getItemForSwish = async () => {
             if (barcode) {
-                console.log('barcode', barcode);
-                
                 try {
                    const item = await getItemByBarcode(barcode);
                    console.log('item', item);
