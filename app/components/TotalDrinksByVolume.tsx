@@ -32,8 +32,6 @@ export default function TotalDrinksByVolume({ transactions }: { transactions: Tr
         });
     }, [transactionsByVolyme]);
 
-    console.log(data);
-    
     return (
         <>
             {
