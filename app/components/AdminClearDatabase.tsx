@@ -67,13 +67,13 @@ export function AdminClearDatabase() {
                                     Är du säker på att du vill rensa databasen? Detta kommer ta bort alla transaktioner, nollställa senaste skulddatumet, samt ta bort swishinfon. Alla användare och inventarie kommer fortfarande vara kvar. Detta går inte att ångra.
                                 </p>
                                 <p>
-                                   Skriv in 'Rensa databas' för att bekräfta.
+                                    Skriv in &apos;Rensa databas&apos; för att bekräfta.
                                 </p>
 
-                                <Input 
-                                value={confirmText} 
-                                onChange={(e) => setConfirmText(e.target.value)}
-                                placeholder="Skriv in 'Rensa databas' för att bekräfta" 
+                                <Input
+                                    value={confirmText}
+                                    onChange={(e) => setConfirmText(e.target.value)}
+                                    placeholder="Skriv in 'Rensa databas' för att bekräfta"
                                 />
 
                             </ModalBody>
