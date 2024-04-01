@@ -31,6 +31,7 @@ export function AdminClearDatabase() {
             return;
         }
 
+        //TODO: This should also delete the swish image from Vercel Blob
         const result = await clearDatabase();
 
         if (!result) {
