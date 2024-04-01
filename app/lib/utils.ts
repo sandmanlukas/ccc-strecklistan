@@ -142,7 +142,7 @@ export function formatPhoneNumber(phoneNumber: string) {
     if (match) {
         return match[1] + ' ' + match[2] + ' ' + match[3] + ' ' + match[4] + ' ' + match[5];
     }
-    return '';
+    return phoneNumber;
 } 
 
 export function formatCentilitres(cl: number) {
