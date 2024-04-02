@@ -12,24 +12,23 @@ import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 
-
 type Props = {};
 
 function AuthButton({ session }: { session: Session | null }) {
   if (session) {
     return (
-      <>
-        <p className="text-xl mr-4 self-end">
-          {session.user?.username}
-        </p>
+      <div className="flex flex-row align-middle items-center">
+        <p className="text-xl mr-4 mt-3">{session.user?.username}</p>
         <SlLogout
           onClick={() => {
             signOut({
               callbackUrl: "/signin",
             });
           }}
-          size={35} className="font-bold cursor-pointer" />
-      </>
+          size={35}
+          className="font-bold cursor-pointer"
+        />
+      </div>
     );
   }
 
@@ -51,50 +50,78 @@ const Navbar = (props: Props) => {
       return "border-b-2 border-black";
     }
     return "";
-  }
+  };
 
   return (
     <nav
       className={
         verve.className +
-        " text-black shadow-lg p-4 border-blue-700 bg-yellow-300 border-t-8 border-b-8 flex items-end items-center sticky top-0 z-50 relative"
+        " text-black shadow-lg p-4 border-blue-700 bg-yellow-300 border-t-8 border-b-8 flex items-center align-middle sticky top-0 z-50 relative"
       }
     >
-      <div className="flex">
-        <Link className="text-3xl self-end" href={"/"} as={"/"}>
+      <div className="flex flex-row justify-between w-full items-center">
+        <Link className="text-3xl mt-3" href={"/"} as={"/"}>
           strecklistan
         </Link>
-        {session && (
-          <>
-            {session.user.role === "ADMIN" && (
-              <Link href={"/user/new"} as={"/user/new"} className={`mx-2 ${activeTab("/user/new")}`}>
-                <AiOutlineUserAdd size={35} className="font-bold" />
+        <div className="flex flex-row">
+          {session && (
+            <>
+              <div className="object-fit">
+                <Link
+                  href={"/swish"}
+                  as={"/swish"}
+                  className={`flex items-center align-middle text-3xl mt-3 mx-2 p-0 ${activeTab("/swish")}`}
+                >
+                  swish
+                </Link>
+              </div>
+              <Link
+                href={"/stats"}
+                as={"/stats"}
+                className={`flex align-middle items-center mx-2 ${activeTab(
+                  "/stats"
+                )}`}
+              >
+                <IoIosStats size={35} className="font-bold" />
               </Link>
-            )}
-            <Link href={"/item/new"} as={"/item/new"} className={`mx-2 ${activeTab("/item/new")}`}>
-              <IoIosAddCircleOutline size={35} className="font-bold" />
-            </Link>
-            <Link href={"/stats"} as={"/stats"} className={`mx-2 ${activeTab("/stats")}`}>
-              <IoIosStats size={35} className="font-bold" />
-            </Link>
-            <Link href={"/swish"} as={"/swish"} className={`mx-2 p-0 ${activeTab("/swish")}`}>
-              <Image src="/swish.png" alt="Swishloggan" width={300} height={300} className="p-0"/>
-            </Link>
-
-          </>
-        )}
-      </div>
-      <div className="flex justify-end items-end w-full">
-        {session && (
-          <div className="flex">
-            {session.user.role === "ADMIN" && (
-              <Link href={"/admin"} as={"/admin"} className={`mx-2 ${activeTab("/admin")}`}>
-                <MdOutlineAdminPanelSettings size={35} className="font-bold" />
+              <Link
+                href={"/item/new"}
+                as={"/item/new"}
+                className={`flex align-middle items-center mx-2 ${activeTab(
+                  "/item/new"
+                )}`}
+              >
+                <IoIosAddCircleOutline size={35} className="font-bold" />
               </Link>
-            )}
-            <AuthButton session={session} />
-          </div>
-        )}
+              {session.user.role === "ADMIN" && (
+                <>
+                  <Link
+                    href={"/user/new"}
+                    as={"/user/new"}
+                    className={` flex align-middle items-center mx-2 ${activeTab(
+                      "/user/new"
+                    )}`}
+                  >
+                    <AiOutlineUserAdd size={35} className="font-bold" />
+                  </Link>
+                  <Link
+                    href={"/admin"}
+                    as={"/admin"}
+                    className={`flex align-middle items-center mx-2 ${activeTab(
+                      "/admin"
+                    )}`}
+                  >
+                    <MdOutlineAdminPanelSettings
+                      size={35}
+                      className="font-bold"
+                    />
+                  </Link>
+                </>
+              )}
+              <AuthButton session={session} />
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );
