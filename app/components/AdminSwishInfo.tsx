@@ -23,6 +23,17 @@ export default function AdminSwishInfo({ swish }: { swish: Swish | null }) {
         if (swish) {
             setEditedSwish(swish);
             setOriginalSwish(swish);
+        } else {
+            const nulledSwish: Swish = {
+                id: -1,
+                name: '',
+                number: '',
+                imageUrl: '',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+            setEditedSwish(nulledSwish);
+            setOriginalSwish(nulledSwish);
         }
 
     }, [swish]);

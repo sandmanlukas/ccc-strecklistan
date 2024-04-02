@@ -9,6 +9,7 @@ import AdminUserCard from "@/app/components/AdminUserCard";
 import AdminItemCard from "@/app/components/AdminItemCard";
 import AdminDebtCollect from "@/app/components/AdminDebtCollect";
 import AdminSwishInfo from "@/app/components/AdminSwishInfo";
+import { AdminClearDatabase } from "@/app/components/AdminClearDatabase";
 import { ListboxWrapper } from "@/app/components/ListboxWrapper";
 import { getAllItems } from "@/app/lib/getAllItems";
 import { getAllUsers } from "@/app/lib/getAllUsers";
@@ -112,8 +113,10 @@ export default function AdminPage() {
         const fetchSwishInfo = async () => {
             setLoadingSwish(true);
             const swish = await getSwishInfo();
-            if (!swish) {
+            
+            if (swish == false) {
                 toast.error("Kunde inte hämta Swish info");
+                setLoadingSwish(false);
                 return;
             }
             setSwish(swish);
@@ -246,6 +249,9 @@ export default function AdminPage() {
                     <Skeleton isLoaded={!loadingAccounts} className="rounded-lg">
                         <AdminAccountSettings accs={accounts} />
                     </Skeleton>
+                </Tab>
+                <Tab key="clear_database" title="Rensa databas">
+                    <AdminClearDatabase />
                 </Tab>
             </Tabs>
 
