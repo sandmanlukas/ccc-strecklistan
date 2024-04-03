@@ -24,8 +24,8 @@ export default async function RootLayout({
 
 
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col bg-neutral-50 overflow-x-hidden scrollbar-hide">
+    <html lang="en" className="scrollbar-hide">
+      <body className="min-h-screen flex flex-col bg-neutral-50 overflow-x-hidden">
         <Providers>
           <SessionProvider session={session}>
             <Navbar />
