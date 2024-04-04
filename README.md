@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Välkommen till CCCs Strecklista.
+Strecklistan är tänkt att användas med hjälp av en streckkodläsare och är uppsatt i Källarn. Denna strecklista byggdes då jag (Ricky) tröttnat på lappar som sitter på kylen som bara blir blöta och går sönder.
 
-## Getting Started
 
-First, run the development server:
+## Setup
+Installera alla dependencies, se till att ha node (>= 18.0) och yarn installerat först.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+yarn install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+För att kunna connecta till databaserna så måste du ha `.env` filen med alla env-variabler på toppnivå i repot. Hör av dig till Ricky eller Bits om du vill ha denna.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Detta projekt är byggt med Next.js så backend och frontend körs i samma repo/mapp, så för att starta strecklistan lokalt så är det bara att köra.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```bash
+yarn dev
+```
 
-## Learn More
+Gå sedan till [http://localhost:3000](http://localhost:3000) för att se strecklistan lokalt. Hör av dig till NS om du behöver inloggen.
 
-To learn more about Next.js, take a look at the following resources:
+## Deploys
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Strecklistan är hostad på [https://strecklistan.ccc.tools](http://strecklistan.ccc.tools), och all CI/CD och deploymednt sköts genom Vercel, tyvärr så kan man inte ha teams eller fler än en person per projekt om man inte betalar för Vercel så tyvärr sköts allt av Ricky. Databaserna är också hostade genom Vercel.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+Vercel kommer automatisk deploya vid varje push till main, så vid utveckling så rekommenderas att skapa en egen branch för att säkerställa att allt fungerar innan denna mergas in i main. 
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Se också till att `yarn build` inte ger några fel innan merge till main.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Databaser
+Databasen som hanterar alla transaktioner, användare, inventarie, etc är en Postgres databas och vi använder oss av Prisma för all kommunikation med databasen.
+
+Vi har även ett blob-storage på Vercel som vi använder för att lagra alla profilbilder, etc.
+
+## Utveckling
+Om du vill utveckla ny streck-baserad funktionalitet så behövs en streckkodsläsare, om det inte är typ byggvecka så kan antagligen streckkodsläsarna som används till Blippsystemet användas för detta. Fråga sittande CCC snällt bara.
+
