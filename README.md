@@ -19,6 +19,12 @@ yarn dev
 
 Gå sedan till [http://localhost:3000](http://localhost:3000) för att se strecklistan lokalt. Hör av dig till NS om du behöver inloggen.
 
+För att få lite fejk-data och fejk-användare kan man köra, om man vill ändra vad som skapas i seedingen så kan man ändra i ``
+
+```bash
+yarn prisma db seed
+```
+
 ## Deploys
 
 Strecklistan är hostad på [https://strecklistan.ccc.tools](http://strecklistan.ccc.tools), och all CI/CD och deploymednt sköts genom Vercel, tyvärr så kan man inte ha teams eller fler än en person per projekt om man inte betalar för Vercel så tyvärr sköts allt av Ricky. Databaserna är också hostade genom Vercel.
