@@ -2,22 +2,23 @@
 
 import React from 'react';
 import { TransactionWithItem } from '@/app/components/UserPage';
-import { formatDate } from '../lib/utils';
+import { formatTransactionDate } from '../lib/utils';
 
 interface TransactionProps {
     transactions: TransactionWithItem[];
 }
 
-export const handleBeeredTransaction = (transaction: TransactionWithItem) => {
-    if (transaction.beeredTransaction) {
-        if (transaction.beeredBy) {
-            return <p className="text-sm md:text-base text-slate-600">Bärsad av {transaction.beeredBy} för {transaction.price} kr</p>;
-        } else if (transaction.beeredUser) {
-            return <p className="text-sm md:text-base text-slate-600">Bärsade {transaction.beeredUser}</p>;
-        }
-    } else {
-        if (transaction.price === 0) {
-            return <p className="text-sm md:text-base text-slate-600">Gratis</p>;
+const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
+    // Helper function to format date
+
+
+    const handleBeeredTransaction = (transaction: TransactionWithItem) => {
+        if (transaction.beeredTransaction) {
+            if (transaction.beeredBy) {
+                return <p className="text-base text-slate-600">Bärsad av {transaction.beeredBy} för {transaction.price} kr</p>;
+            } else if (transaction.beeredUser) {
+                return <p className="text-base text-slate-600">Bärsade {transaction.beeredUser}</p>;
+            }
         } else {
             return <p className="text-sm md:text-base text-slate-600">{transaction.price} kr</p>;
         }
@@ -41,6 +42,7 @@ const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
                                     </h3>
                                     {transaction.item.volume > 0 && <p className='text-xs md:text-sm text-gray-600 ml-2'>{transaction.item.volume} cl</p>}
                                 </div>
+                                <p className="text-sm text-gray-600">{formatTransactionDate(transaction.createdAt)}</p>
                             </div>
                             <div className="flex justify-between items-center">
                                 {
