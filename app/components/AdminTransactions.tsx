@@ -3,14 +3,18 @@
 import React, { useEffect, useState } from "react";
 
 import { TransactionWithItemAndUser } from "./StatsPage";
-import { Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip, useDisclosure } from "@nextui-org/react";
 import { formatTransactionDate } from "../lib/utils";
 import { MdDeleteForever, MdClear } from "react-icons/md";
+import { TransactionTable } from "./TransactionTable";
 
 
 export function AdminTransactions({ transactions }: { transactions: TransactionWithItemAndUser[] }) {
+    const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
     const [filteredUsers, setFilteredUsers] = useState<string[]>(['']);
     const [filteredTransactions, setFilteredTransactions] = useState(transactions);
+    const [selectedTransaction, setSelectedTransaction] = useState<TransactionWithItemAndUser | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const uniqueUsers = Array.from(new Set(transactions.map((transaction) => transaction.user.username)));
 
@@ -48,7 +52,6 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
     ]
 
     const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selected = e.target.value;
         setFilteredUsers(e.target.value.split(","));
     };
 
@@ -56,8 +59,27 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
         setFilteredUsers(['']);
     }
 
-    const deleteTransaction = (transaction: TransactionWithItemAndUser) => {
-        console.log("Deleting transaction", transaction);
+    const selectTransactionForDeletions = (transaction: TransactionWithItemAndUser) => {
+        if (transaction) {
+            setSelectedTransaction(transaction);
+            onOpen();
+        }
+    }
+
+    const deleteTransaction = () => {
+        if (selectedTransaction) {
+            setIsDeleting(true);
+            console.log("Deleting transaction", selectedTransaction);
+            setIsDeleting(false);
+            onClose();
+        }
+    }
+
+    const closeModal = () => {
+        if (selectedTransaction) {
+            setSelectedTransaction(null);
+        }
+        onClose();
     }
 
     return (
@@ -85,37 +107,38 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
                         </span>
                     </Tooltip>
                 </div>
-                <Table
-                    aria-label="Transaktioner"
-                    layout="fixed"
-                    isHeaderSticky
-                    classNames={{
-                        base: "max-h-[520px] overflow-scroll",
-                    }}
-                >
-                    <TableHeader columns={columns}>
-                        {(column) => <TableColumn key={column.key}>{column.title}</TableColumn>}
-                    </TableHeader>
-                    <TableBody items={filteredTransactions}>
-                        {(transaction: TransactionWithItemAndUser) => (
-                            <TableRow key={transaction.id}>
-                                <TableCell>{transaction.item.name}</TableCell>
-                                <TableCell>{transaction.price} kr</TableCell>
-                                <TableCell>{formatTransactionDate(transaction.createdAt)}</TableCell>
-                                <TableCell>{transaction.user.username}</TableCell>
-                                <TableCell>
-                                    <div className="flex justify-center items-center">
-                                        <Tooltip color="danger" content="Ta bort transaktion">
-                                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                                <MdDeleteForever onClick={() => deleteTransaction(transaction)} />
-                                            </span>
-                                        </Tooltip>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                <TransactionTable transactions={filteredTransactions} columns={columns} label="Transaktioner" selectTransaction={selectTransactionForDeletions}/>
+                {selectedTransaction && (
+                    <Modal
+                        isOpen={isOpen}
+                        onClose={closeModal}
+                        onOpenChange={onOpenChange}
+                        placement="top-center"
+                    >
+                        <ModalContent>
+                            {() => (
+                                <>
+                                    <ModalHeader className="flex flex-col gap-1 p-4 text-lg font-bold">Ta bort transaktion</ModalHeader>
+                                    <ModalBody className="p-4">
+                                        <p>Är du säker på att du vill ta bort denna transaktion? Priset för transaktionen kommer dras bort från personens skuld.</p>
+                                        <TransactionTable transactions={[selectedTransaction]} columns={columns.slice(0,-1)} label="Transaktion(er) att ta bort"/>
+                                    </ModalBody>
+                                    <ModalFooter>
+                                        <Button variant="flat" onPress={closeModal}>
+                                            Stäng
+                                        </Button>
+                                        <Button
+                                            color="danger"
+                                            onPress={deleteTransaction}
+                                            isLoading={isDeleting}>
+                                            Ta bort transaktion
+                                        </Button>
+                                    </ModalFooter>
+                                </>
+                            )}
+                        </ModalContent>
+                    </Modal>
+                )}
             </div>
         </div>
     );
