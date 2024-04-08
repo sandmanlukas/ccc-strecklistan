@@ -3,16 +3,18 @@
 import React, { useEffect, useState } from "react";
 
 import { TransactionWithItemAndUser } from "./StatsPage";
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip, useDisclosure } from "@nextui-org/react";
-import { formatTransactionDate } from "../lib/utils";
-import { MdDeleteForever, MdClear } from "react-icons/md";
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Tooltip, useDisclosure } from "@nextui-org/react";
+import { MdClear } from "react-icons/md";
 import { TransactionTable } from "./TransactionTable";
+import { deleteTransaction } from "../lib/deleteTransaction";
+import { toast } from "react-toastify";
 
 
 export function AdminTransactions({ transactions }: { transactions: TransactionWithItemAndUser[] }) {
     const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
     const [filteredUsers, setFilteredUsers] = useState<string[]>(['']);
     const [filteredTransactions, setFilteredTransactions] = useState(transactions);
+    const [updatedTransactions, setUpdatedTransactions] = useState(transactions);
     const [selectedTransaction, setSelectedTransaction] = useState<TransactionWithItemAndUser | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -20,12 +22,12 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
 
     useEffect(() => {
         if (filteredUsers.length > 1) {
-            const filtered = transactions.filter(transaction => filteredUsers.includes(transaction.user.username));
+            const filtered = updatedTransactions.filter(transaction => filteredUsers.includes(transaction.user.username));
             setFilteredTransactions(filtered);
         } else if (filteredUsers.length === 1 && filteredUsers[0] === '') {
-            setFilteredTransactions(transactions);
+            setFilteredTransactions(updatedTransactions);
         }
-    }, [filteredUsers, transactions]);
+    }, [filteredUsers, updatedTransactions]);
 
     const columns = [
         {
@@ -66,12 +68,26 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
         }
     }
 
-    const deleteTransaction = () => {
+    const handleDeleteTransaction = async () => {
         if (selectedTransaction) {
             setIsDeleting(true);
-            console.log("Deleting transaction", selectedTransaction);
-            setIsDeleting(false);
-            onClose();
+            const transactionId = selectedTransaction.id;
+            const userId = selectedTransaction.userId;
+            const price = selectedTransaction.price;
+
+            const deletedTransaction = await deleteTransaction(transactionId, userId, price);
+
+            if (!deletedTransaction) {
+                toast.error('Något gick fel vid borttagning av transaktion!');
+                closeModal();
+                return;
+
+            }
+
+            const updatedTransactions = filteredTransactions.filter(transaction => transaction.id !== selectedTransaction.id);
+            setUpdatedTransactions(updatedTransactions);
+            closeModal();
+            toast.success('Transaktion borttagen!');
         }
     }
 
@@ -79,6 +95,7 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
         if (selectedTransaction) {
             setSelectedTransaction(null);
         }
+        setIsDeleting(false);
         onClose();
     }
 
@@ -129,7 +146,7 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
                                         </Button>
                                         <Button
                                             color="danger"
-                                            onPress={deleteTransaction}
+                                            onPress={handleDeleteTransaction}
                                             isLoading={isDeleting}>
                                             Ta bort transaktion
                                         </Button>
