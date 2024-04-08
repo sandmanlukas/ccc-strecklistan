@@ -127,11 +127,7 @@ export const formatDateToLocale = (date: Date): string => {
     return date.toLocaleDateString('sv-SE');
 }
 
-export const formatDate = (date: Date): string => {
-    if (!(date instanceof Date)) {
-        date = new Date(date);
-    }
-
+export const formatTransactionDate = (date: Date): string => {
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);

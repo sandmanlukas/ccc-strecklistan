@@ -2,8 +2,8 @@
 
 import React from "react";
 import { useEffect } from "react";
-import { Account, Item, Swish, User } from "@prisma/client";
-import { Listbox, ListboxItem, Selection, Tabs, Tab, Link, Spinner } from "@nextui-org/react";
+import { Account, Item, Swish, Transaction, User } from "@prisma/client";
+import { Listbox, ListboxItem, Skeleton, Selection, Tabs, Tab, Link } from "@nextui-org/react";
 
 import AdminUserCard from "@/app/components/AdminUserCard";
 import AdminItemCard from "@/app/components/AdminItemCard";
@@ -18,6 +18,9 @@ import { getSwishInfo } from "@/app/lib/getSwishInfo";
 import { itemTypes } from "@/app/lib/utils";
 import { toast } from "react-toastify";
 import { AdminAccountSettings } from "./AdminAccountSettings";
+import { getAllTransactions } from "../lib/getAllTransactions";
+import { AdminTransactions } from "./AdminTransactions";
+import { TransactionWithItemAndUser } from "./StatsPage";
 
 
 export default function AdminPage() {
@@ -25,6 +28,7 @@ export default function AdminPage() {
     const [items, setItems] = React.useState<Item[]>([]);
     const [swish, setSwish] = React.useState<Swish | null>(null);
     const [accounts, setAccounts] = React.useState<Account[]>([]);
+    const [transactions, setTransactions] = React.useState<TransactionWithItemAndUser[]>([]);
     const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
     const [selectedItem, setSelectedItem] = React.useState<Item | null>(null);
     const [selectedUserKey, setSelectedUserKey] = React.useState<Selection>(new Set([users[0]?.id.toString()]));
@@ -34,6 +38,7 @@ export default function AdminPage() {
     const [loadingItems, setLoadingItems] = React.useState(true);
     const [loadingSwish, setLoadingSwish] = React.useState(true);
     const [loadingAccounts, setLoadingAccounts] = React.useState(true);
+    const [loadingTransactions, setLoadingTransactions] = React.useState(true);
 
 
     const handleUserUpdate = (updatedUser: User) => {
@@ -134,10 +139,22 @@ export default function AdminPage() {
             setLoadingAccounts(false);
         }
 
+        const fetchTransactions = async () => {
+            setLoadingTransactions(true);
+            const transactions = await getAllTransactions();
+            if (!transactions) {
+                toast.error("Kunde inte hämta transaktioner");
+                return;
+            }
+            setTransactions(transactions);
+            setLoadingTransactions(false);
+        }
+
         fetchUsers();
         fetchItems();
         fetchSwishInfo();
         fetchAccounts();
+        fetchTransactions();
     }, []);
 
     return (
@@ -255,6 +272,11 @@ export default function AdminPage() {
                     ) : (
                         <AdminSwishInfo swish={swish} />
                     )}
+                </Tab>
+                <Tab key="transactions" title="Transaktioner">
+                    <Skeleton isLoaded={!loadingAccounts} className="rounded-lg">
+                        <AdminTransactions transactions={transactions} />
+                    </Skeleton>
                 </Tab>
                 <Tab key="passwordChange" title="Ändra kontoinställningar">
                     {loadingAccounts ? (
