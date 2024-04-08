@@ -21,10 +21,6 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
     const renderCell = React.useCallback((transaction: TransactionWithItemAndUser, columnKey: React.Key) => {
         const cellValue = transaction[columnKey as keyof TransactionWithItemAndUser];
 
-        console.log(cellValue);
-        console.log(transaction);
-
-
         switch (columnKey) {
             case "price":
                 return (
