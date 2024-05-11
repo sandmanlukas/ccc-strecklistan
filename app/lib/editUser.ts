@@ -41,7 +41,7 @@ async function editUser(user: User, oldUser: User) {
             });
         }
 
-            return dbUser;
+        return dbUser;
     } catch (error) {
         console.log('error', error);
 
