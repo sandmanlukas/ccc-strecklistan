@@ -121,8 +121,13 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
             ...editedUser,
             avatar: newAvatarUrl?.url || null,
         }
+        
+        if (originalUser == null) {
+            toast.error('Kunde inte spara ändringar');
+            return;
+        };
 
-        const user = await editUser(editedUserWithNewAvatar);
+        const user = await editUser(editedUserWithNewAvatar, originalUser);
         if (user) {
             onUserUpdate(user);
             setEditedUser(user);

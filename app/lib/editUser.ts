@@ -4,7 +4,7 @@ import { prisma } from '@/app/lib/db';
 import { User } from '@prisma/client';
 import { roleStringToUserRole } from './utils';
 
-async function editUser(user: User) {
+async function editUser(user: User, oldUser: User) {
     try {
         const dbUser = await prisma.user.update({
             where: {
@@ -20,7 +20,28 @@ async function editUser(user: User) {
                 avatar: user.avatar
             }
         });
-        return dbUser;
+
+        if (oldUser.username !== user.username) {
+            await prisma.transaction.updateMany({
+                where: {
+                    beeredBy: oldUser.username
+                },
+                data: {
+                    beeredBy: dbUser.username
+                }
+            });
+
+            await prisma.transaction.updateMany({
+                where: {
+                    beeredUser: oldUser.username
+                },
+                data: {
+                    beeredUser: dbUser.username
+                }
+            });
+        }
+
+            return dbUser;
     } catch (error) {
         console.log('error', error);
 
