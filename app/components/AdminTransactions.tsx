@@ -47,6 +47,10 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
             key: "user",
         },
         {
+            title: "Bärsning",
+            key: "beered",
+        },
+        {
             title: "Åtgärder",
             key: "actions",
         },

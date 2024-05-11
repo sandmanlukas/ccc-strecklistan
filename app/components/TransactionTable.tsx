@@ -1,8 +1,9 @@
-import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
+import { Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
 import { TransactionWithItemAndUser } from "./StatsPage";
 import { formatTransactionDate } from "../lib/utils";
 import { MdDeleteForever } from "react-icons/md";
-import React from "react";
+import { useAsyncList } from "@react-stately/data";
+import React, { Key, useState } from "react";
 
 interface Column {
     title: string,
@@ -16,7 +17,53 @@ interface TransactionTableProps {
     selectTransaction?: (transaction: TransactionWithItemAndUser) => void,
 }
 
+const sortDescriptorToValue = (sortDescriptor: Key | undefined, transaction: TransactionWithItemAndUser) => {
+    switch (sortDescriptor) {
+        case "name":
+            return transaction.item.name;
+        case "price":
+            return transaction.price;
+        case "createdAt":
+            return transaction.createdAt;
+        case "user":
+            return transaction.user.username;
+        case "beered":
+            return transaction.beeredTransaction;
+        default:
+            return null;
+    }
+}
+
+
+
 export function TransactionTable({ transactions, columns, label, selectTransaction }: TransactionTableProps) {
+    const [isLoading, setIsLoading] = useState(true);
+
+    let list = useAsyncList({
+        async load() {
+            setIsLoading(false);
+            return { items: transactions };
+        },
+        async sort({ items, sortDescriptor }) {
+            return {
+                items: items.sort((a, b) => {                    
+                    let first = sortDescriptorToValue(sortDescriptor.column, a);
+                    let second = sortDescriptorToValue(sortDescriptor.column, b);
+
+                    if (first === null || second === null) {
+                        return 0;
+                    }
+
+                    let cmp = first < second ? -1 : 1;
+                    if (sortDescriptor.direction === "descending") {
+                        cmp *= -1;
+                    }
+
+                    return cmp;
+                }),
+            };
+        },
+    });
 
     const renderCell = React.useCallback((transaction: TransactionWithItemAndUser, columnKey: React.Key) => {
         const cellValue = transaction[columnKey as keyof TransactionWithItemAndUser];
@@ -58,6 +105,12 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
                         {transaction.user.username}
                     </p>
                 )
+            case "beered":
+                return (
+                    <p>
+                        {transaction.beeredTransaction ? "Ja" : "Nej"}
+                    </p>
+                )
         }
     }, []);
 
@@ -69,15 +122,21 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
             classNames={{
                 base: "max-h-[520px] overflow-scroll",
             }}
+            sortDescriptor={list.sortDescriptor}
+            onSortChange={list.sort}
         >
             <TableHeader columns={columns}>
                 {(column) => (
-                    <TableColumn key={column.key} align={column.key === "actions" ? "center" : "start"}>
+                    <TableColumn key={column.key} align={column.key === "actions" ? "center" : "start"} allowsSorting={column.key !== "actions"}>
                         {column.title}
                     </TableColumn>
                 )}
             </TableHeader>
-            <TableBody items={transactions}>
+            <TableBody
+                items={list.items}
+                isLoading={isLoading}
+                loadingContent={<Spinner label="Laddar transaktioner..." />}
+            >
                 {(transaction: TransactionWithItemAndUser) => (
                     <TableRow key={transaction.id}>
                         {(columnKey) => <TableCell>{renderCell(transaction, columnKey)}</TableCell>}

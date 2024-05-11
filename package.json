@@ -17,6 +17,7 @@
     "@nextui-org/react": "^2.2.9",
     "@prisma/client": "^5.13.0",
     "@react-email/components": "0.0.15",
+    "@react-stately/data": "^3.11.3",
     "@types/bcryptjs": "^2.4.6",
     "@vercel/blob": "^0.22.1",
     "@vercel/postgres": "^0.7.2",
