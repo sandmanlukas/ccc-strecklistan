@@ -120,7 +120,7 @@ export default function UserPage({ id }: { id: number }) {
                 <Spinner />
             </div>
             : (
-                <div className="mx-auto p-3">
+                <div className="mx-auto p-3 w-1/2">
                     {user &&
                         <>
                             {beeredUser && (
