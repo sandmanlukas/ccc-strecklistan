@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Container, Head, Heading, Tailwind, Text } from "@react-email/components";
-import { formatDate, formatDateAndTime } from '../lib/utils';
+import { formatDateToLocale, formatDateAndTime } from '../lib/utils';
 import { EmailTemplateProps } from './Email';
 
 
@@ -26,7 +26,7 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
                 <div>
 
                     <Text style={text}>
-                        Dina transaktioner (sedan senaste skuldutskicket {lastEmailSent && formatDate(lastEmailSent)}):
+                        Dina transaktioner (sedan senaste skuldutskicket {lastEmailSent && formatDateToLocale(lastEmailSent)}):
                     </Text>
                     <table className='table-auto'>
                         <thead>

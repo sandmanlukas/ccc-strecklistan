@@ -116,12 +116,34 @@ export const formatDateAndTime = (date: Date): string => {
     return date.toLocaleDateString('sv-SE', options);
 };
 
-export const formatDate = (date: Date): string => {
+export const formatDateToLocale = (date: Date): string => {
     if (!(date instanceof Date)) {
         date = new Date(date);
     }
     return date.toLocaleDateString('sv-SE');
 }
+
+export const formatDate = (date: Date): string => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    today.setHours(0, 0, 0, 0);
+    yesterday.setHours(0, 0, 0, 0);
+    const transactionDate = new Date(date);
+    transactionDate.setHours(0, 0, 0, 0);
+
+
+    if (transactionDate.getTime() === today.getTime()) {
+        return `Idag kl ${formatTime(date)}`;
+    } else if (transactionDate.getTime() === yesterday.getTime()) {
+        return `Igår kl ${formatTime(date)}`;
+    }
+    else {
+        const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return date.toLocaleDateString('sv-SE', options);
+    }
+};
 
 export function base64toFile(base64: string, filename: string): File {
     const arr = base64.split(',');

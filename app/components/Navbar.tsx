@@ -7,10 +7,10 @@ import { signOut, useSession } from "next-auth/react";
 import { SlLogout, SlLogin } from "react-icons/sl";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { IoIosAddCircleOutline, IoIosStats } from "react-icons/io";
+import { IoReceiptOutline } from "react-icons/io5";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
 
 type Props = {};
 
@@ -60,9 +60,14 @@ const Navbar = (props: Props) => {
       }
     >
       <div className="flex flex-row justify-between w-full items-center">
+        <div className="flex flex-row">
         <Link className="text-3xl mt-3" href={"/"} as={"/"}>
           strecklistan
         </Link>
+        <Link className="text-3xl ml-3 mt-3" href={"/recent"} as={"/recent"}>
+          <IoReceiptOutline size={35} className="font-bold"/>
+        </Link>
+        </div>
         <div className="flex flex-row">
           {session && (
             <>

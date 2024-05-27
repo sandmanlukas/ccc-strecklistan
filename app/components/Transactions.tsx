@@ -2,51 +2,31 @@
 
 import React from 'react';
 import { TransactionWithItem } from '@/app/components/UserPage';
-import { formatTime } from '../lib/utils';
+import { formatDate } from '../lib/utils';
 
 interface TransactionProps {
     transactions: TransactionWithItem[];
+    showUsername: boolean;
 }
 
-const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
-    // Helper function to format date
-    const formatDate = (date: Date): string => {
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-
-        today.setHours(0, 0, 0, 0);
-        yesterday.setHours(0, 0, 0, 0);
-        const transactionDate = new Date(date);
-        transactionDate.setHours(0, 0, 0, 0);
-
-
-        if (transactionDate.getTime() === today.getTime()) {
-            return `Idag kl ${formatTime(date)}`;
-        } else if (transactionDate.getTime() === yesterday.getTime()) {
-            return `Igår kl ${formatTime(date)}`;
+export const handleBeeredTransaction = (transaction: TransactionWithItem) => {
+    if (transaction.beeredTransaction) {
+        if (transaction.beeredBy) {
+            return <p className="text-base text-slate-600">Bärsad av {transaction.beeredBy} för {transaction.price} kr</p>;
+        } else if (transaction.beeredUser) {
+            return <p className="text-base text-slate-600">Bärsade {transaction.beeredUser}</p>;
         }
-        else {
-            const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            return date.toLocaleDateString('sv-SE', options);
-        }
-    };
-
-    const handleBeeredTransaction = (transaction: TransactionWithItem) => {
-        if (transaction.beeredTransaction) {
-            if (transaction.beeredBy) {
-                return <p className="text-base text-slate-600">Bärsad av {transaction.beeredBy} för {transaction.price} kr</p>;
-            } else if (transaction.beeredUser) {
-                return <p className="text-base text-slate-600">Bärsade {transaction.beeredUser}</p>;
-            }
+    } else {
+        if (transaction.price === 0) {
+            return <p className="text-base text-slate-600">Gratis</p>;
         } else {
-            if (transaction.price === 0) {
-                return <p className="text-base text-slate-600">Gratis</p>;
-            } else {
-                return <p className="text-base text-slate-600">{transaction.price} kr</p>;
-            }
+            return <p className="text-base text-slate-600">{transaction.price} kr</p>;
         }
     }
+}
+
+
+const Transactions: React.FC<TransactionProps> = ({ transactions, showUsername }) => {
 
     return (
         <div className="flex flex-col items-start mt-4">

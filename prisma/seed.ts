@@ -58,7 +58,7 @@ async function createAndAddItemsToDatabase() {
 }
 
 async function createFakeTransactions(items: Item[], users: User[]) {
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 200; i++) {
     const barcode = items[Math.floor(Math.random() * items.length)].barcode;
     const user = users[Math.floor(Math.random() * users.length)].id;
     const randomTransaction = {
@@ -68,6 +68,7 @@ async function createFakeTransactions(items: Item[], users: User[]) {
       price: faker.number.int({min:15, max: 100}),
       beeredUser: null,
       beeredBy: null,
+      createdAt: faker.date.between({from: new Date(Date.now() - 1000 * 3600 * 24 * 28), to: new Date()})
     };
 
     await prisma.transaction.create({ data: randomTransaction });
@@ -76,9 +77,9 @@ async function createFakeTransactions(items: Item[], users: User[]) {
 
 async function main() {
   await prisma.account.deleteMany({});
+  await prisma.transaction.deleteMany({});
   await prisma.user.deleteMany({});
   await prisma.item.deleteMany({});
-  await prisma.transaction.deleteMany({});
 
   const hashedPassword = await bcrypt.hash(
     process.env.ADMIN_PASSWORD || "admin",
