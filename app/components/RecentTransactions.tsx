@@ -36,7 +36,6 @@ export default function RecentTransactions() {
                 groupedTransactions['Mer än 1 vecka sedan'].push(transaction);
             }
         });
-        console.log(groupedTransactions);
 
         setTransactionsByDay(groupedTransactions);
     }
