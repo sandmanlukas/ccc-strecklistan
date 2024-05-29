@@ -103,6 +103,10 @@ export const roleStringToUserRole: { [key: string]: UserRole } = {
 }
 
 export const formatTime = (date: Date): string => {
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+    
     const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
     return date.toLocaleTimeString('sv-SE', options);
 };
@@ -124,6 +128,10 @@ export const formatDateToLocale = (date: Date): string => {
 }
 
 export const formatDate = (date: Date): string => {
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+    
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
