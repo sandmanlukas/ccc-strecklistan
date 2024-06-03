@@ -26,12 +26,12 @@ export const handleBeeredTransaction = (transaction: TransactionWithItem) => {
 }
 
 
-const Transactions: React.FC<TransactionProps> = ({ transactions, showUsername }) => {
+const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
 
     return (
         <div className="flex flex-col items-start mt-4">
             <h2 className="text-xl text-left font-semibold mb-2">Senaste transaktioner</h2>
-            <div className="w-96 max-w-md max-h-100 overflow-y-auto">
+            <div className="max-h-100 overflow-y-auto w-full">
                 {transactions && transactions.length > 0 ? (
                     transactions.map((transaction) => (
                         <div key={transaction.id} className="bg-white shadow-md rounded-lg p-2 mb-2 border border-grey">

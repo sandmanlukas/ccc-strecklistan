@@ -1,17 +1,18 @@
 import { getAllTransactions } from "@/app/lib/getAllTransactions";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
+    const url = new URL(req.url);
+    const dateString = url.searchParams.get('date');
+    const date = dateString ? new Date(dateString) : null;
+
     try {
-        const url = new URL(req.url);
-        const dateString = url.searchParams.get('date');
-        const date = dateString ? new Date(dateString) : null;
-        
         const transactions = await getAllTransactions(true, date);
-        
-        return Response.json(transactions);
+
+        return NextResponse.json(transactions);
     } catch (error) {
         console.log('error', error);
-        return Response.json({ error });
+
+        return NextResponse.json({ error });
     }
 }

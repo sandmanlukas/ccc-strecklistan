@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { TransactionWithItemAndUser } from "./StatsPage";
-import { Link, Spinner } from "@nextui-org/react";
+import { getAllTransactions } from "../lib/getAllTransactions";
+import { Button, Link, Spinner } from "@nextui-org/react";
 import { handleBeeredTransaction } from "./Transactions";
 import { formatDate, formatTime } from "../lib/utils";
+import { createTransaction } from "../lib/createTransaction";
 import useTransactions from "../hooks/useTransactions";
 import React from "react";
+import { toast } from "react-toastify";
 
 
 const Transaction = ({ transaction, date }: { transaction: TransactionWithItemAndUser, date: string }) => (
@@ -31,49 +33,49 @@ const Transaction = ({ transaction, date }: { transaction: TransactionWithItemAn
     </div>
 );
 
-const TransactionsByDay = React.memo(({ transactionsByDay }: { transactionsByDay: { [key: string]: TransactionWithItemAndUser[] } }) => (
-    transactionsByDay && Object.keys(transactionsByDay).length > 0 ? (
-        Object.keys(transactionsByDay).map((date) => (
-            <div key={date}>
-                <h3 className="text-xl text-left font-semibold my-4">{date}</h3>
-                {transactionsByDay[date].map((transaction) => (
-                    <Transaction transaction={transaction} date={date} />
-                ))}
+const TransactionsByDay = React.memo(function TransactionsByDay({ transactionsByDay, isValidating }: { transactionsByDay: { [key: string]: TransactionWithItemAndUser[] }, isValidating: boolean }) {
+    if (!isValidating && transactionsByDay && Object.keys(transactionsByDay).length === 0) {
+        return (
+            <div className='text-center flex items-start text-gray-600 text-base'>
+                <p>Inga transaktioner de senaste 3 veckorna. Skanna en öl eller något!</p>
             </div>
-        ))
-    ) : (
-        <div className='text-center flex items-start text-gray-600 text-base'>
-            <p>Inga transaktioner än. Skanna en öl eller något!</p>
-        </div>
-    )
-));
+        )
+    }
+
+    return (
+        transactionsByDay && Object.keys(transactionsByDay).length > 0 && (
+            Object.keys(transactionsByDay).map((date) => (
+                transactionsByDay[date].length > 0 && (
+                    <div key={date}>
+                        <h3 className="text-xl text-left font-semibold my-4">{date}</h3>
+                        {transactionsByDay[date].map((transaction) => (
+                            <Transaction key={transaction.id} transaction={transaction} date={date} />
+                        ))}
+                    </div>
+                )
+            ))
+        )
+    );
+});
 
 export default function RecentTransactions() {
-    const [loading, setLoading] = useState(false);
-    // const [transactionsByDay, setTransactionsByDay] = useState<{ [key: string]: TransactionWithItemAndUser[] }>({});
-
     const threeWeeksAgo = new Date(Date.now() - 1000 * 3600 * 24 * 21);
-    const { data, error, isLoading, isValidating } = useTransactions(threeWeeksAgo);
+    const { data, error, isValidating } = useTransactions(threeWeeksAgo);
 
-    const createFakeTransaction = async () => {
-        // setLoading(true);
-        const transaction = await createTransaction(93, undefined, '709caa8e-43e6-4a94-9889-987174f110b9');
-        // setLoading(false);
-    };
+
+    if (error) {
+        console.log(error);
+        toast.error('Något gick fel. Försök igen senare.');
+    }
+
     return (
-        loading ?
-            <div className='mx-auto mt-2'>
-                <Spinner />
+        <div className="mx-auto p-3 w-1/2">
+            <h2 className="text-xl text-left font-semibold mb-2">Senaste transaktionerna</h2>
+            <div className="flex flex-row justify-between">
+                <p>Här visas de senaste tre veckornas transaktioner.</p>
+                {isValidating ? <Spinner size="sm" /> : null}
             </div>
-            : (
-                <div className="mx-auto p-3 w-1/2">
-                    <h2 className="text-xl text-left font-semibold mb-2">Senaste transaktionerna</h2>
-                    <div className="flex flex-row justify-between">
-                        <p>Här visas de senaste tre veckornas transaktioner.</p>
-                        {isValidating ? <Spinner size="sm" /> : null}
-                    </div>
-                        <TransactionsByDay transactionsByDay={data as {[key:string]: TransactionWithItemAndUser[]}} />
-                </div>
-            )
+            <TransactionsByDay transactionsByDay={data as { [key: string]: TransactionWithItemAndUser[] }}  isValidating/>
+        </div>
     );
 }

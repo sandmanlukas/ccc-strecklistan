@@ -1,7 +1,7 @@
 import useSWR from "swr"
 import fetcher from "../lib/fetcher"
 import { TransactionWithItemAndUser } from "../components/StatsPage";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 function isEqual(x: any, y: any): boolean {
     const ok = Object.keys, tx = typeof x, ty = typeof y;
@@ -42,7 +42,7 @@ const groupTransactionsByDay = (transactions: TransactionWithItemAndUser[]) => {
 }
 
 export default function useTransactions (date: Date) {
-        const { data, error, isLoading, isValidating } = useSWR<TransactionWithItemAndUser[]>(`/api/transactions?date=${date}`, fetcher, {
+        const { data, error, isValidating } = useSWR<TransactionWithItemAndUser[]>(`/api/transactions?date=${date}`, fetcher, {
          refreshInterval: 3000
         });
 
@@ -57,11 +57,11 @@ export default function useTransactions (date: Date) {
          if (!isEqual(newTransactionData, transactionData)) {
              setTransactionData(newTransactionData);
          }
-     }, [data]);
+     }, [data, transactionData]);
 
         
         
         return {
-           data: transactionData, error, isLoading, isValidating
+           data: transactionData, error, isValidating
         }
     }
