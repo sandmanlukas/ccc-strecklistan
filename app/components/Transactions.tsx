@@ -6,7 +6,6 @@ import { formatDate } from '../lib/utils';
 
 interface TransactionProps {
     transactions: TransactionWithItem[];
-    showUsername: boolean;
 }
 
 export const handleBeeredTransaction = (transaction: TransactionWithItem) => {
