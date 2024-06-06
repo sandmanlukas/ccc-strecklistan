@@ -61,12 +61,14 @@ const Navbar = (props: Props) => {
     >
       <div className="flex flex-row justify-between w-full items-center">
         <div className="flex flex-row">
-        <Link className="text-3xl mt-3" href={"/"} as={"/"}>
-          strecklistan
-        </Link>
-        <Link className="text-3xl ml-3 mt-3" href={"/recent"} as={"/recent"}>
-          <IoReceiptOutline size={35} className="font-bold"/>
-        </Link>
+          <Link className="text-3xl mt-3" href={"/"} as={"/"}>
+            strecklistan
+          </Link>
+          {session && (
+            <Link className="text-3xl ml-3 mt-3" href={"/recent"} as={"/recent"}>
+              <IoReceiptOutline size={35} className="font-bold" />
+            </Link>
+          )}
         </div>
         <div className="flex flex-row">
           {session && (
