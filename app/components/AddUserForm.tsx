@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import { addUser } from '@/app/lib/addUser';
 import type { PutBlobResult } from '@vercel/blob';
 import { DEFAULT_AVATAR_URL } from '@/app/constants';
-
+import NextUIContainer from './NextUIContainer';
 
 export default function AddUserForm() {
     const [formData, setFormData] = useState({
@@ -20,6 +20,7 @@ export default function AddUserForm() {
         role: 'Ordförande', // Default role
     });
     const [showWebcam, setShowWebcam] = useState(false);
+    const [showFileInput, setShowFileInput] = useState(false);
     const [avatar, setAvatar] = useState(DEFAULT_AVATAR_URL);
     const [creatingUser, setCreatingUser] = useState(false);
     const webcamRef = React.useRef<Webcam>(null);
@@ -98,7 +99,7 @@ export default function AddUserForm() {
                 return;
             }
 
-            newBlob = (await response.json()) as PutBlobResult;            
+            newBlob = (await response.json()) as PutBlobResult;
         }
 
         const user = {
@@ -133,7 +134,28 @@ export default function AddUserForm() {
             setShowWebcam(false);
         },
         [webcamRef]
-      );
+    );
+
+    const chooseImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            setAvatar(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    const activateFileInput = () => {
+        setShowWebcam(false);
+        setShowFileInput(true);
+    }
+
+    const activateWebcam = () => {
+        setShowFileInput(false);
+        setShowWebcam(true);
+    }
 
 
     return (
@@ -144,23 +166,44 @@ export default function AddUserForm() {
                     <div>
                         {showWebcam ? (
                             <div>
-                                <Webcam 
-                                className='mb-2 rounded-lg'
-                                screenshotFormat='image/jpeg'
-                                ref={webcamRef}/>
-                                <Button onClick={captureImage}>Ta profilbild</Button>
+                                <Webcam
+                                    className='mb-2 rounded-lg'
+                                    screenshotFormat='image/jpeg'
+                                    ref={webcamRef} />
+                                <Button className='mb-2' fullWidth onClick={captureImage}>Tryck för att ta bild!</Button>
                             </div>
-                                ) : 
-                                (
-                                <div>        
-                                <Avatar 
-                                radius="sm" 
-                                src={avatar}
-                                className='w-36 h-36 mx-auto mb-2 rounded-lg'
+                        ) : (
+                            <div>
+                                <Avatar
+                                    radius="sm"
+                                    src={avatar}
+                                    className='w-48 h-48 mx-auto mb-2 rounded-lg'
                                 />
-                                <Button onClick={() => setShowWebcam(true)}>Ta profilbild</Button>
-                                </div>
-                                )}
+                            </div>
+                        )}
+
+                        {showFileInput && (
+                            <div className='m-2'>
+                                <NextUIContainer>
+                                    <input
+                                        type="file"
+                                        name="image"
+                                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold"
+                                        accept="image/*"
+                                        onChange={chooseImage}
+                                    />
+                                </NextUIContainer>
+                            </div>
+                        )}
+
+                        {!showWebcam && (
+                            <Button className='mb-2' fullWidth onClick={activateWebcam}>Ta egen profilbild</Button>
+                        )}
+
+                        {!showFileInput && (
+                            <Button className='mb-2' fullWidth onClick={activateFileInput}>Välj profilbild</Button>
+                        )}
+
                         <Input
                             type="text"
                             id="username"
@@ -225,7 +268,7 @@ export default function AddUserForm() {
                             label="Position"
                             aria-label='Position'
                             onChange={handleChange}
-                            required    
+                            required
                             isRequired
                         >
                             {
@@ -235,10 +278,10 @@ export default function AddUserForm() {
                             }
                         </Select>
                     </div>
-                    <Button 
-                    type='submit'
-                    className='w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
-                    isLoading={creatingUser}
+                    <Button
+                        type='submit'
+                        className='w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
+                        isLoading={creatingUser}
                     >
                         Lägg till
                     </Button>

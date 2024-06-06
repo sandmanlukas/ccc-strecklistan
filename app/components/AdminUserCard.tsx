@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { DEFAULT_AVATAR_URL } from '@/app/constants';
 import Webcam from 'react-webcam';
 import { PutBlobResult } from '@vercel/blob';
+import NextUIContainer from './NextUIContainer';
 
 export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { user: User | null, onUserUpdate: (user: User) => void, onUserDeletion: (user: User) => void }) {
     const { isOpen: isEditUserModalOpen, onOpen: onOpenEditUserModal, onClose: onCloseEditUserModal, onOpenChange: onOpenChangeEditUserModal } = useDisclosure();
@@ -20,6 +21,7 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
     const [editedUser, setEditedUser] = React.useState<User | null>(user);
     const [originalUser, setOriginalUser] = React.useState<User | null>(user);
     const [showWebcam, setShowWebcam] = useState(false);
+    const [showFileInput, setShowFileInput] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const webcamRef = React.useRef<Webcam>(null);
@@ -57,7 +59,7 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
         if (!editedUser) return;
         setIsDeleting(true);
 
-        if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL) {            
+        if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL) {
             const response = await fetch(`/api/avatar/delete?url=${editedUser.avatar}`, {
                 method: 'DELETE',
             });
@@ -85,22 +87,22 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
         setIsEditing(true);
 
         let newAvatarUrl = originalUser?.avatar ? { url: originalUser.avatar } : null;
-        // Delete old avatar if a new one is uploaded, if the new one is different from old one
-        if (editedUser.avatar && editedUser.avatar !== DEFAULT_AVATAR_URL && editedUser.avatar !== originalUser?.avatar) {
-            
+        // Delete old avatar if a new one is uploaded, if the new one is different from old one        
+        if (editedUser.avatar && editedUser.avatar !== originalUser?.avatar) {
+
             // Delete old file from storage if it exists first
-            if (originalUser?.avatar && originalUser.avatar !== editedUser.avatar) {
-                
+            if (originalUser?.avatar && originalUser.avatar !== editedUser.avatar && originalUser.avatar !== DEFAULT_AVATAR_URL) {
+
                 const response = await fetch(`/api/avatar/delete?url=${originalUser.avatar}`, {
                     method: 'DELETE',
                 });
-                
+
                 if (!response.ok) {
                     toast.error('Kunde inte ta bort användarens avatar');
                     return;
                 }
             };
-            
+
             const response = await fetch(`/api/avatar/upload?filename=${editedUser.username}_avatar`, {
                 method: 'POST',
                 body: base64toFile(editedUser.avatar, `${editedUser}_avatar.jpg`),
@@ -160,6 +162,32 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
         [webcamRef]
     );
 
+    const chooseImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setEditedUser((prev) => {
+                    if (prev !== null) {
+                        return { ...prev, avatar: reader.result as string };
+                    }
+                    return null;
+                });
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    const activateWebcam = () => {
+        setShowFileInput(false);
+        setShowWebcam(true);
+    }
+
+    const activateFileInput = () => {
+        setShowWebcam(false);
+        setShowFileInput(true);
+    }
+
     return (
         <div>
             {originalUser && (
@@ -179,7 +207,7 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
                                 src={originalUser.avatar ? originalUser.avatar : DEFAULT_AVATAR_URL}
                                 width={200}
                                 height={200}
-                                className='rounded mr-4' />
+                                className='rounded mr-4 max-h-min' />
                             <div>
                                 <p className='text-gray-600 text-sm'>Post</p>
                                 <p>{role}</p>
@@ -202,40 +230,53 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
                                 isOpen={isEditUserModalOpen}
                                 onClose={onCloseEditUserModal}
                                 onOpenChange={onOpenChangeEditUserModal}
-                                placement="top-center"
+                                scrollBehavior='outside'
                             >
                                 <ModalContent>
                                     {() => (
                                         <>
                                             <ModalHeader className="flex flex-col gap-1">Ändra info för {originalUser.username}</ModalHeader>
                                             <ModalBody>
-                                                {
-                                                    showWebcam ? (
-                                                        <div>
-                                                            <Webcam
-                                                                className='mb-2 rounded-lg'
-                                                                screenshotFormat='image/jpeg'
-                                                                ref={webcamRef} />
-                                                            <Button onClick={captureImage}>Ta profilbild</Button>
-                                                        </div>
-                                                    ) : (
-                                                        <>
-                                                            <Image
-                                                                alt="Användarens avatar"
-                                                                src={editedUser.avatar ? editedUser.avatar : DEFAULT_AVATAR_URL}
-                                                                width={200}
-                                                                height={100}
-                                                                className='rounded mt-0 pt-0 w-auto'
+                                                {showWebcam ? (
+                                                    <div>
+                                                        <Webcam
+                                                            className='mb-2 rounded-lg'
+                                                            screenshotFormat='image/jpeg'
+                                                            ref={webcamRef} />
+                                                        <Button fullWidth onClick={captureImage}>Tryck för att ta ny profilbild</Button>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <Image
+                                                            alt="Användarens avatar"
+                                                            src={editedUser.avatar ? editedUser.avatar : DEFAULT_AVATAR_URL}
+                                                            width={200}
+                                                            height={100}
+                                                            className='rounded mt-0 pt-0 w-auto'
+                                                        />
+                                                    </>
+                                                )}
+                                                {showFileInput && (
+                                                    <div className='m-2'>
+                                                        <NextUIContainer>
+                                                            <input
+                                                                type="file"
+                                                                name="image"
+                                                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold"
+                                                                accept="image/*"
+                                                                onChange={chooseImage}
                                                             />
-                                                            <Button
-                                                                color='primary'
-                                                                onClick={() => setShowWebcam(true)}
-                                                            >
-                                                                Ändra avatar
-                                                            </Button>
-                                                        </>
-                                                    )
-                                                }
+                                                        </NextUIContainer>
+                                                    </div>
+                                                )}
+
+                                                {!showWebcam && (
+                                                    <Button color='primary' onClick={activateWebcam} > Ta ny profilbild </Button>
+                                                )}
+
+                                                {!showFileInput && (
+                                                    <Button color='primary' onClick={activateFileInput} > Ladda upp ny profilbild </Button>
+                                                )}
                                                 <Input
                                                     autoFocus
                                                     label="Användarnamn"
