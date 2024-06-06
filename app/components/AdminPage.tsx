@@ -3,7 +3,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { Account, Item, Swish, User } from "@prisma/client";
-import { Listbox, ListboxItem, Skeleton, Selection, Tabs, Tab, Link } from "@nextui-org/react";
+import { Listbox, ListboxItem, Selection, Tabs, Tab, Link, Spinner } from "@nextui-org/react";
 
 import AdminUserCard from "@/app/components/AdminUserCard";
 import AdminItemCard from "@/app/components/AdminItemCard";
@@ -113,7 +113,7 @@ export default function AdminPage() {
         const fetchSwishInfo = async () => {
             setLoadingSwish(true);
             const swish = await getSwishInfo();
-            
+
             if (swish == false) {
                 toast.error("Kunde inte hämta Swish info");
                 setLoadingSwish(false);
@@ -147,39 +147,43 @@ export default function AdminPage() {
                 <Tab key="users" title="Användare">
 
                     {users.length > 0 ? (
-                    <Skeleton isLoaded={!loadingUsers} className="rounded-lg">
-                        <div className="grid grid-cols-[1fr_2fr] gap-4">
-                            <div className="">
-                                <ListboxWrapper>
-                                    <Listbox
-                                        aria-label="Användare i systemet"
-                                        variant="flat"
-                                        disallowEmptySelection
-                                        selectionMode="single"
-                                        items={users}
-                                        selectedKeys={selectedUserKey}
-                                        onSelectionChange={setSelectedUserKey}
-                                        classNames={{
-                                            base: "max-w-xs",
-                                            list: "max-h-[300px] overflow-scroll",
-                                        }}
-                                    >
-                                        {(user) => (
-                                            <ListboxItem key={user.id} textValue={user.username} onClick={() => setSelectedUser(user)}>
-                                                <div className="flex gap-2 s-center">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-small">{user.username}</span>
-                                                        <span className="text-tiny text-default-400">{user.firstName} {user.lastName}</span>
-                                                    </div>
-                                                </div>
-                                            </ListboxItem>
-                                        )}
-                                    </Listbox>
-                                </ListboxWrapper>
+                        loadingUsers ? (
+                            <div className="flex items-center justify-center">
+                                <Spinner />
                             </div>
-                            <AdminUserCard user={selectedUser} onUserUpdate={handleUserUpdate} onUserDeletion={handleUserDeletion} />
-                        </div>
-                    </Skeleton>
+                        ) : (
+                            <div className="grid grid-cols-[1fr_2fr] gap-4">
+                                <div className="">
+                                    <ListboxWrapper>
+                                        <Listbox
+                                            aria-label="Användare i systemet"
+                                            variant="flat"
+                                            disallowEmptySelection
+                                            selectionMode="single"
+                                            items={users}
+                                            selectedKeys={selectedUserKey}
+                                            onSelectionChange={setSelectedUserKey}
+                                            classNames={{
+                                                base: "max-w-xs",
+                                                list: "max-h-[300px] overflow-scroll",
+                                            }}
+                                        >
+                                            {(user) => (
+                                                <ListboxItem key={user.id} textValue={user.username} onClick={() => setSelectedUser(user)}>
+                                                    <div className="flex gap-2 s-center">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-small">{user.username}</span>
+                                                            <span className="text-tiny text-default-400">{user.firstName} {user.lastName}</span>
+                                                        </div>
+                                                    </div>
+                                                </ListboxItem>
+                                            )}
+                                        </Listbox>
+                                    </ListboxWrapper>
+                                </div>
+                                <AdminUserCard user={selectedUser} onUserUpdate={handleUserUpdate} onUserDeletion={handleUserDeletion} />
+                            </div>
+                        )
                     ) : (
                         <div className="p-4 bg-white rounded-lg">
                             <p className="text-xl ">Inga användare hittades. Testa lägga till några användare
@@ -191,64 +195,79 @@ export default function AdminPage() {
                 <Tab key="items" title="Inventarie">
                     {
                         items.length > 0 ?
-                    (
+                            (
+                                loadingItems ? (
+                                    <div className="flex items-center justify-center">
+                                        <Spinner />
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-[1fr_2fr] gap-4">
+                                        <div className="">
+                                            <ListboxWrapper>
+                                                <Listbox
+                                                    aria-label="Inventarie i systemet"
+                                                    variant="flat"
+                                                    disallowEmptySelection
+                                                    selectionMode="single"
+                                                    items={items}
+                                                    selectedKeys={selectedItemKey}
+                                                    onSelectionChange={setSelectedItemKey}
+                                                    classNames={{
+                                                        base: "max-w-xs",
+                                                        list: "max-h-[300px] overflow-scroll",
+                                                    }}
+                                                >
+                                                    {(item) => (
+                                                        <ListboxItem key={item.id} textValue={item.name} onClick={() => setSelectedItem(item)}>
+                                                            <div className="flex gap-2 s-center">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-small">{item.name}</span>
+                                                                    <span className="text-tiny text-default-400">{item.price}kr - {itemTypes[item.type]}</span>
+                                                                </div>
+                                                            </div>
+                                                        </ListboxItem>
+                                                    )}
+                                                </Listbox>
+                                            </ListboxWrapper>
+                                        </div>
+                                        <AdminItemCard item={selectedItem} onItemUpdate={handleItemUpdate} onItemDeletion={handleItemDeletion} />
+                                    </div>
+                                )
+                            ) : (
+                                <div className="p-4 bg-white rounded-lg">
+                                    <p className="text-xl ">Ingen inventarie hittades. Testa lägga till några grejer
+                                        <Link className="ml-2 text-xl" href={"/item/new"}>här</Link>
+                                    </p>
+                                </div>
 
-                        <Skeleton isLoaded={!loadingItems} className="rounded-lg">
-                        <div className="grid grid-cols-[1fr_2fr] gap-4">
-                            <div className="">
-                                <ListboxWrapper>
-                                    <Listbox
-                                        aria-label="Inventarie i systemet"
-                                        variant="flat"
-                                        disallowEmptySelection
-                                        selectionMode="single"
-                                        items={items}
-                                        selectedKeys={selectedItemKey}
-                                        onSelectionChange={setSelectedItemKey}
-                                        classNames={{
-                                            base: "max-w-xs",
-                                            list: "max-h-[300px] overflow-scroll",
-                                        }}
-                                        >
-                                        {(item) => (
-                                            <ListboxItem key={item.id} textValue={item.name} onClick={() => setSelectedItem(item)}>
-                                                <div className="flex gap-2 s-center">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-small">{item.name}</span>
-                                                        <span className="text-tiny text-default-400">{item.price}kr - {itemTypes[item.type]}</span>
-                                                    </div>
-                                                </div>
-                                            </ListboxItem>
-                                        )}
-                                    </Listbox>
-                                </ListboxWrapper>
-                            </div>
-                            <AdminItemCard item={selectedItem} onItemUpdate={handleItemUpdate} onItemDeletion={handleItemDeletion} />
-                        </div>
-                    </Skeleton>
-                        ) : (
-                            <div className="p-4 bg-white rounded-lg">
-                                <p className="text-xl ">Ingen inventarie hittades. Testa lägga till några grejer
-                                    <Link className="ml-2 text-xl" href={"/item/new"}>här</Link>
-                                </p>
-                            </div>
-                        
-                        )}
+                            )}
                 </Tab>
                 <Tab key="debts" title="Samla in skulder">
-                    <Skeleton isLoaded={!loadingAccounts} className="rounded-lg">
+                    {loadingSwish ? (
+                        <div className="flex items-center justify-center">
+                            <Spinner />
+                        </div>
+                    ) : (
                         <AdminDebtCollect swish={swish} />
-                    </Skeleton>
+                    )}
                 </Tab>
                 <Tab key="swish" title="Swishinfo">
-                    <Skeleton isLoaded={!loadingSwish} className="rounded-lg">
+                    {loadingSwish ? (
+                        <div className="flex items-center justify-center">
+                            <Spinner />
+                        </div>
+                    ) : (
                         <AdminSwishInfo swish={swish} />
-                    </Skeleton>
+                    )}
                 </Tab>
                 <Tab key="passwordChange" title="Ändra kontoinställningar">
-                    <Skeleton isLoaded={!loadingAccounts} className="rounded-lg">
+                    {loadingAccounts ? (
+                        <div className="flex items-center justify-center">
+                            <Spinner />
+                        </div>
+                    ) : (
                         <AdminAccountSettings accs={accounts} />
-                    </Skeleton>
+                    )}
                 </Tab>
                 <Tab key="clear_database" title="Rensa databas">
                     <AdminClearDatabase />
