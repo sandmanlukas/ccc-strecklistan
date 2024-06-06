@@ -1,7 +1,7 @@
 import useSWR from "swr"
 import fetcher from "../lib/fetcher"
 import { TransactionWithItemAndUser } from "../components/StatsPage";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 function isEqual(x: any, y: any): boolean {
     const ok = Object.keys, tx = typeof x, ty = typeof y;
