@@ -44,7 +44,7 @@ async function createTransaction(userId: number, beeredUserId: number | undefine
                     data: {
                         userId: userId,
                         barcode: barcode,
-                        beeredTransaction: true,
+                        beeredTransaction: null, // First set the beeredTransaction to null
                         beeredUser: beeredUser.username, // Which user was beered
                         price: 0,
                     },
@@ -70,12 +70,22 @@ async function createTransaction(userId: number, beeredUserId: number | undefine
                     data: {
                         userId: beeredUserId,
                         barcode: BEERED_BARCODE,
-                        beeredTransaction: true,
+                        beeredTransaction: transaction.id, // Set the beeredTransaction to the transaction id of the beering transaction
                         beeredBy: beeringUser.username,
                         price: item.price,
                     },
                     include: {
                         item: true,
+                    },
+                });
+
+                // Update the beering transaction with the beered transaction id
+                await prisma.transaction.update({
+                    where: {
+                        id: transaction.id,
+                    },
+                    data: {
+                        beeredTransaction: beeredUserTransaction.id,
                     },
                 });
 
