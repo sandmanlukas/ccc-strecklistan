@@ -2,8 +2,8 @@ import { Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRo
 import { TransactionWithItemAndUser } from "./StatsPage";
 import { formatTransactionDate } from "../lib/utils";
 import { MdDeleteForever } from "react-icons/md";
-import { useAsyncList } from "@react-stately/data";
-import React, { Key, use, useEffect, useState } from "react";
+import { AsyncListData, useAsyncList } from "@react-stately/data";
+import React, { Key, use, useEffect, useMemo, useRef, useState } from "react";
 
 interface Column {
     title: string,
@@ -38,8 +38,10 @@ const sortDescriptorToValue = (sortDescriptor: Key | undefined, transaction: Tra
 
 export function TransactionTable({ transactions, columns, label, selectTransaction }: TransactionTableProps) {
     const [isLoading, setIsLoading] = useState(true);
-    
-    let list = useAsyncList({
+
+    let listRef = useRef<AsyncListData<TransactionWithItemAndUser> | null>(null);
+
+    listRef.current = useAsyncList({
         async load() {
             setIsLoading(false);
             return { items: transactions };
@@ -67,7 +69,7 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
 
     useEffect(() => {
         if (transactions) {
-            list.reload();
+            listRef.current?.reload();
         }
     }, [transactions]);
 
@@ -128,8 +130,8 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
             classNames={{
                 base: "max-h-[520px] overflow-scroll",
             }}
-            sortDescriptor={list.sortDescriptor}
-            onSortChange={list.sort}
+            sortDescriptor={listRef.current.sortDescriptor}
+            onSortChange={listRef.current.sort}
         >
             <TableHeader columns={columns}>
                 {(column) => (
@@ -139,7 +141,7 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
                 )}
             </TableHeader>
             <TableBody
-                items={list.items}
+                items={listRef.current.items}
                 isLoading={isLoading}
                 loadingContent={<Spinner label="Laddar transaktioner..." />}
             >
