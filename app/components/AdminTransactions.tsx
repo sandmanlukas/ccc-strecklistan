@@ -82,11 +82,8 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
     const handleDeleteTransaction = async () => {
         if (selectedTransaction) {
             setIsDeleting(true);
-            const transactionId = selectedTransaction.id;
-            const userId = selectedTransaction.userId;
-            const price = selectedTransaction.price;
 
-            const deletedTransaction = await deleteTransaction(transactionId, userId, price);
+            const deletedTransaction = await deleteTransaction(selectedTransaction);
 
             if (!deletedTransaction) {
                 toast.error('Något gick fel vid borttagning av transaktion!');

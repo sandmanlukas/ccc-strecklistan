@@ -118,7 +118,7 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
                     </p>
                 )
         }
-    }, []);
+    }, [selectTransaction]);
 
     return (
         <Table

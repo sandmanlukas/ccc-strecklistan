@@ -64,7 +64,7 @@ async function createFakeTransactions(items: Item[], users: User[]) {
     const randomTransaction = {
       userId: user,
       barcode: barcode,
-      beeredTransaction: false,
+      beeredTransaction: null,
       price: faker.number.int({min:15, max: 100}),
       beeredUser: null,
       beeredBy: null,
