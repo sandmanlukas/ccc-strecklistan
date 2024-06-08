@@ -3,7 +3,7 @@ import { TransactionWithItemAndUser } from "./StatsPage";
 import { formatTransactionDate } from "../lib/utils";
 import { MdDeleteForever } from "react-icons/md";
 import { useAsyncList } from "@react-stately/data";
-import React, { Key, useState } from "react";
+import React, { Key, use, useEffect, useState } from "react";
 
 interface Column {
     title: string,
@@ -38,7 +38,7 @@ const sortDescriptorToValue = (sortDescriptor: Key | undefined, transaction: Tra
 
 export function TransactionTable({ transactions, columns, label, selectTransaction }: TransactionTableProps) {
     const [isLoading, setIsLoading] = useState(true);
-
+    
     let list = useAsyncList({
         async load() {
             setIsLoading(false);
@@ -64,6 +64,12 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
             };
         },
     });
+
+    useEffect(() => {
+        if (transactions) {
+            list.reload();
+        }
+    }, [transactions]);
 
     const renderCell = React.useCallback((transaction: TransactionWithItemAndUser, columnKey: React.Key) => {
         const cellValue = transaction[columnKey as keyof TransactionWithItemAndUser];
