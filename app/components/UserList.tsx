@@ -14,9 +14,6 @@ function UserList() {
     const [otherUsers, setOtherUsers] = useState<User[] | null>();
     const [loading, setLoading] = useState(true);
 
-    
-    
-    
     useEffect(() => {
         const rolesOrder = ['ORDFORANDE', 'KASSOR', 'BYGGCHEF', 'BILCHEF', 'GARDVAR', 'KLADCHEF', 'PROGRAMCHEF', 'ANNONSCHEF', 'MUSIKCHEF', 'OLCHEF', 'PRCHEF'];
         const fetchUsers = async () => {
