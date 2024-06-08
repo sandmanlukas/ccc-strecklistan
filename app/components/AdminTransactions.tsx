@@ -20,9 +20,9 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
 
     const uniqueUsers = Array.from(new Set(transactions.map((transaction) => transaction.user.username)));
 
-    useEffect(() => {
-        if (filteredUsers.length > 1) {
-            const filtered = updatedTransactions.filter(transaction => filteredUsers.includes(transaction.user.username));
+    useEffect(() => {                
+        if (filteredUsers.length >= 1 && filteredUsers[0] !== '') {
+            const filtered = updatedTransactions.filter(transaction => filteredUsers.includes(transaction.user.username));            
             setFilteredTransactions(filtered);
         } else if (filteredUsers.length === 1 && filteredUsers[0] === '') {
             setFilteredTransactions(updatedTransactions);
@@ -58,7 +58,14 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
     ]
 
     const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilteredUsers(e.target.value.split(","));
+        let filteredUsers = e.target.value.split(",");
+
+        // First element of e.target.value is a comma, therefore we remove the first element after splitting
+        if (filteredUsers[0] === '') {
+            filteredUsers.shift();
+            }
+            
+        setFilteredUsers(filteredUsers);
     };
 
     const clearSelection = () => {
@@ -135,6 +142,7 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
                         onClose={closeModal}
                         onOpenChange={onOpenChange}
                         placement="top-center"
+                        size="3xl"
                     >
                         <ModalContent>
                             {() => (
