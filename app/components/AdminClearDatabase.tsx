@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
+import { Button, Card, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
 import { clearDatabase } from "@/app/lib/clearDatabase";
 import React from "react";
 import { toast } from "react-toastify";
@@ -46,7 +46,7 @@ export function AdminClearDatabase() {
     }
 
     return (
-        <div>
+        <Card className="border p-4 mx-auto rounded-lg shadow-md space-y-2">
             <p className="text-small">Tryck här om du vill rensa databasen, t.ex. i början av nytt CCC år. Detta kommer ta bort alla transaktioner, nollställa senaste skulddatumet, samt ta bort swishinfon. Alla användare och inventarie kommer fortfarande vara kvar.</p>
 
             <p className="mt-2 text-small">Om du rensar i början/slutet av ett CCC-år, glöm inte att byta roll till Kadaver på er som går av.</p>
@@ -92,6 +92,6 @@ export function AdminClearDatabase() {
                     )}
                 </ModalContent>
             </Modal>
-        </div>
+        </Card>
     )
 }

@@ -178,17 +178,17 @@ export default function AdminDebtCollect({ swish }: { swish: Swish | null }) {
     }
 
     return (
-        <Card className="border p-4 rounded-lg shadow-md space-y-2">
-            <p className="text-sm">
+        <Card className="border p-4 mx-auto rounded-lg shadow-md space-y-2">
+            <p className="text-xs md:text-sm">
                 Här kan du skicka ut mail till alla (icke-sittande) om att det är dags att betala sin skuld.
                 Nedanför så finns en mailmall som går att redigera, det är detta mail som kommer skickas ut till folk.
                 Swishinformation behöver inte skrivas med i mailet, utan det kommer från admininställningarna, så se till att de stämmer där.
             </p>
-            <p className='text-sm flex items-end'>
-                Du kan trycka på <PiFileMagnifyingGlass className='mx-1' size={20} /> för att se en förhandsgranskning på hur mailet kommer se ut.
-            </p>
-            <p className='text-sm flex items-end'>
-                Genom att trycka på <CiEdit className='mx-1' size={20} /> så kan du börja redigera mailet. Tryck sedan på <FaRegSave className='mx-1' size={20} /> för att spara ändringarna.
+            <span className='text-xs md:text-sm md:flex md:items-end'>
+                Du kan trycka på  <PiFileMagnifyingGlass className='inline-flex mx-1' size={20} /> för att se en förhandsgranskning på hur mailet kommer se ut.
+            </span>
+            <p className='text-xs md:text-sm md:flex md:items-end'>
+                Genom att trycka på <span><CiEdit className='inline-flex mx-1' size={20} /></span> så kan du börja redigera mailet. Tryck sedan på  <span><FaRegSave className='inline-flex mx-1' size={20} /></span> för att spara ändringarna.
             </p>
             <div className='flex items-end '>
                 <h3>Mailmall</h3>

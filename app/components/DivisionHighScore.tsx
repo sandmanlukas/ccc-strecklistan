@@ -49,13 +49,13 @@ export default function DebtHighScore({ transactions }: { transactions: Transact
                 {divisionTransactionCounts.length > 0 ?
                     (
                         divisionTransactionCounts.map((division, index) => (
-                            <div key={division.division} className='flex items-center justify-between w-96 bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
+                            <div key={division.division} className='w-full flex items-center justify-between bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
                                 <h3 className='text-lg font-medium'>{index + 1}. {division.division} </h3>
                                 <p className='text-base text-slate-600'>{division.countPerPerson} per/person ({division.count} totalt)</p>
                             </div>
                         ))
                     ) : (
-                        <div className='flex items-center justify-between w-96 bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
+                        <div className='w-full flex items-center justify-between bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
                             <h3 className='text-lg font-medium'>Ingen data än. Strecka något.</h3>
                         </div>
                     )

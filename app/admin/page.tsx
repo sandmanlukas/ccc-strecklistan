@@ -13,7 +13,7 @@ export default async function Page() {
 
     return (
         <div className='m-auto'>
-            <h1 className='text-2xl my-2 pl-1'>Adminsaker</h1>
+            <h1 className='text-2xl font-bold m-2 pl-1'>Adminsaker</h1>
             <AdminPage />
         </div>
     );

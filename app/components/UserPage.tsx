@@ -120,7 +120,7 @@ export default function UserPage({ id }: { id: number }) {
                 <Spinner />
             </div>
             : (
-                <div className="mx-auto p-3 w-1/2">
+                <div className="mx-auto p-3 md:w-1/2">
                     {user &&
                         <>
                             {beeredUser && (
@@ -138,18 +138,23 @@ export default function UserPage({ id }: { id: number }) {
                                     <div className="flex justify-between">
                                         <Avatar src={user.avatar ? user.avatar : DEFAULT_AVATAR_URL} className="mr-2 w-20 h-20" />
                                         <div>
-                                            <h1 className="text-2xl font-bold mb-1">{user.username}</h1>
+                                            <h1 className="text-xl md:text-2xl font-bold mb-1">{user.username}</h1>
                                             <p className="text-sm">{user.firstName} {user.lastName} - {positionLabels[user.role]}</p>
                                         </div>
                                     </div>
-
+                                </div>
+                            </div>
+                            <div className="mt-3">
+                                <div className="w-full">
                                     {currentUsers && (user.role !== 'OTHER' && user.role !== 'KADAVER') && (
-                                        <Dropdown shouldBlockScroll={false}>
+                                        <Dropdown shouldBlockScroll={false} >
                                             <DropdownTrigger>
                                                 <Button
                                                     size="lg"
                                                     variant="bordered"
-                                                    className="ml-4">
+                                                    fullWidth
+                                                    className="mb-2"
+                                                >
                                                     <span>
                                                         Bärsa!
                                                     </span>
@@ -167,8 +172,6 @@ export default function UserPage({ id }: { id: number }) {
                                         </Dropdown>
                                     )}
                                 </div>
-                            </div>
-                            <div className="mt-3">
                                 <p><span className="font-bold">Skuld:</span> {debt} kr</p>
                             </div>
 

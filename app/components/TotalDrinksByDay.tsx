@@ -4,7 +4,7 @@ import { TransactionWithItem } from "./UserPage";
 import { Card } from "@nextui-org/react";
 
 
-export default function TotalDrinksByDay({ transactions }: { transactions: TransactionWithItem[]; }) {
+export default function TotalDrinksByDay({ width, transactions }: { width: number, transactions: TransactionWithItem[]; }) {
 
     const transactionsByDay = React.useMemo(() => {
         const counts: { [key: string]: number } = { 'Måndag': 0, 'Tisdag': 0, 'Onsdag': 0, 'Torsdag': 0, 'Fredag': 0, 'Lördag': 0, 'Söndag': 0, };
@@ -36,25 +36,25 @@ export default function TotalDrinksByDay({ transactions }: { transactions: Trans
         <>
             {data.length > 0 ?
                 (
-                    <Card className="p-4">
-                        <BarChart
-                            width={700}
-                            height={300}
-                            data={data}
-                            margin={{
-                                top: 5,
-                                right: 30,
-                                left: 20,
-                                bottom: 5,
-                            }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="weekday" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="drinks" name="Streckade drycker" type="monotone" fill="#43AA8B" activeBar={<Rectangle fill="#EF3054" stroke="#000" />} />
-                        </BarChart>
+                    <Card className="p-4 overflow-x-scroll">
+                        <ResponsiveContainer width={width < 900 ? 800 : '100%'} height={300}>
+                            <BarChart
+                                data={data}
+                                margin={{
+                                    top: 5,
+                                    right: 30,
+                                    left: 20,
+                                    bottom: 5,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="weekday" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="drinks" name="Streckade drycker" type="monotone" fill="#43AA8B" activeBar={<Rectangle fill="#EF3054" stroke="#000" />} />
+                            </BarChart>
+                        </ResponsiveContainer>
                     </Card>
                 ) : (
                     <Card className="p-4">

@@ -11,15 +11,15 @@ interface TransactionProps {
 export const handleBeeredTransaction = (transaction: TransactionWithItem) => {
     if (transaction.beeredTransaction) {
         if (transaction.beeredBy) {
-            return <p className="text-base text-slate-600">Bärsad av {transaction.beeredBy} för {transaction.price} kr</p>;
+            return <p className="text-sm md:text-base text-slate-600">Bärsad av {transaction.beeredBy} för {transaction.price} kr</p>;
         } else if (transaction.beeredUser) {
-            return <p className="text-base text-slate-600">Bärsade {transaction.beeredUser}</p>;
+            return <p className="text-sm md:text-base text-slate-600">Bärsade {transaction.beeredUser}</p>;
         }
     } else {
         if (transaction.price === 0) {
-            return <p className="text-base text-slate-600">Gratis</p>;
+            return <p className="text-sm md:text-base text-slate-600">Gratis</p>;
         } else {
-            return <p className="text-base text-slate-600">{transaction.price} kr</p>;
+            return <p className="text-sm md:text-base text-slate-600">{transaction.price} kr</p>;
         }
     }
 }
@@ -36,16 +36,18 @@ const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
                         <div key={transaction.id} className="bg-white shadow-md rounded-lg p-2 mb-2 border border-grey">
                             <div className="flex justify-between items-center">
                                 <div className='flex items-baseline space-x-2'>
-                                    <h3 className="text-lg font-medium">
+                                    <h3 className="text-sm md:text-lg font-small md:font-medium">
                                         {transaction.item.name}
                                     </h3>
-                                    {transaction.item.volume > 0 && <p className='text-sm text-gray-600 ml-2'>{transaction.item.volume} cl</p>}
+                                    {transaction.item.volume > 0 && <p className='text-xs md:text-sm text-gray-600 ml-2'>{transaction.item.volume} cl</p>}
                                 </div>
-                                <p className="text-sm text-gray-600">{formatDate(transaction.createdAt)}</p>
                             </div>
-                            {
-                                handleBeeredTransaction(transaction)
-                            }
+                            <div className="flex justify-between items-center">
+                                {
+                                    handleBeeredTransaction(transaction)
+                                }
+                                <p className="text-xs md:text-sm text-gray-600">{formatDate(transaction.createdAt)}</p>
+                            </div>
                         </div>
                     ))
                 ) : (

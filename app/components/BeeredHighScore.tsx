@@ -41,13 +41,13 @@ export default function BeeredHighScore({ transactions }: { transactions: Transa
             <div className='flex flex-col items-start mt-2'>
                 {beeredTransactionsByUserCounts.length > 0 ? (
                     beeredTransactionsByUserCounts.map((user, index) => (
-                        <div key={user.username} className='flex items-center justify-between w-96 bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
+                        <div key={user.username} className='w-full flex items-center justify-between bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
                             <h3 className='text-lg font-medium'>{index + 1}. {user.username} </h3>
                             <p className='text-base text-slate-600'>{user.count}</p>
                         </div>
                     ))
                 ) : (
-                    <div className='flex items-center justify-between w-96 bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
+                    <div className='w-full flex items-center justify-between bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
                         <h3 className='text-lg font-medium'>Ingen data än. Strecka något.</h3>
                     </div>
                 )}

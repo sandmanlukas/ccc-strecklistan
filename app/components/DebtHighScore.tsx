@@ -11,12 +11,12 @@ export default function DebtHighScore({ users }: { users: User[] }) {
     return (
         <div className='ml-4'>
             <h3 className='text-2xl ml-2 mt-2 font-bold'>Skuldtopplista</h3>
-            <div className='flex flex-col items-start mt-2'>
+            <div className='md:flex md:flex-col md:items-start mt-2 w-full'>
                 {sortedUsers.length > 0 && highestDebt > 0 ? (
                     sortedUsers.map((user, index) => (
                         <>
                         {user.debt > 0 && (
-                            <div key={user.id} className='flex items-center justify-between w-96 bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
+                            <div key={user.id} className='md:flex items-center justify-between bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
                             <Link href={`user/${user.id}`} ><h3 className='text-lg font-medium'>{index + 1}. {user.username}</h3></Link>
                             <p className='text-base text-slate-600'>{user.debt} kr</p>
                             </div>
@@ -24,7 +24,7 @@ export default function DebtHighScore({ users }: { users: User[] }) {
                         </>
                     ))) :
                     (
-                        <div className='flex items-center justify-between w-96 bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
+                        <div className='md:flex items-center justify-between bg-white shadow-md rounded-lg p-2 mb-2 border border-grey'>
                             <h3 className='text-lg font-medium'>Ingen data än eller så har ingen en skuld. Strecka något.</h3>
                         </div>
                     )}

@@ -1,19 +1,44 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { getSwishInfo } from "../lib/getSwishInfo";
 import { toast } from "react-toastify";
-import { Item, ItemType, Swish } from "@prisma/client";
-import Image from "next/image";
+import { Item, Swish } from "@prisma/client";
 import { formatPhoneNumber, handleScan, itemTypes } from "@/app/lib/utils";
 import { getItemByBarcode } from "../lib/getItem";
 import QrCode from "react-qr-code";
+
+const getSize = () => {
+  if (typeof window !== 'undefined') {
+    if (window.innerWidth < 640) {
+      return 250; // size for small screens
+    } else if (window.innerWidth < 1024) {
+      return 300; // size for medium screens
+    } else {
+      return 400; // size for large screens
+    }
+  }
+  return 400; // default size if window object is not available (e.g., during server-side rendering)
+};
 
 export default function SwishPage() {
   const [swish, setSwish] = useState<Swish | null>(null);
   const [barcode, setBarcode] = useState<string | null>(null);
   const [scanCount, setScanCount] = useState<number>(0);
   const [item, setItem] = useState<Item | null>();
+  const [size, setSize] = useState<number>(getSize());
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSize(getSize());
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchSwish = async () => {
@@ -37,6 +62,8 @@ export default function SwishPage() {
       document.removeEventListener("keydown", handleScanEvent);
     };
   }, []);
+
+
 
   useEffect(() => {
     const getItemForSwish = async () => {
@@ -68,19 +95,19 @@ export default function SwishPage() {
       <h2 className="text-4xl font-bold mb-4">Swisha till CCC!</h2>
       {swish ? (
         <>
-          <p className="text-gray-700 mb-4">
+          <p className="text-gray-700 text-xl md:text-2xl mx-2 mb-4 ">
             Strecka något så kommer priset dyka upp nedanför!
           </p>
           {item && (
             <div className="my-4 flex gap-2">
-              <p className="text-xl mb-2">
+              <p className="text-xl md:text-2xl mb-2">
                 Du håller på att strecka en{" "}
                 <span className="font-bold">{item.name}</span>
               </p>
               <p className="text-gray-700 mb-2"> - {item.price} kr/st</p>
             </div>
           )}
-          <p className="text-xl text-gray-700">
+          <p className="text-xl md:text-2xl text-gray-700">
             Swisha till{" "}
             <span className="font-bold">{formatPhoneNumber(swish.number)}</span>{" "}
             ({swish.name})
@@ -88,10 +115,9 @@ export default function SwishPage() {
           <p className="text-xl text-gray-700 mb-8">eller skanna QR-koden med Swish</p>
           <div className="rounded-lg overflow-hidden">
             <QrCode
-              value={`C${swish.number};${item ? item.price : 0};;${
-                item ? 4 : 6 // 4 för att låsa pris och nummer och 6 för att låsa nummer
-              }`}
-              size={400}
+              value={`C${swish.number};${item ? item.price : 0};;${item ? 4 : 6 // 4 för att låsa pris och nummer och 6 för att låsa nummer
+                }`}
+              size={size}
             />
           </div>
         </>

@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
-import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
+import React from "react";
+import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { TransactionWithItem } from "./UserPage";
 import { Card, Select, SelectItem } from "@nextui-org/react";
-import { ItemType } from "@prisma/client";
 
 
 interface DataPoint {
@@ -13,7 +12,7 @@ interface Data {
     [drink: string]: DataPoint[];
 }
 
-export default function DrinksByDay({ transactions }: { transactions: TransactionWithItem[]; }) {
+export default function DrinksByDay({ width, transactions }: { width: number, transactions: TransactionWithItem[]; }) {
     const [selectedDrink, setSelectedDrink] = React.useState<string>("Totalt");
 
     // Process the transactions data
@@ -60,49 +59,50 @@ export default function DrinksByDay({ transactions }: { transactions: Transactio
     if (drinks.length === 0) {
         return <Card className="p-4">Inga drycker hittades</Card>;
     }
-    
+
     return (
-        <Card className="p-4">
+        <Card className="p-4 overflow-x-scroll">
             <Select
                 aria-label="Choose drink to display in graph"
-                className="my-2"
+                className={`my-2 ${width < 900 ? 'w-[800px]' : 'w-full'}`}
                 selectedKeys={[selectedDrink]}
                 onChange={handleSelectionChange}
+                fullWidth
             >
                 {drinks.map(drink => (
                     <SelectItem key={drink} value={drink}>{drink}</SelectItem>
                 ))}
             </Select>
 
-            { selectedDrink ? (
+            {selectedDrink ? (
                 <div>
                     <h3 className="ml-2">
                         {selectedDrink}
                     </h3>
-                    <LineChart
-                    width={700}
-                    height={300}
-                    data={dateToDrinkByDate[selectedDrink]}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5,}}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" tick={{ fontSize: 15 }} />
-                        <YAxis
-                            tickFormatter={(value) => Math.floor(value).toString()}
-                            ticks={
-                                dateToDrinkByDate[selectedDrink] ?
-                                Array.from(new Set(dateToDrinkByDate[selectedDrink].map(item => Math.floor(item.count))))
-                                : []
-                            }
-                            domain={[0, 'dataMax + 0.5']}
+                    <ResponsiveContainer width={width < 900 ? 800 : '100%'} height={300}>
+                        <LineChart
+                            data={dateToDrinkByDate[selectedDrink]}
+                            margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="date" tick={{ fontSize: 15 }} />
+                            <YAxis
+                                tickFormatter={(value) => Math.floor(value).toString()}
+                                ticks={
+                                    dateToDrinkByDate[selectedDrink] ?
+                                        Array.from(new Set(dateToDrinkByDate[selectedDrink].map(item => Math.floor(item.count))))
+                                        : []
+                                }
+                                domain={[0, 'dataMax + 0.5']}
                             />
-                        <Tooltip />
-                        <Legend />
-                        <Line key="melleruds" type="monotone" name="Antal streck" dataKey="count" stroke="#8884d8" activeDot={{ r: 6 }} />
-                    </LineChart>
+                            <Tooltip />
+                            <Legend />
+                            <Line key="melleruds" type="monotone" name="Antal streck" dataKey="count" stroke="#8884d8" activeDot={{ r: 6 }} />
+                        </LineChart>
+                    </ResponsiveContainer>
                 </div>
-                    ) : (
-                        <h3 className="text-xl">Du måste välja en dryck.</h3>
-                    )}
+            ) : (
+                <h3 className="text-xl">Du måste välja en dryck.</h3>
+            )}
         </Card>
     );
 }

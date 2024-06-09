@@ -192,12 +192,12 @@ export default function AdminUserCard({ user, onUserUpdate, onUserDeletion }: { 
         <div>
             {originalUser && (
                 <>
-                    <div className='border p-4 rounded-lg shadow-md space-y-2'>
+                    <div className='border p-4 rounded-lg shadow-md space-y-2 mr-2'>
                         <div className='flex justify-between'>
                             <h2 className='text-xl font-bold'>{originalUser.username}</h2>
                             <div className='flex'>
                                 <MdOutlineEdit onClick={onOpenEditUserModal} className='mx-3 text-2xl cursor-pointer' />
-                                <RiDeleteBinLine onClick={onOpenDeleteUserModal} className='texEt-2xl text-red-600 cursor-pointer' />
+                                <RiDeleteBinLine onClick={onOpenDeleteUserModal} className='text-2xl text-red-600 cursor-pointer' />
                             </div>
                         </div>
 

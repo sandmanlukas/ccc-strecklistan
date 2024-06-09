@@ -141,58 +141,54 @@ export default function AdminPage() {
     }, []);
 
     return (
-
-        <div>
-            <Tabs aria-label="Tabbar för användare eller inventarie">
-                <Tab key="users" title="Användare">
-
+        <div className="w-screen md:w-fit mx-auto overflow-auto">
+            <Tabs aria-label="Tabbar för användare eller inventarie" fullWidth>
+                <Tab key="users" title="Användare" className="w-[800px] md:w-full">
                     {users.length > 0 ? (
                         loadingUsers ? (
                             <div className="flex items-center justify-center">
                                 <Spinner />
                             </div>
                         ) : (
-                            <div className="grid grid-cols-[1fr_2fr] gap-4">
-                                <div className="">
-                                    <ListboxWrapper>
-                                        <Listbox
-                                            aria-label="Användare i systemet"
-                                            variant="flat"
-                                            disallowEmptySelection
-                                            selectionMode="single"
-                                            items={users}
-                                            selectedKeys={selectedUserKey}
-                                            onSelectionChange={setSelectedUserKey}
-                                            classNames={{
-                                                base: "max-w-xs",
-                                                list: "max-h-[300px] overflow-scroll",
-                                            }}
-                                        >
-                                            {(user) => (
-                                                <ListboxItem key={user.id} textValue={user.username} onClick={() => setSelectedUser(user)}>
-                                                    <div className="flex gap-2 s-center">
-                                                        <div className="flex flex-col">
-                                                            <span className="text-small">{user.username}</span>
-                                                            <span className="text-tiny text-default-400">{user.firstName} {user.lastName}</span>
-                                                        </div>
+                            <div className="grid grid-cols grid-cols-[1fr_2fr] gap-4">
+                                <ListboxWrapper>
+                                    <Listbox
+                                        aria-label="Användare i systemet"
+                                        variant="flat"
+                                        disallowEmptySelection
+                                        selectionMode="single"
+                                        items={users}
+                                        selectedKeys={selectedUserKey}
+                                        onSelectionChange={setSelectedUserKey}
+                                        classNames={{
+                                            base: "w-full md:max-w-xs",
+                                            list: "w-full max-h-[300px] overflow-scroll",
+                                        }}
+                                    >
+                                        {(user) => (
+                                            <ListboxItem key={user.id} textValue={user.username} onClick={() => setSelectedUser(user)}>
+                                                <div className="flex gap-2 s-center">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-small">{user.username}</span>
+                                                        <span className="text-tiny text-default-400">{user.firstName} {user.lastName}</span>
                                                     </div>
-                                                </ListboxItem>
-                                            )}
-                                        </Listbox>
-                                    </ListboxWrapper>
-                                </div>
+                                                </div>
+                                            </ListboxItem>
+                                        )}
+                                    </Listbox>
+                                </ListboxWrapper>
                                 <AdminUserCard user={selectedUser} onUserUpdate={handleUserUpdate} onUserDeletion={handleUserDeletion} />
                             </div>
                         )
                     ) : (
-                        <div className="p-4 bg-white rounded-lg">
+                        <div className="p-4 bg-white rounded-lg w-[800px]">
                             <p className="text-xl ">Inga användare hittades. Testa lägga till några användare
                                 <Link className="ml-2 text-xl" href={"/user/new"}>här</Link>
                             </p>
                         </div>
                     )}
                 </Tab>
-                <Tab key="items" title="Inventarie">
+                <Tab key="items" title="Inventarie" className="w-[800px] md:w-full">
                     {
                         items.length > 0 ?
                             (

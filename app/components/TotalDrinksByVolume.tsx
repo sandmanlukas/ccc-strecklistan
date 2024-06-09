@@ -5,7 +5,7 @@ import { Card } from "@nextui-org/react";
 import { BEERED_BARCODE } from "../constants";
 
 
-export default function TotalDrinksByVolume({ transactions }: { transactions: TransactionWithItem[]; }) {
+export default function TotalDrinksByVolume({ width, transactions }: { width: number, transactions: TransactionWithItem[]; }) {
 
     transactions = transactions.filter(({ item }) => item.barcode !== BEERED_BARCODE);
 
@@ -36,25 +36,25 @@ export default function TotalDrinksByVolume({ transactions }: { transactions: Tr
         <>
             {
                 data.length > 0 ? (
-                    <Card className="p-4">
-                        <BarChart
-                            width={700}
-                            height={300}
-                            data={data}
-                            margin={{
-                                top: 5,
-                                right: 30,
-                                left: 20,
-                                bottom: 5,
-                            }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="drink" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="volume" name="Volym per dryck (liter)" type="monotone" fill="#43AA8B" activeBar={<Rectangle fill="#EF3054" stroke="#000" />} />
-                        </BarChart>
+                    <Card className="p-4 overflow-x-scroll">
+                        <ResponsiveContainer width={width < 900 ? 800 : '100%'} height={300}>
+                            <BarChart
+                                data={data}
+                                margin={{
+                                    top: 5,
+                                    right: 30,
+                                    left: 20,
+                                    bottom: 5,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="drink" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="volume" name="Volym per dryck (liter)" type="monotone" fill="#43AA8B" activeBar={<Rectangle fill="#EF3054" stroke="#000" />} />
+                            </BarChart>
+                        </ResponsiveContainer>
                     </Card>
                 ) : (
                     <Card className="p-4">
