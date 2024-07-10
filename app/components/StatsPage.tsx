@@ -57,7 +57,6 @@ export default function StatsPage() {
 
     }, []);
 
-
     return (
         loading ?
             <div className='mx-auto mt-2'>
