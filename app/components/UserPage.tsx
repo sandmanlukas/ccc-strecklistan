@@ -17,6 +17,41 @@ export interface TransactionWithItem extends Transaction {
     item: Item;
 }
 
+export interface FavoriteDrinkCount {
+    drink: string;
+    count: number;
+}
+
+function calculateFavoriteDrink(transactions: TransactionWithItem[]): FavoriteDrinkCount {
+    const drinkCounts: Record<string, number> = {};
+
+    transactions.forEach((transaction) => {
+        if (transaction.item.type != 'DRYCK') {
+            return;
+        }
+        
+        const { name } = transaction.item;
+
+        if (drinkCounts[name]) {
+            drinkCounts[name] += 1;
+        } else {
+            drinkCounts[name] = 1;
+        }
+    });
+
+    let favoriteDrink = '';
+    let maxCount = 0;
+
+    Object.entries(drinkCounts).forEach(([drink, count]) => {
+        if (count > maxCount) {
+            favoriteDrink = drink;
+            maxCount = count;
+        }
+    }); 
+
+    return { drink: favoriteDrink, count: maxCount };
+}
+
 export default function UserPage({ id }: { id: number }) {
     const [user, setUser] = useState<User | null>(null);
     const [beeredUser, setBeeredUser] = useState<User | null>(null);
@@ -27,6 +62,7 @@ export default function UserPage({ id }: { id: number }) {
     const [scanCount, setScanCount] = useState<number>(0);
     const [item, setItem] = useState<Item | null>(null);
     const [debt, setDebt] = useState<number>(0);
+    const [favoriteDrink, setFavoriteDrink] = useState<FavoriteDrinkCount | null>(null);
 
     const divRef = useRef<HTMLDivElement>(null);
 
@@ -47,6 +83,7 @@ export default function UserPage({ id }: { id: number }) {
             const currentUsers = users.filter(filterUser => filterUser.role !== 'KADAVER' && filterUser.role !== 'OTHER' && filterUser.username !== user.username);
             setCurrentUsers(currentUsers);
             setTransactions(user.transactions);
+            setFavoriteDrink(calculateFavoriteDrink(user.transactions));
             setDebt(user.debt);
             setLoading(false);
         }
@@ -172,6 +209,8 @@ export default function UserPage({ id }: { id: number }) {
                                         </Dropdown>
                                     )}
                                 </div>
+                                {favoriteDrink &&
+                                    <p><span className="font-bold">Favoritdryck: </span>{favoriteDrink.drink} <span className="text-sm">{favoriteDrink.count} st</span></p>                                }
                                 <p><span className="font-bold">Skuld:</span> {debt} kr</p>
                             </div>
 
