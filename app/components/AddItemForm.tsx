@@ -5,13 +5,17 @@ import { handleScan, capitalizeFirstLetter } from "@/app/lib/utils";
 import { addItem } from "@/app/lib/addItem";
 import { ItemType } from "@prisma/client";
 import { Item } from "@/app/lib/addItem";
+import { useSearchParams } from 'next/navigation';
 
 import { toast } from 'react-toastify';
 import { Input, SelectItem, Select } from "@nextui-org/react";
 
 export default function AddItemForm() {
+    const searchParams = useSearchParams();
+    const barcode = searchParams.get('barcode');
+
     const [formData, setFormData] = useState({
-        barcode: '',
+        barcode: barcode ? barcode : '',
         name: '',
         price: 0,
         volume: 0,

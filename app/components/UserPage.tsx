@@ -11,6 +11,8 @@ import { getAllUsers } from "@/app/lib/getAllUsers";
 import { createTransaction } from "@/app/lib/createTransaction";
 import Transactions from "@/app/components/Transactions";
 import { DEFAULT_AVATAR_URL } from "../constants";
+import { useRouter } from 'next/navigation';
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 
 export interface TransactionWithItem extends Transaction {
@@ -29,7 +31,7 @@ function calculateFavoriteDrink(transactions: TransactionWithItem[]): FavoriteDr
         if (transaction.item.type != 'DRYCK') {
             return;
         }
-        
+
         const { name } = transaction.item;
 
         if (drinkCounts[name]) {
@@ -47,10 +49,25 @@ function calculateFavoriteDrink(transactions: TransactionWithItem[]): FavoriteDr
             favoriteDrink = drink;
             maxCount = count;
         }
-    }); 
+    });
 
     return { drink: favoriteDrink, count: maxCount };
 }
+
+const CreateNewItemToast = ({ router, barcode }: { router: AppRouterInstance, barcode: string }) => (
+    <div className="flex items-center justify-center">
+        <div>
+            <div className="flex items-start">
+                <div>
+                    <h3 className="text-sm font-medium">Något gick fel! Den här varan finns inte.</h3>
+                    <div className="text-sm mt-2">
+                        <button className="w-full mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => { toast.dismiss(); router.push(`/item/new?barcode=${barcode}`) }}>Skapa ny produkt!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+);
 
 export default function UserPage({ id }: { id: number }) {
     const [user, setUser] = useState<User | null>(null);
@@ -63,6 +80,7 @@ export default function UserPage({ id }: { id: number }) {
     const [item, setItem] = useState<Item | null>(null);
     const [debt, setDebt] = useState<number>(0);
     const [favoriteDrink, setFavoriteDrink] = useState<FavoriteDrinkCount | null>(null);
+    const router = useRouter();
 
     const divRef = useRef<HTMLDivElement>(null);
 
@@ -134,12 +152,12 @@ export default function UserPage({ id }: { id: number }) {
                     setItem(item);
                     setBeeredUser(null);
                 } catch (error) {
-                    toast.error('Något gick fel! Är du säker på att den här varan finns?');
+                    toast.error(<CreateNewItemToast router={router} barcode={barcode} />);
                 }
             }
         }
         performTransaction();
-    }, [scanCount, user, barcode])
+    }, [scanCount, user, barcode, router])
 
     const handleDropdownClick = (user: User) => {
         setTimeout(() => {
@@ -210,7 +228,7 @@ export default function UserPage({ id }: { id: number }) {
                                     )}
                                 </div>
                                 {favoriteDrink &&
-                                    <p><span className="font-bold">Favoritdryck: </span>{favoriteDrink.drink} <span className="text-sm">{favoriteDrink.count} st</span></p>                                }
+                                    <p><span className="font-bold">Favoritdryck: </span>{favoriteDrink.drink} <span className="text-sm">{favoriteDrink.count} st</span></p>}
                                 <p><span className="font-bold">Skuld:</span> {debt} kr</p>
                             </div>
 
