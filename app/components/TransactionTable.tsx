@@ -1,9 +1,10 @@
-import { Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
+import { select, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
 import { TransactionWithItemAndUser } from "./StatsPage";
 import { formatTransactionDate } from "../lib/utils";
 import { MdDeleteForever } from "react-icons/md";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 import { AsyncListData, useAsyncList } from "@react-stately/data";
-import React, { Key, use, useEffect, useMemo, useRef, useState } from "react";
+import React, { Key, useEffect, useRef, useState } from "react";
 
 interface Column {
     title: string,
@@ -14,7 +15,8 @@ interface TransactionTableProps {
     transactions: TransactionWithItemAndUser[],
     columns: Column[],
     label: string,
-    selectTransaction?: (transaction: TransactionWithItemAndUser) => void,
+    selectTransactionDeletion?: (transaction: TransactionWithItemAndUser) => void,
+    selectTransactionInformation?: (transaction: TransactionWithItemAndUser) => void,
 }
 
 const sortDescriptorToValue = (sortDescriptor: Key | undefined, transaction: TransactionWithItemAndUser) => {
@@ -36,7 +38,7 @@ const sortDescriptorToValue = (sortDescriptor: Key | undefined, transaction: Tra
 
 
 
-export function TransactionTable({ transactions, columns, label, selectTransaction }: TransactionTableProps) {
+export function TransactionTable({ transactions, columns, label, selectTransactionDeletion, selectTransactionInformation }: TransactionTableProps) {
     const [isLoading, setIsLoading] = useState(true);
 
     let listRef = useRef<AsyncListData<TransactionWithItemAndUser> | null>(null);
@@ -48,7 +50,7 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
         },
         async sort({ items, sortDescriptor }) {
             return {
-                items: items.sort((a, b) => {                    
+                items: items.sort((a, b) => {
                     let first = sortDescriptorToValue(sortDescriptor.column, a);
                     let second = sortDescriptorToValue(sortDescriptor.column, b);
 
@@ -84,15 +86,22 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
             case "actions":
                 return (
                     <>
-                        {selectTransaction && (
-                            <div className="flex justify-center items-center">
+                        <div className="flex space-x-4">
+                            { selectTransactionInformation && (
+                            <Tooltip content="Information">
+                                <span className="text-lg cursor-pointer active:opacity-50">
+                                    <IoMdInformationCircleOutline onClick={() => selectTransactionInformation(transaction)} />
+                                </span>
+                            </Tooltip>
+                            )}
+                            {selectTransactionDeletion && (
                                 <Tooltip color="danger" content="Ta bort transaktion">
                                     <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                        <MdDeleteForever onClick={() => selectTransaction(transaction)} />
+                                        <MdDeleteForever onClick={() => selectTransactionDeletion(transaction)} />
                                     </span>
                                 </Tooltip>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </>
                 );
             case "createdAt":
@@ -120,7 +129,7 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
                     </p>
                 )
         }
-    }, [selectTransaction]);
+    }, [selectTransactionDeletion, selectTransactionInformation]);
 
     return (
         <Table

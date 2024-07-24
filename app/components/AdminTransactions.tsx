@@ -11,11 +11,13 @@ import { toast } from "react-toastify";
 
 
 export function AdminTransactions({ transactions }: { transactions: TransactionWithItemAndUser[] }) {
-    const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+    const { isOpen: isOpenDeleteModal, onOpen: onOpenDeleteModal, onClose: onCloseDeleteModal, onOpenChange: onOpenChangeDeleteModal } = useDisclosure();
+    const { isOpen: isOpenInformationModal, onOpen: onOpenInformationModal, onClose: onCloseInformationModal, onOpenChange: onOpenChangeInformationModal } = useDisclosure();
     const [filteredUsers, setFilteredUsers] = useState<string[]>(['']);
     const [filteredTransactions, setFilteredTransactions] = useState(transactions);
     const [updatedTransactions, setUpdatedTransactions] = useState(transactions);
-    const [selectedTransaction, setSelectedTransaction] = useState<TransactionWithItemAndUser | null>(null);
+    const [selectedTransactionDeletion, setSelectedTransactionDeletion] = useState<TransactionWithItemAndUser | null>(null);
+    const [selectedTransactionInformation, setSelectedTransactionInformation] = useState<TransactionWithItemAndUser | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const uniqueUsers = Array.from(new Set(transactions.map((transaction) => transaction.user.username)));
@@ -74,37 +76,51 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
 
     const selectTransactionForDeletions = (transaction: TransactionWithItemAndUser) => {
         if (transaction) {
-            setSelectedTransaction(transaction);
-            onOpen();
+            setSelectedTransactionDeletion(transaction);
+            onOpenDeleteModal();
+        }
+    }
+
+    const selectTransactionForInformation = (transaction: TransactionWithItemAndUser) => {
+        if (transaction) {
+            setSelectedTransactionInformation(transaction);
+            onOpenInformationModal();
         }
     }
 
     const handleDeleteTransaction = async () => {
-        if (selectedTransaction) {
+        if (selectedTransactionDeletion) {
             setIsDeleting(true);
 
-            const deletedTransaction = await deleteTransaction(selectedTransaction);
+            const deletedTransaction = await deleteTransaction(selectedTransactionDeletion);
 
             if (!deletedTransaction) {
                 toast.error('Något gick fel vid borttagning av transaktion!');
-                closeModal();
+                closeDeleteModal();
                 return;
 
             }
 
-            const updatedTransactions = filteredTransactions.filter(transaction => transaction.id !== selectedTransaction.id);
+            const updatedTransactions = filteredTransactions.filter(transaction => transaction.id !== selectedTransactionDeletion.id);
             setUpdatedTransactions(updatedTransactions);
-            closeModal();
+            closeDeleteModal();
             toast.success('Transaktion borttagen!');
         }
     }
 
-    const closeModal = () => {
-        if (selectedTransaction) {
-            setSelectedTransaction(null);
+    const closeDeleteModal = () => {
+        if (selectedTransactionDeletion) {
+            setSelectedTransactionDeletion(null);
         }
         setIsDeleting(false);
-        onClose();
+        onCloseDeleteModal();
+    }
+
+    const closeInformationModal = () => {
+        if (selectedTransactionInformation) {
+            setSelectedTransactionInformation(null);
+        }
+        onCloseInformationModal();
     }
 
     return (
@@ -132,12 +148,18 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
                         </span>
                     </Tooltip>
                 </div>
-                <TransactionTable transactions={filteredTransactions} columns={columns} label="Transaktioner" selectTransaction={selectTransactionForDeletions}/>
-                {selectedTransaction && (
+                <TransactionTable 
+                    transactions={filteredTransactions} 
+                    columns={columns} 
+                    label="Transaktioner" 
+                    selectTransactionDeletion={selectTransactionForDeletions}
+                    selectTransactionInformation={selectTransactionForInformation}
+                    />
+                {selectedTransactionDeletion && (
                     <Modal
-                        isOpen={isOpen}
-                        onClose={closeModal}
-                        onOpenChange={onOpenChange}
+                        isOpen={isOpenDeleteModal}
+                        onClose={closeDeleteModal}
+                        onOpenChange={onOpenChangeDeleteModal}
                         placement="top-center"
                         size="3xl"
                     >
@@ -147,10 +169,10 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
                                     <ModalHeader className="flex flex-col gap-1 p-4 text-lg font-bold">Ta bort transaktion</ModalHeader>
                                     <ModalBody className="p-4">
                                         <p>Är du säker på att du vill ta bort denna transaktion? Priset för transaktionen kommer dras bort från personens skuld.</p>
-                                        <TransactionTable transactions={[selectedTransaction]} columns={columns.slice(0,-1)} label="Transaktion(er) att ta bort"/>
+                                        <TransactionTable transactions={[selectedTransactionDeletion]} columns={columns.slice(0,-1)} label="Transaktion(er) att ta bort"/>
                                     </ModalBody>
                                     <ModalFooter>
-                                        <Button variant="flat" onPress={closeModal}>
+                                        <Button variant="flat" onPress={closeDeleteModal}>
                                             Stäng
                                         </Button>
                                         <Button
@@ -158,6 +180,32 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
                                             onPress={handleDeleteTransaction}
                                             isLoading={isDeleting}>
                                             Ta bort transaktion
+                                        </Button>
+                                    </ModalFooter>
+                                </>
+                            )}
+                        </ModalContent>
+                    </Modal>
+                )}
+                {selectedTransactionInformation && (
+                    <Modal
+                        isOpen={isOpenInformationModal}
+                        onClose={closeInformationModal}
+                        onOpenChange={onOpenChangeInformationModal}
+                        placement="top-center"
+                        size="3xl"
+                    >
+                        <ModalContent>
+                            {() => (
+                                <>
+                                    <ModalHeader className="flex flex-col gap-1 p-4 text-lg font-bold">Information</ModalHeader>
+                                    <ModalBody className="p-4">
+                                        <p>Här är information om denna transaktion.</p>
+                                        <TransactionTable transactions={[selectedTransactionInformation]} columns={columns.slice(0,-1)} label="Information"/>
+                                    </ModalBody>
+                                    <ModalFooter>
+                                        <Button variant="flat" onPress={closeInformationModal}>
+                                            Stäng
                                         </Button>
                                     </ModalFooter>
                                 </>
