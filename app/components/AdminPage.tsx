@@ -18,7 +18,7 @@ import { getSwishInfo } from "@/app/lib/getSwishInfo";
 import { itemTypes } from "@/app/lib/utils";
 import { toast } from "react-toastify";
 import { AdminAccountSettings } from "./AdminAccountSettings";
-import { getAllTransactions } from "../lib/getAllTransactions";
+import { getAllTransactionsWithoutBeeredUser } from "../lib/getAllTransactionsWithoutBeeredUser";
 import { AdminTransactions } from "./AdminTransactions";
 import { TransactionWithItemAndUser } from "./StatsPage";
 
@@ -141,7 +141,7 @@ export default function AdminPage() {
 
         const fetchTransactions = async () => {
             setLoadingTransactions(true);
-            const transactions = await getAllTransactions();
+            const transactions = await getAllTransactionsWithoutBeeredUser();
             if (!transactions) {
                 toast.error("Kunde inte hämta transaktioner");
                 return;
