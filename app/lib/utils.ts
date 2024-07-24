@@ -128,6 +128,9 @@ export const formatDateToLocale = (date: Date): string => {
 }
 
 export const formatTransactionDate = (date: Date): string => {
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
