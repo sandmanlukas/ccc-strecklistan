@@ -3,7 +3,7 @@
 import { TransactionWithItemAndUser } from "./StatsPage";
 import { Link, Spinner } from "@nextui-org/react";
 import { handleBeeredTransaction } from "./Transactions";
-import { formatDate, formatTime } from "../lib/utils";
+import { formatTime, formatTransactionDate } from "../lib/utils";
 import useTransactions from "../hooks/useTransactions";
 import React from "react";
 import { toast } from "react-toastify";
@@ -18,7 +18,7 @@ const Transaction = ({ transaction, date }: { transaction: TransactionWithItemAn
                 </h3>
                 {transaction.item.volume > 0 && <p className='text-sm text-gray-600 ml-2'>{transaction.item.volume} cl</p>}
             </div>
-            <p className="text-sm text-gray-600">{date == 'Idag' ? formatTime(transaction.createdAt) : formatDate(transaction.createdAt)}</p>
+            <p className="text-sm text-gray-600">{date == 'Idag' ? formatTime(transaction.createdAt) : formatTransactionDate(transaction.createdAt)}</p>
         </div>
         <div className="flex flex-row justify-between">
             {handleBeeredTransaction(transaction)}

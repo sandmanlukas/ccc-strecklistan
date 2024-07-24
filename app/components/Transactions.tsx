@@ -8,24 +8,19 @@ interface TransactionProps {
     transactions: TransactionWithItem[];
 }
 
-const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
-    // Helper function to format date
-
-
-    const handleBeeredTransaction = (transaction: TransactionWithItem) => {
-        if (transaction.beeredTransaction) {
-            if (transaction.beeredBy) {
-                return <p className="text-base text-slate-600">Bärsad av {transaction.beeredBy} för {transaction.price} kr</p>;
-            } else if (transaction.beeredUser) {
-                return <p className="text-base text-slate-600">Bärsade {transaction.beeredUser}</p>;
-            }
-        } else {
-            return <p className="text-sm md:text-base text-slate-600">{transaction.price} kr</p>;
+// Helper function to format date
+export const handleBeeredTransaction = (transaction: TransactionWithItem) => {
+    
+    if (transaction.beeredTransaction) {
+        if (transaction.beeredBy) {
+            return <p className="text-base text-slate-600">Bärsad av {transaction.beeredBy} för {transaction.price} kr</p>;
+        } else if (transaction.beeredUser) {
+            return <p className="text-base text-slate-600">Bärsade {transaction.beeredUser}</p>;
         }
+    } else {
+        return <p className="text-sm md:text-base text-slate-600">{transaction.price} kr</p>;
     }
 }
-
-
 const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
 
     return (
@@ -48,7 +43,6 @@ const Transactions: React.FC<TransactionProps> = ({ transactions }) => {
                                 {
                                     handleBeeredTransaction(transaction)
                                 }
-                                <p className="text-xs md:text-sm text-gray-600">{formatDate(transaction.createdAt)}</p>
                             </div>
                         </div>
                     ))

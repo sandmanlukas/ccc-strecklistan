@@ -3,7 +3,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { Account, Item, Swish, Transaction, User } from "@prisma/client";
-import { Listbox, ListboxItem, Skeleton, Selection, Tabs, Tab, Link } from "@nextui-org/react";
+import { Listbox, ListboxItem, Skeleton, Selection, Tabs, Tab, Link, Spinner } from "@nextui-org/react";
 
 import AdminUserCard from "@/app/components/AdminUserCard";
 import AdminItemCard from "@/app/components/AdminItemCard";
@@ -274,7 +274,7 @@ export default function AdminPage() {
                     )}
                 </Tab>
                 <Tab key="transactions" title="Transaktioner">
-                    <Skeleton isLoaded={!loadingAccounts} className="rounded-lg">
+                    <Skeleton isLoaded={!loadingTransactions} className="rounded-lg">
                         <AdminTransactions transactions={transactions} />
                     </Skeleton>
                 </Tab>
