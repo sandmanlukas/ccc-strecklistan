@@ -67,7 +67,7 @@ export default function RecentTransactions() {
     }
 
     return (
-        <div className="mx-auto p-3 w-1/2">
+        <div className="mx-auto p-3">
             <h2 className="text-xl text-left font-semibold mb-2">Senaste transaktionerna</h2>
             <div className="flex flex-row justify-between">
                 <p>Här visas de senaste tre veckornas transaktioner.</p>
