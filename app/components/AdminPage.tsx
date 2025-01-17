@@ -179,7 +179,7 @@ export default function AdminPage() {
                                         onSelectionChange={setSelectedUserKey}
                                         classNames={{
                                             base: "w-full md:max-w-xs",
-                                            list: "w-full max-h-[300px] overflow-scroll",
+                                            list: "w-full max-h-[300px] overflow-y-auto",
                                         }}
                                     >
                                         {(user) => (
@@ -227,7 +227,7 @@ export default function AdminPage() {
                                                     onSelectionChange={setSelectedItemKey}
                                                     classNames={{
                                                         base: "max-w-xs",
-                                                        list: "max-h-[300px] overflow-scroll",
+                                                        list: "max-h-[300px] overflow-y-auto",
                                                     }}
                                                 >
                                                     {(item) => (
