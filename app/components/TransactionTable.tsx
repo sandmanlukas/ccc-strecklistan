@@ -125,7 +125,7 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
             case "beered":
                 return (
                     <p>
-                        {transaction.beeredTransaction ? "Ja" : "Nej"}
+                        {transaction.beeredTransaction ? `Ja (av ${transaction.beeredBy})` : "Nej"}
                     </p>
                 )
         }
@@ -137,7 +137,7 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
             layout="fixed"
             isHeaderSticky
             classNames={{
-                base: "max-h-[520px] overflow-scroll",
+                base: "max-h-[520px]",
             }}
             sortDescriptor={listRef.current.sortDescriptor}
             onSortChange={listRef.current.sort}

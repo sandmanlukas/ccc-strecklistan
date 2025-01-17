@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 export function AdminTransactions({ transactions }: { transactions: TransactionWithItemAndUser[] }) {
     const { isOpen: isOpenDeleteModal, onOpen: onOpenDeleteModal, onClose: onCloseDeleteModal, onOpenChange: onOpenChangeDeleteModal } = useDisclosure();
     const { isOpen: isOpenInformationModal, onOpen: onOpenInformationModal, onClose: onCloseInformationModal, onOpenChange: onOpenChangeInformationModal } = useDisclosure();
-    const [filteredUsers, setFilteredUsers] = useState<string[]>(['']);
+    const [filteredUsers, setFilteredUsers] = useState<string[]>([]);
     const [filteredTransactions, setFilteredTransactions] = useState(transactions);
     const [updatedTransactions, setUpdatedTransactions] = useState(transactions);
     const [selectedTransactionDeletion, setSelectedTransactionDeletion] = useState<TransactionWithItemAndUser | null>(null);
@@ -22,11 +22,11 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
 
     const uniqueUsers = Array.from(new Set(transactions.map((transaction) => transaction.user.username)));
 
-    useEffect(() => {                
-        if (filteredUsers.length >= 1 && filteredUsers[0] !== '') {
-            const filtered = updatedTransactions.filter(transaction => filteredUsers.includes(transaction.user.username));            
+    useEffect(() => {
+        if (filteredUsers.length >= 1) {
+            const filtered = updatedTransactions.filter(transaction => filteredUsers.includes(transaction.user.username));
             setFilteredTransactions(filtered);
-        } else if (filteredUsers.length === 1 && filteredUsers[0] === '') {
+        } else if (filteredUsers.length === 0) {
             setFilteredTransactions(updatedTransactions);
         }
     }, [filteredUsers, updatedTransactions]);
@@ -66,12 +66,12 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
         if (filteredUsers[0] === '') {
             filteredUsers.shift();
             }
-            
+
         setFilteredUsers(filteredUsers);
     };
 
     const clearSelection = () => {
-        setFilteredUsers(['']);
+        setFilteredUsers([]);
     }
 
     const selectTransactionForDeletions = (transaction: TransactionWithItemAndUser) => {
@@ -134,7 +134,7 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
                         placeholder="Välj användare"
                         selectedKeys={filteredUsers}
                         onChange={handleSelectionChange}
-                        className="mb-2"
+                        className="mb-2 w-full"
                     >
                         {uniqueUsers.map((user) => (
                             <SelectItem key={user} value={user}>
@@ -142,16 +142,18 @@ export function AdminTransactions({ transactions }: { transactions: TransactionW
                             </SelectItem>
                         ))}
                     </Select>
-                    <Tooltip content="Rensa filter">
-                        <span className="text-lg cursor-pointer active:opacity-50">
-                            <MdClear onClick={clearSelection} />
-                        </span>
-                    </Tooltip>
+                    {filteredUsers.length > 0 && (
+                        <Tooltip content="Rensa filter">
+                            <span className="text-lg cursor-pointer active:opacity-50">
+                                <MdClear onClick={clearSelection} />
+                            </span>
+                        </Tooltip>
+                    )}
                 </div>
-                <TransactionTable 
-                    transactions={filteredTransactions} 
-                    columns={columns} 
-                    label="Transaktioner" 
+                <TransactionTable
+                    transactions={filteredTransactions}
+                    columns={columns}
+                    label="Transaktioner"
                     selectTransactionDeletion={selectTransactionForDeletions}
                     selectTransactionInformation={selectTransactionForInformation}
                     />
