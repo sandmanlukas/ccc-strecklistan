@@ -30,7 +30,7 @@ function AuthButton({ session }: { session: Session | null }) {
             });
           }}
           size={35}
-          className="align-left"
+          className="align-left cursor-pointer"
         />
         <p className="md:hidden text-xl ml-4 mt-2">logga ut</p>
       </div>
