@@ -141,7 +141,7 @@ export default function AdminPage() {
 
         const fetchTransactions = async () => {
             setLoadingTransactions(true);
-            const transactions = await getAllTransactionsWithoutBeeredUser();
+            const transactions = await getAllTransactionsWithoutBeeredUser(true);
             if (!transactions) {
                 toast.error("Kunde inte hämta transaktioner");
                 return;
