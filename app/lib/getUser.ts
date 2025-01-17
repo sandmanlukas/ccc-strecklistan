@@ -9,7 +9,6 @@ async function getUser(id: number) {
         },
         include: {
             transactions: {
-                take: 10,
                 orderBy: {
                     createdAt: 'desc',
                 },

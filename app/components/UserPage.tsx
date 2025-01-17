@@ -100,7 +100,7 @@ export default function UserPage({ id }: { id: number }) {
             setUser(user);
             const currentUsers = users.filter(filterUser => filterUser.role !== 'KADAVER' && filterUser.role !== 'OTHER' && filterUser.username !== user.username);
             setCurrentUsers(currentUsers);
-            setTransactions(user.transactions);
+            setTransactions(user.transactions.slice(0, 10));
             setFavoriteDrink(calculateFavoriteDrink(user.transactions));
             setDebt(user.debt);
             setLoading(false);
