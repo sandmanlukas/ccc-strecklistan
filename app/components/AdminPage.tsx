@@ -22,6 +22,7 @@ import { getAllTransactionsWithoutBeeredUser } from "../lib/getAllTransactionsWi
 import { AdminTransactions } from "./AdminTransactions";
 import { TransactionWithItemAndUser } from "./StatsPage";
 
+export const TRANSACTION_PAGE_SIZE = 50;
 
 export default function AdminPage() {
     const [users, setUsers] = React.useState<User[]>([]);
@@ -141,7 +142,7 @@ export default function AdminPage() {
 
         const fetchTransactions = async () => {
             setLoadingTransactions(true);
-            const transactions = await getAllTransactionsWithoutBeeredUser(true);
+            const transactions = await getAllTransactionsWithoutBeeredUser(true, null, TRANSACTION_PAGE_SIZE, 0);
             if (!transactions) {
                 toast.error("Kunde inte hämta transaktioner");
                 return;

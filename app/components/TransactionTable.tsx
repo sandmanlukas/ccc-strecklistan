@@ -1,10 +1,12 @@
-import { select, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
+import { Button, select, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
 import { TransactionWithItemAndUser } from "./StatsPage";
 import { formatTransactionDate } from "../lib/utils";
 import { MdDeleteForever } from "react-icons/md";
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import { AsyncListData, useAsyncList } from "@react-stately/data";
-import React, { Key, useEffect, useRef, useState } from "react";
+import { useAsyncList } from "@react-stately/data";
+import React, { Key, useState } from "react";
+import { getAllTransactionsWithoutBeeredUser } from "../lib/getAllTransactionsWithoutBeeredUser";
+import { TRANSACTION_PAGE_SIZE } from "./AdminPage";
 
 interface Column {
     title: string,
@@ -40,13 +42,26 @@ const sortDescriptorToValue = (sortDescriptor: Key | undefined, transaction: Tra
 
 export function TransactionTable({ transactions, columns, label, selectTransactionDeletion, selectTransactionInformation }: TransactionTableProps) {
     const [isLoading, setIsLoading] = useState(true);
+    const [hasMore, setHasMore] = useState(true);
 
-    let listRef = useRef<AsyncListData<TransactionWithItemAndUser> | null>(null);
+    let list = useAsyncList<TransactionWithItemAndUser>({
+        async load({ signal, cursor }): Promise<{ items: TransactionWithItemAndUser[], cursor: string | undefined }> {
+            try {
+                const currentPage = cursor ? parseInt(cursor as string) : 1;
+                const moreTransactions = await getAllTransactionsWithoutBeeredUser(true, null, TRANSACTION_PAGE_SIZE, currentPage * TRANSACTION_PAGE_SIZE);
 
-    listRef.current = useAsyncList({
-        async load() {
-            setIsLoading(false);
-            return { items: transactions };
+                setHasMore(moreTransactions.length === TRANSACTION_PAGE_SIZE);
+
+                setIsLoading(false);
+                return { items: currentPage === 1 ? transactions : moreTransactions, cursor: moreTransactions.length === TRANSACTION_PAGE_SIZE ? (currentPage + 1).toString() : undefined };
+            } catch (error) {
+                if (signal.aborted) {
+                    console.warn('Request aborted');
+                } else {
+                    console.error("Failed to load transactions", error);
+                }
+                return { items: transactions, cursor: undefined };
+            }
         },
         async sort({ items, sortDescriptor }) {
             return {
@@ -69,11 +84,11 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
         },
     });
 
-    useEffect(() => {
-        if (transactions) {
-            listRef.current?.reload();
-        }
-    }, [transactions]);
+    // useEffect(() => {
+    //     if (transactions && list) {
+    //         list?.reload();
+    //     }
+    // }, [transactions]);
 
     const renderCell = React.useCallback((transaction: TransactionWithItemAndUser, columnKey: React.Key) => {
         const cellValue = transaction[columnKey as keyof TransactionWithItemAndUser];
@@ -87,12 +102,12 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
                 return (
                     <>
                         <div className="flex space-x-4">
-                            { selectTransactionInformation && (
-                            <Tooltip content="Information">
-                                <span className="text-lg cursor-pointer active:opacity-50">
-                                    <IoMdInformationCircleOutline onClick={() => selectTransactionInformation(transaction)} />
-                                </span>
-                            </Tooltip>
+                            {selectTransactionInformation && (
+                                <Tooltip content="Information">
+                                    <span className="text-lg cursor-pointer active:opacity-50">
+                                        <IoMdInformationCircleOutline onClick={() => selectTransactionInformation(transaction)} />
+                                    </span>
+                                </Tooltip>
                             )}
                             {selectTransactionDeletion && (
                                 <Tooltip color="danger" content="Ta bort transaktion">
@@ -139,8 +154,21 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
             classNames={{
                 base: "max-h-[520px]",
             }}
-            sortDescriptor={listRef.current.sortDescriptor}
-            onSortChange={listRef.current.sort}
+            sortDescriptor={list.sortDescriptor}
+            onSortChange={list.sort}
+            bottomContent={
+                hasMore && !isLoading ? (
+                    <div className="flex w-full justify-center">
+                        <Button
+                            isDisabled={list.isLoading}
+                            onClick={() => list.loadMore()}
+                        >
+                            {list.isLoading && <Spinner color="white" size="sm" />}
+                            Ladda fler
+                        </Button>
+                    </div>
+                ) : null
+            }
         >
             <TableHeader columns={columns}>
                 {(column) => (
@@ -150,7 +178,7 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
                 )}
             </TableHeader>
             <TableBody
-                items={listRef.current.items}
+                items={list.items}
                 isLoading={isLoading}
                 loadingContent={<Spinner label="Laddar transaktioner..." />}
             >
