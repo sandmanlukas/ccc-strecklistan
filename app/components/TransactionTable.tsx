@@ -1,4 +1,4 @@
-import { Button, select, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
+import { Button, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
 import { TransactionWithItemAndUser } from "./StatsPage";
 import { formatTransactionDate } from "../lib/utils";
 import { MdDeleteForever } from "react-icons/md";

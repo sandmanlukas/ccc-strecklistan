@@ -64,7 +64,7 @@ export default function StatsPage() {
             </div>
             : (
                 <div className='space-y-4 w-screen md:w-auto mx-auto'>
-                    <div className='mx-auto md:grid overflow-x-scroll w-full overflow-hidden'>
+                    <div className='mx-auto md:grid overflow-x-auto w-full overflow-hidden'>
                         <h2 className='text-3xl font-bold mt-4 ml-2'>Statistik</h2>
                         <div className='mx-2 w-full md:w-auto'>
                             <Tabs aria-label="Different graphs" fullWidth>

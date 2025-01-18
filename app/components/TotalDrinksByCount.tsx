@@ -32,7 +32,7 @@ export default function TotalDrinksByCount({ width, transactions }: { width: num
         <>
             {
                 data.length > 0 ? (
-                    <Card className="p-4 overflow-x-scroll">
+                    <Card className="p-4 overflow-x-auto">
                         <ResponsiveContainer width={width < 900 ? 800 : '100%'} height={300}>
                             <BarChart
                                 data={data}
