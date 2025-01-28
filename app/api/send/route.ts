@@ -33,9 +33,18 @@ export async function POST(req: Request) {
             }
         });
 
-        const data = await resend.batch.send(emails);
+        const emailBatches = [];
+        let response = null;
+        for (let i = 0; i < emails.length; i += 5) {
+            emailBatches.push(emails.slice(i, i + 5));
+        }
 
-        return Response.json(data);
+        for (const batch of emailBatches) {
+            console.log('Sending batch of emails', batch);
+            response = await resend.batch.send(batch);
+        }
+
+        return Response.json(response);
     } catch (error) {
         console.log('error', error);
         return Response.json({ error });

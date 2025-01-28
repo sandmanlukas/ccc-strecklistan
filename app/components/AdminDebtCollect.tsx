@@ -83,6 +83,7 @@ const sendEmails = async (users: UserWithItemsAndTransactions[], title: string, 
     });
 
     if (!response.ok) {
+        console.log(response);
         toast.error('Något gick fel vid mailutskick!');
         return;
     }
