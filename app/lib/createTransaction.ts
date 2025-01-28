@@ -2,7 +2,8 @@
 
 import { prisma } from '@/app/lib/db';
 import { BEERED_BARCODE } from '@/app/constants';
-
+import { Transaction } from '@prisma/client';
+import { TransactionWithItem } from '../components/UserPage';
 async function createTransaction(userId: number, beeredUserId: number | undefined, barcode: string) {
     try {
         let freeBeer = false;
@@ -40,18 +41,18 @@ async function createTransaction(userId: number, beeredUserId: number | undefine
                 }
 
                 // Create a transaction for the user who beered the other user
-                const transaction = await prisma.transaction.create({
+                let transaction = await prisma.transaction.create({
                     data: {
                         userId: userId,
                         barcode: barcode,
-                        beeredTransaction: true,
+                        beeredTransaction: null, // First set the beeredTransaction to null
                         beeredUser: beeredUser.username, // Which user was beered
                         price: 0,
                     },
                     include: {
                         item: true,
                     },
-                });
+                }) as TransactionWithItem;
 
                 // Update the beered user's debt
                 await prisma.user.update({
@@ -70,9 +71,22 @@ async function createTransaction(userId: number, beeredUserId: number | undefine
                     data: {
                         userId: beeredUserId,
                         barcode: BEERED_BARCODE,
-                        beeredTransaction: true,
+                        beeredTransaction: transaction.id, // Set the beeredTransaction to the transaction id of the beering transaction
                         beeredBy: beeringUser.username,
                         price: item.price,
+                    },
+                    include: {
+                        item: true,
+                    },
+                });
+
+                // Update the beering transaction with the beered transaction id
+                transaction = await prisma.transaction.update({
+                    where: {
+                        id: transaction.id,
+                    },
+                    data: {
+                        beeredTransaction: beeredUserTransaction.id,
                     },
                     include: {
                         item: true,

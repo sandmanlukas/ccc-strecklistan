@@ -1729,7 +1729,7 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@prisma/client@^5.10.2":
+"@prisma/client@^5.15.0":
   version "5.22.0"
   resolved "https://registry.yarnpkg.com/@prisma/client/-/client-5.22.0.tgz#da1ca9c133fbefe89e0da781c75e1c59da5f8802"
   integrity sha512-M0SVXfyHnQREBKxCgyo7sffrKttwE6R8PMq330MIUF0pTwjUhLbW84pFDlf06B27XyCR++VtjugEnIHdr07SVA==
@@ -2924,6 +2924,14 @@
     "@react-stately/select" "^3.6.10"
     "@react-stately/utils" "^3.10.5"
     "@react-types/combobox" "^3.13.2"
+    "@react-types/shared" "^3.27.0"
+    "@swc/helpers" "^0.5.0"
+
+"@react-stately/data@^3.11.4":
+  version "3.12.1"
+  resolved "https://registry.yarnpkg.com/@react-stately/data/-/data-3.12.1.tgz#d1f3a9e8a80d882d0987f6b99f2a2b37db11a945"
+  integrity sha512-/Nc8X1FmrJ53QU4rN/1i1JtNir4iqo+39Xn5ZOJ74Nng7T+xVVuEuWSo+OEGaycCJf2eZRsomauPxUnnZgCM1A==
+  dependencies:
     "@react-types/shared" "^3.27.0"
     "@swc/helpers" "^0.5.0"
 
@@ -7951,7 +7959,7 @@ prism-react-renderer@2.1.0:
     "@types/prismjs" "^1.26.0"
     clsx "^1.2.1"
 
-prisma@^5.10.2:
+prisma@^5.15.0:
   version "5.22.0"
   resolved "https://registry.yarnpkg.com/prisma/-/prisma-5.22.0.tgz#1f6717ff487cdef5f5799cc1010459920e2e6197"
   integrity sha512-vtpjW3XuYCSnMsNVBjLMNkTj6OZbudcPPTPYHqX0CJfpcdWciI1dM8uHETwmDxxiqEwCIE6WvXucWUetJgfu/A==

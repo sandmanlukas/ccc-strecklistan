@@ -37,7 +37,7 @@ export function AdminAccountSettings({ accs }: { accs: Account[] }) {
                         onSelectionChange={setSelectedAccountKey}
                         classNames={{
                             base: "max-w-xs",
-                            list: "max-h-[300px] overflow-scroll",
+                            list: "max-h-[300px] overflow-y-auto",
                         }}
                     >
                         {(account) => (

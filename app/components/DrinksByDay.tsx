@@ -1,7 +1,8 @@
 import React from "react";
 import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { TransactionWithItem } from "./UserPage";
-import { Card, Select, SelectItem } from "@nextui-org/react";
+import { Card, Select, SelectItem, Tooltip as NextUITooltip } from "@nextui-org/react";
+import { MdClear } from "react-icons/md";
 
 
 interface DataPoint {
@@ -54,6 +55,10 @@ export default function DrinksByDay({ width, transactions }: { width: number, tr
         setSelectedDrink(e.target.value);
     };
 
+    const clearSelection = () => {
+        setSelectedDrink('Totalt');
+    }
+
     const drinks = Object.keys(dateToDrinkByDate).sort();
 
     if (drinks.length === 0) {
@@ -61,24 +66,29 @@ export default function DrinksByDay({ width, transactions }: { width: number, tr
     }
 
     return (
-        <Card className="p-4 overflow-x-scroll">
-            <Select
-                aria-label="Choose drink to display in graph"
-                className={`my-2 ${width < 900 ? 'w-[800px]' : 'w-full'}`}
-                selectedKeys={[selectedDrink]}
-                onChange={handleSelectionChange}
-                fullWidth
-            >
-                {drinks.map(drink => (
-                    <SelectItem key={drink} value={drink}>{drink}</SelectItem>
-                ))}
-            </Select>
-
+        <Card className="p-4 overflow-x-auto">
+            <div className="flex items-center space-x-4">
+                <Select
+                    aria-label="Choose drink to display in graph"
+                    className={`my-2 ${width < 900 ? 'w-[800px]' : 'w-full'}`}
+                    selectedKeys={[selectedDrink]}
+                    onChange={handleSelectionChange}
+                    fullWidth
+                >
+                    {drinks.map(drink => (
+                        <SelectItem key={drink} value={drink}>{drink}</SelectItem>
+                    ))}
+                </Select>
+                {selectedDrink != 'Totalt' && (
+                    <NextUITooltip content="Rensa filter">
+                        <span className="text-lg cursor-pointer active:opacity-50">
+                            <MdClear onClick={clearSelection} />
+                        </span>
+                    </NextUITooltip>
+                )}
+            </div>
             {selectedDrink ? (
                 <div>
-                    <h3 className="ml-2">
-                        {selectedDrink}
-                    </h3>
                     <ResponsiveContainer width={width < 900 ? 800 : '100%'} height={300}>
                         <LineChart
                             data={dateToDrinkByDate[selectedDrink]}
