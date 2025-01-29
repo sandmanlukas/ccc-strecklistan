@@ -4,7 +4,7 @@ import { formatTransactionDate } from "../lib/utils";
 import { MdDeleteForever } from "react-icons/md";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { useAsyncList } from "@react-stately/data";
-import React, { Key, useState } from "react";
+import React, { Key, useEffect, useState } from "react";
 import { getAllTransactionsWithoutBeeredUser } from "../lib/getAllTransactionsWithoutBeeredUser";
 import { TRANSACTION_PAGE_SIZE } from "./AdminPage";
 
@@ -50,10 +50,16 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
                 const currentPage = cursor ? parseInt(cursor as string) : 1;
                 const moreTransactions = await getAllTransactionsWithoutBeeredUser(true, null, TRANSACTION_PAGE_SIZE, currentPage * TRANSACTION_PAGE_SIZE);
 
-                setHasMore(moreTransactions.length === TRANSACTION_PAGE_SIZE);
+                console.log("moreTransactions", moreTransactions.length);
+                console.log("TRANSACTION_PAGE_SIZE", TRANSACTION_PAGE_SIZE);
+
+                const totalLoaded = list.items.length + moreTransactions.length;
+                const hasMoreTransactions = moreTransactions.length > 0 && totalLoaded % TRANSACTION_PAGE_SIZE === 0;
+
+                setHasMore(hasMoreTransactions);
 
                 setIsLoading(false);
-                return { items: currentPage === 1 ? transactions : moreTransactions, cursor: moreTransactions.length === TRANSACTION_PAGE_SIZE ? (currentPage + 1).toString() : undefined };
+                return { items: currentPage === 1 ? transactions : moreTransactions, cursor: hasMoreTransactions ? (currentPage + 1).toString() : undefined };
             } catch (error) {
                 if (signal.aborted) {
                     console.warn('Request aborted');
@@ -84,11 +90,11 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
         },
     });
 
-    // useEffect(() => {
-    //     if (transactions && list) {
-    //         list?.reload();
-    //     }
-    // }, [transactions]);
+    useEffect(() => {
+        if (transactions && list) {
+            list?.reload();
+        }
+    }, [transactions]);
 
     const renderCell = React.useCallback((transaction: TransactionWithItemAndUser, columnKey: React.Key) => {
         const cellValue = transaction[columnKey as keyof TransactionWithItemAndUser];
@@ -161,7 +167,7 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
                     <div className="flex w-full justify-center">
                         <Button
                             isDisabled={list.isLoading}
-                            onClick={() => list.loadMore()}
+                            onPress={() => list.loadMore()}
                         >
                             {list.isLoading && <Spinner color="white" size="sm" />}
                             Ladda fler
