@@ -48,18 +48,18 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
         async load({ signal, cursor }): Promise<{ items: TransactionWithItemAndUser[], cursor: string | undefined }> {
             try {
                 const currentPage = cursor ? parseInt(cursor as string) : 1;
-                const moreTransactions = await getAllTransactionsWithoutBeeredUser(true, null, TRANSACTION_PAGE_SIZE, currentPage * TRANSACTION_PAGE_SIZE);
+                const offset = (currentPage - 1) * TRANSACTION_PAGE_SIZE;
+                const moreTransactions = await getAllTransactionsWithoutBeeredUser(true, null, TRANSACTION_PAGE_SIZE, offset);
 
-                console.log("moreTransactions", moreTransactions.length);
-                console.log("TRANSACTION_PAGE_SIZE", TRANSACTION_PAGE_SIZE);
-
-                const totalLoaded = list.items.length + moreTransactions.length;
-                const hasMoreTransactions = moreTransactions.length > 0 && totalLoaded % TRANSACTION_PAGE_SIZE === 0;
-
-                setHasMore(hasMoreTransactions);
-
+                setHasMore(moreTransactions.length === TRANSACTION_PAGE_SIZE);
                 setIsLoading(false);
-                return { items: currentPage === 1 ? transactions : moreTransactions, cursor: hasMoreTransactions ? (currentPage + 1).toString() : undefined };
+
+                const items = currentPage === 1 ? transactions : [...list.items, ...moreTransactions];
+
+                return {
+                    items,
+                    cursor: moreTransactions.length === TRANSACTION_PAGE_SIZE ? (currentPage + 1).toString() : undefined
+                };
             } catch (error) {
                 if (signal.aborted) {
                     console.warn('Request aborted');
@@ -167,7 +167,7 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
                     <div className="flex w-full justify-center">
                         <Button
                             isDisabled={list.isLoading}
-                            onPress={() => list.loadMore()}
+                            onClick={() => list.loadMore()}
                         >
                             {list.isLoading && <Spinner color="white" size="sm" />}
                             Ladda fler
