@@ -149,6 +149,11 @@ export default function UserPage({ id }: { id: number }) {
                         // Slice the array to keep only the last 10 items
                         return updatedTransactions.slice(0, 10);
                     });
+                    // Recalculate favorite drink with all transactions including the new one
+                    const updatedUser = await getUser(user.id);
+                    if (updatedUser) {
+                        setFavoriteDrink(calculateFavoriteDrink(updatedUser.transactions));
+                    }
                     setItem(item);
                     setBeeredUser(null);
                 } catch (error) {
