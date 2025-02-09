@@ -47,17 +47,25 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
     let list = useAsyncList<TransactionWithItemAndUser>({
         async load({ signal, cursor }): Promise<{ items: TransactionWithItemAndUser[], cursor: string | undefined }> {
             try {
-                const currentPage = cursor ? parseInt(cursor as string) : 1;
+                // If no cursor, return initial transactions
+                if (!cursor) {
+                    setIsLoading(false);
+                    setHasMore(transactions.length === TRANSACTION_PAGE_SIZE);
+                    return {
+                        items: transactions,
+                        cursor: transactions.length === TRANSACTION_PAGE_SIZE ? "2" : undefined
+                    };
+                }
+
+                const currentPage = parseInt(cursor as string);
                 const offset = (currentPage - 1) * TRANSACTION_PAGE_SIZE;
                 const moreTransactions = await getAllTransactionsWithoutBeeredUser(true, null, TRANSACTION_PAGE_SIZE, offset);
 
                 setHasMore(moreTransactions.length === TRANSACTION_PAGE_SIZE);
                 setIsLoading(false);
 
-                const items = currentPage === 1 ? transactions : [...list.items, ...moreTransactions];
-
                 return {
-                    items,
+                    items: [...list.items, ...moreTransactions],
                     cursor: moreTransactions.length === TRANSACTION_PAGE_SIZE ? (currentPage + 1).toString() : undefined
                 };
             } catch (error) {
@@ -66,6 +74,7 @@ export function TransactionTable({ transactions, columns, label, selectTransacti
                 } else {
                     console.error("Failed to load transactions", error);
                 }
+                setIsLoading(false);
                 return { items: transactions, cursor: undefined };
             }
         },
