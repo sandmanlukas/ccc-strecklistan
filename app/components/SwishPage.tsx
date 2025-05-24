@@ -70,7 +70,6 @@ export default function SwishPage() {
       if (barcode) {
         try {
           const item = await getItemByBarcode(barcode);
-          console.log("item", item);
 
           if (!item) {
             toast.error(
